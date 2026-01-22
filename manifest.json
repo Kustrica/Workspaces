@@ -1,0 +1,126 @@
+{
+  "manifest_version": 3,
+  "default_locale": "en",
+  "name": "__MSG_extensionName__",
+  "author": "Kustrica (Telegram: @Kustrica)",
+  "homepage_url": "https://t.me/Kustrica",
+  "version": "1.0",
+  "description": "__MSG_extensionDescription__",
+  "permissions": [
+    "tabs",
+    "storage",
+    "tabHide",
+    "menus",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "sidebar_action": {
+    "default_panel": "sidebar.html",
+    "default_icon": "icons/main-64.png",
+    "default_title": "Workspaces"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "commands": {
+    "_execute_sidebar_action": {
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "Command+Q"
+      },
+      "description": "Toggle Sidebar"
+    },
+    "switch_workspace_1": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
+      },
+      "description": "Switch to Workspace 1"
+    },
+    "switch_workspace_2": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
+      },
+      "description": "Switch to Workspace 2"
+    },
+    "switch_workspace_3": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+3",
+        "mac": "Command+Shift+3"
+      },
+      "description": "Switch to Workspace 3"
+    },
+    "switch_workspace_4": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+4",
+        "mac": "Command+Shift+4"
+      },
+      "description": "Switch to Workspace 4"
+    },
+    "switch_workspace_5": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+5",
+        "mac": "Command+Shift+5"
+      },
+      "description": "Switch to Workspace 5"
+    },
+    "switch_workspace_6": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+6",
+        "mac": "Command+Shift+6"
+      },
+      "description": "Switch to Workspace 6"
+    },
+    "switch_workspace_7": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+7",
+        "mac": "Command+Shift+7"
+      },
+      "description": "Switch to Workspace 7"
+    },
+    "switch_workspace_8": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+8",
+        "mac": "Command+Shift+8"
+      },
+      "description": "Switch to Workspace 8"
+    },
+    "switch_workspace_9": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+9",
+        "mac": "Command+Shift+9"
+      },
+      "description": "Switch to Workspace 9"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "workspaces@kustrica.addon",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}
