@@ -1,5 +1,4 @@
 
-// Default workspaces
 const DEFAULT_WORKSPACES = [
     { id: 'ws_default', name: browser.i18n.getMessage("defaultWsMain") || 'Main', icon: 'img:icons/main-64.png' },
     { id: 'ws_study', name: browser.i18n.getMessage("defaultWsStudy") || 'Study', icon: 'img:icons/study-64.png' },
@@ -43,9 +42,15 @@ const EMOJIS = [
     "🔥", "⭐", "⚡", "✨", "🌈", "☀️", "🌙", "☁️", "❄️", "🍀", "⚠️", "⛔", "✅", "❌", "❓"
 ];
 
+function clearElement(el) {
+    while (el.firstChild) {
+        el.removeChild(el.firstChild);
+    }
+}
+
 // Initialize emoji and icon picker grid
 function initEmojiPicker() {
-    emojiGrid.innerHTML = '';
+    clearElement(emojiGrid);
     EMOJIS.forEach(emoji => {
         const div = document.createElement('div');
         div.className = 'emoji-option';
@@ -59,7 +64,7 @@ function initEmojiPicker() {
     });
 
     if (CUSTOM_ICONS.length > 0) {
-        customIconsList.innerHTML = '';
+        clearElement(customIconsList);
         CUSTOM_ICONS.forEach(iconFile => {
             const img = document.createElement('img');
             img.src = `icons/${iconFile}`;
@@ -356,7 +361,7 @@ function initTour() {
         textEl.textContent = step.text;
         imgEl.src = step.icon;
         
-        dotsEl.innerHTML = '';
+    clearElement(dotsEl);
         steps.forEach((_, i) => {
             const dot = document.createElement('div');
             dot.className = 'tour-dot' + (i === index ? ' active' : '');
@@ -499,7 +504,7 @@ if (createDefaultsBtn) {
 
 // Render main workspace list interface
 function render() {
-    listEl.innerHTML = '';
+    clearElement(listEl);
     
     const emptyStateContainer = document.getElementById('empty-state-container');
     
@@ -563,16 +568,25 @@ function render() {
         content.style.flex = '1';
         content.style.pointerEvents = 'none'; 
         
-        let iconHtml = ws.icon;
+        const iconWrapper = document.createElement('div');
+        iconWrapper.className = 'ws-icon';
         if (ws.icon && ws.icon.startsWith('img:')) {
-            const src = ws.icon.substring(4);
-            iconHtml = `<img src="${src}" style="width: 20px; height: 20px; object-fit: contain;">`;
+            const img = document.createElement('img');
+            img.src = ws.icon.substring(4);
+            img.style.width = '20px';
+            img.style.height = '20px';
+            img.style.objectFit = 'contain';
+            iconWrapper.appendChild(img);
+        } else if (ws.icon) {
+            iconWrapper.textContent = ws.icon;
         }
         
-        content.innerHTML = `
-            <div class="ws-icon">${iconHtml}</div>
-            <div class="ws-name">${ws.name}</div>
-        `;
+        const nameWrapper = document.createElement('div');
+        nameWrapper.className = 'ws-name';
+        nameWrapper.textContent = ws.name;
+        
+        content.appendChild(iconWrapper);
+        content.appendChild(nameWrapper);
         
         const actions = document.createElement('div');
         actions.className = 'ws-actions';
@@ -580,40 +594,60 @@ function render() {
         const renameBtn = document.createElement('button');
         renameBtn.className = 'ws-action-btn';
         const renameIconUrl = browser.runtime.getURL('icons/pen-64.png');
-        renameBtn.innerHTML = `<img src="${renameIconUrl}" alt="Rename" style="width: 16px; height: 16px;">`;
+        const renameImg = document.createElement('img');
+        renameImg.src = renameIconUrl;
+        renameImg.alt = 'Rename';
+        renameImg.style.width = '16px';
+        renameImg.style.height = '16px';
+        renameBtn.appendChild(renameImg);
         renameBtn.title = browser.i18n.getMessage("renameWs") || "Rename";
         renameBtn.onclick = (e) => {
             e.stopPropagation();
             startInlineRename(ws.id);
         };
-        renameBtn.querySelector('img').onerror = function() { this.replaceWith('✏️'); };
+        renameImg.onerror = function() { this.replaceWith(document.createTextNode('✏️')); };
 
         const copyBtn = document.createElement('button');
         copyBtn.className = 'ws-action-btn';
         const copyIconUrl = browser.runtime.getURL('icons/copy-64.png');
-        copyBtn.innerHTML = `<img src="${copyIconUrl}" alt="Copy" style="width: 16px; height: 16px;">`; 
+        const copyImg = document.createElement('img');
+        copyImg.src = copyIconUrl;
+        copyImg.alt = 'Copy';
+        copyImg.style.width = '16px';
+        copyImg.style.height = '16px';
+        copyBtn.appendChild(copyImg);
         copyBtn.title = browser.i18n.getMessage("copyUrls");
         copyBtn.onclick = (e) => {
             e.stopPropagation();
             copyWorkspaceUrls(ws.id);
         };
-        copyBtn.querySelector('img').onerror = function() { this.replaceWith('📋'); };
+        copyImg.onerror = function() { this.replaceWith(document.createTextNode('📋')); };
 
         const moveBtn = document.createElement('button');
         moveBtn.className = 'ws-action-btn';
         const moveIconUrl = browser.runtime.getURL('icons/arrow-64.png');
-        moveBtn.innerHTML = `<img src="${moveIconUrl}" alt="Move" style="width: 16px; height: 16px;">`;
+        const moveImg = document.createElement('img');
+        moveImg.src = moveIconUrl;
+        moveImg.alt = 'Move';
+        moveImg.style.width = '16px';
+        moveImg.style.height = '16px';
+        moveBtn.appendChild(moveImg);
         moveBtn.title = browser.i18n.getMessage("moveAll");
         moveBtn.onclick = (e) => {
             e.stopPropagation();
             showMoveMenu(ws.id);
         };
-        moveBtn.querySelector('img').onerror = function() { this.replaceWith('➡'); };
+        moveImg.onerror = function() { this.replaceWith(document.createTextNode('➡')); };
         
         const delBtn = document.createElement('button');
         delBtn.className = 'ws-action-btn';
         const deleteIconUrl = browser.runtime.getURL('icons/trash-64.png');
-        delBtn.innerHTML = `<img src="${deleteIconUrl}" alt="Delete" style="width: 16px; height: 16px;">`;
+        const deleteImg = document.createElement('img');
+        deleteImg.src = deleteIconUrl;
+        deleteImg.alt = 'Delete';
+        deleteImg.style.width = '16px';
+        deleteImg.style.height = '16px';
+        delBtn.appendChild(deleteImg);
         delBtn.title = browser.i18n.getMessage("deleteWs");
         delBtn.onclick = async (e) => {
             e.stopPropagation();
@@ -630,7 +664,7 @@ function render() {
                 showDeleteModal(ws);
             }
         };
-        delBtn.querySelector('img').onerror = function() { this.replaceWith('🗑'); };
+        deleteImg.onerror = function() { this.replaceWith(document.createTextNode('🗑')); };
         
         actions.appendChild(renameBtn);
         actions.appendChild(copyBtn);
@@ -670,7 +704,7 @@ function startInlineRename(wsId) {
     input.onclick = (e) => e.stopPropagation();
     input.onmousedown = (e) => e.stopPropagation();
 
-    nameEl.innerHTML = '';
+    clearElement(nameEl);
     nameEl.appendChild(input);
     input.focus();
     input.select();
@@ -801,18 +835,32 @@ function showMoveMenu(fromWsId) {
         return;
     }
     
-    modalList.innerHTML = '';
+    clearElement(modalList);
     targets.forEach(t => {
         const li = document.createElement('li');
         li.className = 'modal-item';
         
-        let iconHtml = t.icon;
+        const row = document.createElement('span');
+        row.style.display = 'inline-flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '8px';
+        
         if (t.icon && t.icon.startsWith('img:')) {
-            const src = t.icon.substring(4);
-            iconHtml = `<img src="${src}" class="move-menu-icon">`;
+            const img = document.createElement('img');
+            img.src = t.icon.substring(4);
+            img.className = 'move-menu-icon';
+            row.appendChild(img);
+        } else if (t.icon) {
+            const iconText = document.createElement('span');
+            iconText.textContent = t.icon;
+            row.appendChild(iconText);
         }
         
-        li.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;">${iconHtml} ${t.name}</span>`;
+        const nameText = document.createElement('span');
+        nameText.textContent = t.name;
+        row.appendChild(nameText);
+        
+        li.appendChild(row);
         li.onclick = () => {
             browser.runtime.sendMessage({ 
                 action: 'MOVE_ALL_TABS', 
@@ -928,7 +976,7 @@ function showDeleteModal(ws) {
     const targets = workspaces.filter(w => w.id !== ws.id);
     
     if (targets.length > 0) {
-        deleteMoveTargetSelect.innerHTML = '';
+        clearElement(deleteMoveTargetSelect);
         targets.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t.id;
@@ -1109,7 +1157,7 @@ if (clearLogsConfirmBtn) {
 // Render action log
 async function renderLogs() {
     if (!logsListEl) return;
-    logsListEl.innerHTML = '';
+    clearElement(logsListEl);
     
     const header = document.createElement('div');
     header.style.display = 'flex';
@@ -1125,7 +1173,11 @@ async function renderLogs() {
     clearBtn.id = 'clear-logs-btn';
     clearBtn.style.width = 'auto'; 
     clearBtn.style.margin = '0';
-    clearBtn.innerHTML = `<img src="icons/trash-64.png" style="width: 16px; height: 16px;">`;
+    const clearImg = document.createElement('img');
+    clearImg.src = 'icons/trash-64.png';
+    clearImg.style.width = '16px';
+    clearImg.style.height = '16px';
+    clearBtn.appendChild(clearImg);
     clearBtn.title = browser.i18n.getMessage("clearLogs");
     clearBtn.onclick = (e) => {
         e.stopPropagation();
@@ -1201,22 +1253,44 @@ async function renderLogs() {
                 wsObj = workspaces.find(w => w.id === wsIdToFind);
             }
 
+            const logTime = document.createElement('div');
+            logTime.className = 'log-time';
+            logTime.textContent = timeStr;
+            
+            const logRow = document.createElement('div');
+            logRow.className = 'log-row';
+            
+            const logIcon = document.createElement('div');
+            logIcon.className = 'log-icon';
+            
             if (wsObj && wsObj.icon) {
                 if (wsObj.icon.startsWith('img:')) {
-                    const src = wsObj.icon.substring(4);
-                    iconHtml = `<img src="${src}" style="width: 20px; height: 20px; object-fit: contain;">`;
+                    const img = document.createElement('img');
+                    img.src = wsObj.icon.substring(4);
+                    img.style.width = '20px';
+                    img.style.height = '20px';
+                    img.style.objectFit = 'contain';
+                    logIcon.appendChild(img);
                 } else {
-                    iconHtml = wsObj.icon;
+                    logIcon.textContent = wsObj.icon;
                 }
-            } 
-
-            item.innerHTML = `
-                <div class="log-time">${timeStr}</div>
-                <div class="log-row">
-                     <div class="log-icon">${iconHtml}</div>
-                     <div class="log-action"><strong>${actionTitle}</strong>${detailsText ? ': ' + detailsText : ''}</div>
-                </div>
-            `;
+            }
+            
+            const logAction = document.createElement('div');
+            logAction.className = 'log-action';
+            
+            const strong = document.createElement('strong');
+            strong.textContent = actionTitle;
+            logAction.appendChild(strong);
+            
+            if (detailsText) {
+                logAction.appendChild(document.createTextNode(`: ${detailsText}`));
+            }
+            
+            logRow.appendChild(logIcon);
+            logRow.appendChild(logAction);
+            item.appendChild(logTime);
+            item.appendChild(logRow);
             
             item.onclick = (e) => {
                 e.stopPropagation();
@@ -1277,7 +1351,6 @@ init();
 
 browser.storage.onChanged.addListener((changes, area) => {
     if (area === 'local') {
-        // Reload if onboarding or tour flags are reset (removed or set to false)
         if ((changes.onboardingComplete && !changes.onboardingComplete.newValue) || 
             (changes.tourComplete && !changes.tourComplete.newValue)) {
             window.location.reload();

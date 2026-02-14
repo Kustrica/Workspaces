@@ -3,7 +3,7 @@
   "default_locale": "en",
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
-  "homepage_url": "https://t.me/Kustrica",
+  "homepage_url": "https://t.me/Kustric",
   "version": "1.0",
   "description": "__MSG_extensionDescription__",
   "permissions": [
@@ -18,8 +18,11 @@
   ],
   "sidebar_action": {
     "default_panel": "sidebar.html",
-    "default_icon": "icons/main-64.png",
+    "default_icon": "icons/main1-200.png",
     "default_title": "Workspaces"
+  },
+  "icons": {
+    "200": "icons/main1-200.png"
   },
   "background": {
     "scripts": [
@@ -115,7 +118,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "workspaces@kustrica.addon",
-      "strict_min_version": "109.0",
+      "strict_min_version": "142.0",
       "data_collection_permissions": {
         "required": [
           "none"

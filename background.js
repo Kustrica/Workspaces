@@ -2,9 +2,9 @@
 // State management
 let currentWorkspaceId = 'ws_default';
 let isAllTabsMode = false;
-let tabWorkspaceMap = {}; // tabId -> workspaceId
-let workspaceActiveTabMap = {}; // workspaceId -> tabId (last active tab)
-let actionLogs = []; // Array of log objects
+let tabWorkspaceMap = {};
+let workspaceActiveTabMap = {};
+let actionLogs = [];
 
 // Add entry to action log
 function addLog(action, details, undoData = null) {
@@ -221,7 +221,6 @@ async function moveTabsToEnd(tabIds) {
     try {
         await browser.tabs.move(tabIds, { index: -1 });
     } catch (e) {
-        // Ignore move errors
     }
 }
 
@@ -234,7 +233,6 @@ async function updateContextMenus() {
             browser.contextMenus.removeAll(() => {});
         }
     } catch (e) {
-        // Menu cleanup error
     }
     
     const menuAPI = browser.menus || browser.contextMenus;
@@ -265,7 +263,6 @@ async function updateContextMenus() {
                 title: title, 
                 contexts: ["tab"]
             }, () => {
-                 // Ignore submenu creation errors
             });
         });
     });
@@ -433,7 +430,6 @@ browser.runtime.onMessage.addListener(async (message) => {
                             }
 
                         } catch (e) {
-                            // Restore error
                         }
                     }
                 }
