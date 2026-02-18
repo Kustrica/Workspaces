@@ -1,3 +1,3 @@
 # Workspaces
 
-[Firefox Add-On]([https://)](https://addons.mozilla.org/ru/firefox/addon/workspaces-sidebar/)
+[Firefox Add-On](https://addons.mozilla.org/ru/firefox/addon/workspaces-sidebar/)
