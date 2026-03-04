@@ -9,6 +9,7 @@
   "permissions": [
     "tabs",
     "storage",
+    "sessions",
     "tabHide",
     "menus",
     "contextMenus"
