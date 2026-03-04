@@ -4,7 +4,7 @@
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
   "homepage_url": "https://t.me/Kustric",
-  "version": "1.2",
+  "version": "1.3",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -24,7 +24,7 @@
   },
   "action": {
     "default_title": "Workspaces",
-    "default_icon": "icons/main-64.png"
+    "default_icon": "icons/main1-200.png"
   },
   "icons": {
     "200": "icons/main1-200.png"
