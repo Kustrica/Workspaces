@@ -4,11 +4,12 @@
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
   "homepage_url": "https://t.me/Kustric",
-  "version": "1.0",
+  "version": "1.2",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
     "storage",
+    "sessions",
     "tabHide",
     "menus",
     "contextMenus"
@@ -20,6 +21,10 @@
     "default_panel": "sidebar.html",
     "default_icon": "icons/main1-200.png",
     "default_title": "Workspaces"
+  },
+  "action": {
+    "default_title": "Workspaces",
+    "default_icon": "icons/main-64.png"
   },
   "icons": {
     "200": "icons/main1-200.png"
