@@ -178,6 +178,8 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
 
 // Switch active workspace
 async function switchWorkspace(workspaceId, preserveActiveTab = false) {
+    const previousWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
+
     if (currentWorkspaceId) {
         const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true });
         if (currentTab) {
@@ -211,16 +213,11 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
         let ws = tabWorkspaceMap[tab.id];
         
         if (!ws) {
-            ws = currentWorkspaceId || 'ws_default'; 
-            if (currentWorkspaceId) {
-                assignTabToWorkspace(tab.id, currentWorkspaceId);
-            } else {
-                if (workspaces.length > 0) {
-                     ws = workspaces[0].id;
-                     if (!currentWorkspaceId) currentWorkspaceId = ws;
-                     assignTabToWorkspace(tab.id, ws);
-                }
+            ws = previousWorkspaceId || 'ws_default';
+            if (!ws && workspaces.length > 0) {
+                ws = workspaces[0].id;
             }
+            assignTabToWorkspace(tab.id, ws);
         }
 
         if (ws === currentWorkspaceId) {
@@ -443,8 +440,45 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
 // Tab removal listener
 browser.tabs.onRemoved.addListener((tabId) => {
+    const removedWorkspaceId = tabWorkspaceMap[tabId];
     unassignTab(tabId);
+    if (removedWorkspaceId && workspaceActiveTabMap[removedWorkspaceId] === tabId) {
+        delete workspaceActiveTabMap[removedWorkspaceId];
+    }
     saveState();
+});
+
+browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    if (isInitializingState || isAllTabsMode) return;
+    if (removeInfo && removeInfo.isWindowClosing) return;
+    if (!currentWorkspaceId) return;
+
+    const hasWindowId = removeInfo && typeof removeInfo.windowId === 'number';
+    const tabs = await browser.tabs.query(hasWindowId ? { windowId: removeInfo.windowId } : { currentWindow: true });
+    if (!tabs || tabs.length === 0) return;
+
+    const tabsInCurrentWorkspace = tabs.filter(tab => tabWorkspaceMap[tab.id] === currentWorkspaceId);
+    if (tabsInCurrentWorkspace.length > 0) return;
+
+    let fallbackWorkspaceId = null;
+    for (const ws of workspaces) {
+        if (tabs.some(tab => tabWorkspaceMap[tab.id] === ws.id)) {
+            fallbackWorkspaceId = ws.id;
+            break;
+        }
+    }
+
+    if (fallbackWorkspaceId && fallbackWorkspaceId !== currentWorkspaceId) {
+        await switchWorkspace(fallbackWorkspaceId, true);
+        return;
+    }
+
+    const targetWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
+    const newTab = await browser.tabs.create(hasWindowId ? { windowId: removeInfo.windowId, active: true } : { active: true });
+    assignTabToWorkspace(newTab.id, targetWorkspaceId);
+    workspaceActiveTabMap[targetWorkspaceId] = newTab.id;
+    currentWorkspaceId = targetWorkspaceId;
+    await switchWorkspace(targetWorkspaceId, true);
 });
 
 // Storage change listener
