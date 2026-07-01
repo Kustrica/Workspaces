@@ -1,11 +1,13 @@
 
-const DEFAULT_WORKSPACES = [
-    { id: 'ws_default', name: browser.i18n.getMessage("defaultWsMain") || 'Main', icon: 'img:icons/main-64.png' },
-    { id: 'ws_study', name: browser.i18n.getMessage("defaultWsStudy") || 'Study', icon: 'img:icons/study-64.png' },
-    { id: 'ws_work', name: browser.i18n.getMessage("defaultWsWork") || 'Work', icon: 'img:icons/work-64.png' },
-    { id: 'ws_music', name: browser.i18n.getMessage("defaultWsMusic") || 'Music', icon: 'img:icons/music-64.png' },
-    { id: 'ws_cooking', name: browser.i18n.getMessage("defaultWsCooking") || 'Cooking', icon: 'img:icons/cooking-64.png' }
-];
+function getDefaultWorkspaces() {
+    return [
+        { id: 'ws_default', name: getMessage("defaultWsMain") || 'Main', icon: 'img:icons/main-64.png' },
+        { id: 'ws_study', name: getMessage("defaultWsStudy") || 'Study', icon: 'img:icons/study-64.png' },
+        { id: 'ws_work', name: getMessage("defaultWsWork") || 'Work', icon: 'img:icons/work-64.png' },
+        { id: 'ws_music', name: getMessage("defaultWsMusic") || 'Music', icon: 'img:icons/music-64.png' },
+        { id: 'ws_cooking', name: getMessage("defaultWsCooking") || 'Cooking', icon: 'img:icons/cooking-64.png' }
+    ];
+}
 
 let workspaces = [];
 let activeWsId = 'ws_default';
@@ -83,7 +85,7 @@ function initEmojiPicker() {
 
 // Generate unique name for new workspace
 function generateWorkspaceName() {
-    const baseName = browser.i18n.getMessage("workspaceDefaultName") || "Workspace";
+    const baseName = getMessage("workspaceDefaultName") || "Workspace";
     let counter = 1;
     let name = `${baseName} ${counter}`;
     while (workspaces.some(w => w.name === name)) {
@@ -176,13 +178,13 @@ function updateActionsVisibility() {
         const eyeOpenUrl = browser.runtime.getURL('icons/eye-open-64.png');
         toggleActionsBtn.querySelector('img').src = eyeOpenUrl;
         toggleActionsBtn.style.opacity = '1';
-        toggleActionsBtn.title = browser.i18n.getMessage("hideActions") || "Hide Actions";
+        toggleActionsBtn.title = getMessage("hideActions") || "Hide Actions";
     } else {
         listEl.classList.remove('show-actions');
         const eyeClosedUrl = browser.runtime.getURL('icons/eye-closed-64.png');
         toggleActionsBtn.querySelector('img').src = eyeClosedUrl;
         toggleActionsBtn.style.opacity = '0.7'; 
-        toggleActionsBtn.title = browser.i18n.getMessage("showActions") || "Show Actions";
+        toggleActionsBtn.title = getMessage("showActions") || "Show Actions";
     }
 }
 
@@ -191,11 +193,11 @@ function applyTheme() {
     const themeIcon = themeBtn.querySelector('img');
     if (currentTheme === 'light') {
         document.body.classList.add('light-theme');
-        themeBtn.title = browser.i18n.getMessage("switchToDarkTheme") || "Switch to Dark Theme";
+        themeBtn.title = getMessage("switchToDarkTheme") || "Switch to Dark Theme";
         themeIcon.src = browser.runtime.getURL('icons/light-64.png');
     } else {
         document.body.classList.remove('light-theme');
-        themeBtn.title = browser.i18n.getMessage("switchToLightTheme") || "Switch to Light Theme";
+        themeBtn.title = getMessage("switchToLightTheme") || "Switch to Light Theme";
         themeIcon.src = browser.runtime.getURL('icons/dark-64.png');
     }
 }
@@ -237,23 +239,23 @@ let workspaceToDeleteId = null;
 
 // Localize page by replacing text of elements with data-i18n attribute
 function localizePage() {
-    document.documentElement.dir = browser.i18n.getMessage("@@bidi_dir");
+    document.documentElement.dir = getMessage("@@bidi_dir");
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
-        el.textContent = browser.i18n.getMessage(key);
+        el.textContent = getMessage(key);
     });
 
     const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
     placeholders.forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        el.placeholder = browser.i18n.getMessage(key);
+        el.placeholder = getMessage(key);
     });
     
     const titles = document.querySelectorAll('[data-i18n-title]');
     titles.forEach(el => {
         const key = el.getAttribute('data-i18n-title');
-        el.title = browser.i18n.getMessage(key);
+        el.title = getMessage(key);
     });
     
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -261,18 +263,19 @@ function localizePage() {
     while(node = walker.nextNode()) {
         const val = node.nodeValue;
         if (val && val.includes('__MSG_')) {
-            node.nodeValue = val.replace(/__MSG_(\w+)__/g, (m, key) => browser.i18n.getMessage(key));
+            node.nodeValue = val.replace(/__MSG_(\w+)__/g, (m, key) => getMessage(key));
         }
     }
 }
 
 // Initialize app, load settings and data
 async function init() {
+    if (window.initI18n) await window.initI18n();
     localizePage();
     initEmojiPicker();
     
     const res = await browser.storage.local.get(['workspaces', 'currentWorkspaceId', 'areActionsVisible', 'theme', 'isAllTabsMode', 'tourComplete', 'onboardingComplete']);
-    workspaces = res.workspaces || DEFAULT_WORKSPACES;
+    workspaces = res.workspaces || getDefaultWorkspaces();
     activeWsId = res.currentWorkspaceId || 'ws_default';
     
     if (!res.onboardingComplete) {
@@ -339,18 +342,18 @@ function initTour() {
     let currentStep = 0;
     const steps = [
         {
-            title: browser.i18n.getMessage("tourStep1Title"),
-            text: browser.i18n.getMessage("tourStep1Text"),
+            title: getMessage("tourStep1Title"),
+            text: getMessage("tourStep1Text"),
             icon: 'icons/main-64.png'
         },
         {
-            title: browser.i18n.getMessage("tourStep2Title"),
-            text: browser.i18n.getMessage("tourStep2Text"),
+            title: getMessage("tourStep2Title"),
+            text: getMessage("tourStep2Text"),
             icon: 'icons/work-64.png'
         },
         {
-            title: browser.i18n.getMessage("tourStep3Title"),
-            text: browser.i18n.getMessage("tourStep3Text"),
+            title: getMessage("tourStep3Title"),
+            text: getMessage("tourStep3Text"),
             icon: 'icons/settings-64.png'
         }
     ];
@@ -373,10 +376,10 @@ function initTour() {
         });
         
         if (index === steps.length - 1) {
-            nextBtn.textContent = browser.i18n.getMessage("tourFinish");
+            nextBtn.textContent = getMessage("tourFinish");
             skipBtn.style.display = 'none';
         } else {
-            nextBtn.textContent = browser.i18n.getMessage("tourNext");
+            nextBtn.textContent = getMessage("tourNext");
             skipBtn.style.display = 'block';
         }
     };
@@ -444,7 +447,7 @@ async function performExport() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        showToast(browser.i18n.getMessage("exportSuccess"));
+        showToast(getMessage("exportSuccess"));
     } catch (e) {
         showToast("Export failed: " + e.message);
     }
@@ -600,7 +603,7 @@ function render() {
         renameImg.style.width = '16px';
         renameImg.style.height = '16px';
         renameBtn.appendChild(renameImg);
-        renameBtn.title = browser.i18n.getMessage("renameWs") || "Rename";
+        renameBtn.title = getMessage("renameWs") || "Rename";
         renameBtn.onclick = (e) => {
             e.stopPropagation();
             startInlineRename(ws.id);
@@ -616,7 +619,7 @@ function render() {
         copyImg.style.width = '16px';
         copyImg.style.height = '16px';
         copyBtn.appendChild(copyImg);
-        copyBtn.title = browser.i18n.getMessage("copyUrls");
+        copyBtn.title = getMessage("copyUrls");
         copyBtn.onclick = (e) => {
             e.stopPropagation();
             copyWorkspaceUrls(ws.id);
@@ -632,7 +635,7 @@ function render() {
         moveImg.style.width = '16px';
         moveImg.style.height = '16px';
         moveBtn.appendChild(moveImg);
-        moveBtn.title = browser.i18n.getMessage("moveAll");
+        moveBtn.title = getMessage("moveAll");
         moveBtn.onclick = (e) => {
             e.stopPropagation();
             showMoveMenu(ws.id);
@@ -648,7 +651,7 @@ function render() {
         deleteImg.style.width = '16px';
         deleteImg.style.height = '16px';
         delBtn.appendChild(deleteImg);
-        delBtn.title = browser.i18n.getMessage("deleteWs");
+        delBtn.title = getMessage("deleteWs");
         delBtn.onclick = async (e) => {
             e.stopPropagation();
             
@@ -803,7 +806,7 @@ async function copyWorkspaceUrls(wsId) {
     if (res && res.urls) {
         const text = res.urls.join('\n');
         navigator.clipboard.writeText(text).then(() => {
-            showToast(browser.i18n.getMessage("copied"));
+            showToast(getMessage("copied"));
         });
     }
 }
@@ -831,7 +834,7 @@ async function checkWorkspaceEmpty(wsId) {
 function showMoveMenu(fromWsId) {
     const targets = workspaces.filter(w => w.id !== fromWsId);
     if (targets.length === 0) {
-        showToast(browser.i18n.getMessage("noOtherWorkspaces"));
+        showToast(getMessage("noOtherWorkspaces"));
         return;
     }
     
@@ -867,7 +870,7 @@ function showMoveMenu(fromWsId) {
                 fromWsId: fromWsId, 
                 toWsId: t.id 
             }).then(async res => {
-                showToast(browser.i18n.getMessage("movedTabs", [res.movedCount.toString(), t.name]));
+                showToast(getMessage("movedTabs", [res.movedCount.toString(), t.name]));
                 
                 modalOverlay.classList.remove('visible');
             });
@@ -984,10 +987,10 @@ function showDeleteModal(ws) {
             deleteMoveTargetSelect.appendChild(opt);
         });
         
-        deleteMessage.textContent = browser.i18n.getMessage("manageWsDesc", [wsName]);
+        deleteMessage.textContent = getMessage("manageWsDesc", [wsName]);
         showMoveOptionsBtn.style.display = 'block';
     } else {
-        deleteMessage.textContent = browser.i18n.getMessage("manageWsDesc", [wsName]);
+        deleteMessage.textContent = getMessage("manageWsDesc", [wsName]);
         showMoveOptionsBtn.style.display = 'none';
     }
     
@@ -1008,7 +1011,7 @@ document.getElementById('close-tabs-only-btn').onclick = async () => {
             undoData: null 
         });
 
-        showToast(browser.i18n.getMessage("tabsClosed"));
+        showToast(getMessage("tabsClosed"));
         
         deleteModalOverlay.classList.remove('visible');
         workspaceToDeleteId = null;
@@ -1051,7 +1054,7 @@ confirmMoveDeleteBtn.onclick = async () => {
         
         await deleteWorkspace(workspaceToDeleteId);
         
-        showToast(browser.i18n.getMessage("movedTabs", [res.movedCount.toString(), targetWs ? targetWs.name : ""]));
+        showToast(getMessage("movedTabs", [res.movedCount.toString(), targetWs ? targetWs.name : ""]));
         
         deleteModalOverlay.classList.remove('visible');
         workspaceToDeleteId = null;
@@ -1166,7 +1169,7 @@ async function renderLogs() {
     header.style.marginBottom = '10px';
     
     const title = document.createElement('strong');
-    title.textContent = browser.i18n.getMessage("logsTitle");
+    title.textContent = getMessage("logsTitle");
     header.appendChild(title);
 
     const clearBtn = document.createElement('button');
@@ -1178,7 +1181,7 @@ async function renderLogs() {
     clearImg.style.width = '16px';
     clearImg.style.height = '16px';
     clearBtn.appendChild(clearImg);
-    clearBtn.title = browser.i18n.getMessage("clearLogs");
+    clearBtn.title = getMessage("clearLogs");
     clearBtn.onclick = (e) => {
         e.stopPropagation();
         if (clearLogsModal) clearLogsModal.classList.add('visible');
@@ -1194,7 +1197,7 @@ async function renderLogs() {
             empty.style.textAlign = 'center';
             empty.style.color = 'var(--text-dim)';
             empty.style.marginTop = '20px';
-            empty.textContent = browser.i18n.getMessage("noLogs");
+            empty.textContent = getMessage("noLogs");
             logsListEl.appendChild(empty);
             return;
         }
@@ -1214,11 +1217,11 @@ async function renderLogs() {
             });
             
             let actionTitle = log.action;
-            if (log.action === 'CREATE_WORKSPACE') actionTitle = browser.i18n.getMessage("logCreated");
-            if (log.action === 'DELETE_WORKSPACE') actionTitle = browser.i18n.getMessage("logDeleted");
-            if (log.action === 'RENAME_WORKSPACE') actionTitle = browser.i18n.getMessage("logRenamed");
-            if (log.action === 'MOVE_TABS') actionTitle = browser.i18n.getMessage("logMoved");
-            if (log.action === 'RESET_WORKSPACES') actionTitle = browser.i18n.getMessage("resetWorkspaces") || "Reset";
+            if (log.action === 'CREATE_WORKSPACE') actionTitle = getMessage("logCreated");
+            if (log.action === 'DELETE_WORKSPACE') actionTitle = getMessage("logDeleted");
+            if (log.action === 'RENAME_WORKSPACE') actionTitle = getMessage("logRenamed");
+            if (log.action === 'MOVE_TABS') actionTitle = getMessage("logMoved");
+            if (log.action === 'RESET_WORKSPACES') actionTitle = getMessage("resetWorkspaces") || "Reset";
             
             if (!actionTitle) actionTitle = log.action;
 
@@ -1227,7 +1230,7 @@ async function renderLogs() {
                 const parts = detailsText.split(':');
                 const key = parts[1];
                 const params = parts.slice(2);
-                detailsText = browser.i18n.getMessage(key, params) || detailsText;
+                detailsText = getMessage(key, params) || detailsText;
             }
             
             if (log.action === 'RESET_WORKSPACES') {
@@ -1301,7 +1304,7 @@ async function renderLogs() {
                 overlay.className = 'log-undo-overlay';
                 
                 const msg = document.createElement('span');
-                msg.textContent = log.isUndone ? browser.i18n.getMessage("redoAction") : browser.i18n.getMessage("undoAction");
+                msg.textContent = log.isUndone ? getMessage("redoAction") : getMessage("undoAction");
                 msg.style.fontSize = '12px';
                 
                 const btnGroup = document.createElement('div');
@@ -1310,24 +1313,24 @@ async function renderLogs() {
                 
                 const confirmBtn = document.createElement('button');
                 confirmBtn.className = 'log-undo-btn confirm';
-                confirmBtn.textContent = browser.i18n.getMessage("yes");
+                confirmBtn.textContent = getMessage("yes");
                 confirmBtn.onclick = async (ev) => {
                     ev.stopPropagation();
                     const undoRes = await browser.runtime.sendMessage({ action: 'UNDO_ACTION', logId: log.id });
                         if (undoRes.success) {
-                            showToast(undoRes.isRedo ? browser.i18n.getMessage("actionRedone") : browser.i18n.getMessage("actionUndone"));
+                            showToast(undoRes.isRedo ? getMessage("actionRedone") : getMessage("actionUndone"));
                             await renderLogs(); 
                             const state = await browser.storage.local.get('workspaces');
                             workspaces = state.workspaces || [];
                             render(); 
                         } else {
-                            showToast(browser.i18n.getMessage("undoFailed"));
+                            showToast(getMessage("undoFailed"));
                         }
                 };
                 
                 const cancelBtn = document.createElement('button');
                 cancelBtn.className = 'log-undo-btn';
-                cancelBtn.textContent = browser.i18n.getMessage("no");
+                cancelBtn.textContent = getMessage("no");
                 cancelBtn.onclick = (ev) => {
                     ev.stopPropagation();
                     overlay.remove();
@@ -1352,7 +1355,8 @@ init();
 browser.storage.onChanged.addListener((changes, area) => {
     if (area === 'local') {
         if ((changes.onboardingComplete && !changes.onboardingComplete.newValue) || 
-            (changes.tourComplete && !changes.tourComplete.newValue)) {
+            (changes.tourComplete && !changes.tourComplete.newValue) ||
+            changes.ui_language) {
             window.location.reload();
             return;
         }

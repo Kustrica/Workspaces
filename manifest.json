@@ -4,7 +4,7 @@
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
   "homepage_url": "https://t.me/Kustric",
-  "version": "1.4",
+  "version": "1.4.5",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -31,6 +31,7 @@
   },
   "background": {
     "scripts": [
+      "i18n.js",
       "background.js"
     ]
   },

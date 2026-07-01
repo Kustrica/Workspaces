@@ -1,17 +1,17 @@
 
 // Localize page by replacing text of elements with data-i18n attribute
 function localizePage() {
-    document.documentElement.dir = browser.i18n.getMessage("@@bidi_dir");
+    document.documentElement.dir = getMessage("@@bidi_dir");
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
-        el.textContent = browser.i18n.getMessage(key) || key;
+        el.textContent = getMessage(key) || key;
     });
 
     const titles = document.querySelectorAll('[data-i18n-title]');
     titles.forEach(el => {
         const key = el.getAttribute('data-i18n-title');
-        el.title = browser.i18n.getMessage(key) || key;
+        el.title = getMessage(key) || key;
     });
 }
 
@@ -86,7 +86,7 @@ async function loadShortcuts() {
         const label = document.createElement('span');
         label.style.width = '120px';
         label.style.fontSize = '14px'; 
-        label.textContent = `${browser.i18n.getMessage("workspaceDefaultName")} ${i}:`;
+        label.textContent = `${getMessage("workspaceDefaultName")} ${i}:`;
 
         const input = document.createElement('input');
         input.type = 'text';
@@ -118,19 +118,19 @@ async function loadShortcuts() {
                 isRecording = false;
                 try {
                     await browser.commands.update({ name: cmdName, shortcut: tempShortcut });
-                    showStatus(browser.i18n.getMessage("shortcutUpdateSuccess"));
+                    showStatus(getMessage("shortcutUpdateSuccess"));
                 } catch (err) {
-                    showStatus(browser.i18n.getMessage("shortcutUpdateError") + " " + err.message, 'error');
+                    showStatus(getMessage("shortcutUpdateError") + " " + err.message, 'error');
                 }
             }
         });
 
         const resetBtn = document.createElement('button');
         resetBtn.className = 'btn';
-        resetBtn.textContent = browser.i18n.getMessage("resetDefault");
+        resetBtn.textContent = getMessage("resetDefault");
         resetBtn.style.padding = '8px 12px';
-        resetBtn.style.width = '80px';
         resetBtn.style.justifyContent = 'center';
+        resetBtn.style.minWidth = '80px';
         resetBtn.onclick = async () => {
             try {
                 await browser.commands.reset(cmdName);
@@ -150,7 +150,9 @@ async function loadShortcuts() {
 
 const shortcutInput = document.getElementById('shortcut-input');
 const resetShortcutBtn = document.getElementById('reset-shortcut-btn');
-let recordedShortcut = null;
+let selectedWorkspaces = new Set();
+let areActionsVisible = true;
+let currentLang = 'auto';
 let isSidebarRecording = false;
 
 shortcutInput.addEventListener('keydown', (e) => {
@@ -173,9 +175,9 @@ shortcutInput.addEventListener('keyup', async (e) => {
                 name: "_execute_sidebar_action",
                 shortcut: recordedShortcut
             });
-            showStatus(browser.i18n.getMessage("shortcutUpdateSuccess"), 'success');
+            showStatus(getMessage("shortcutUpdateSuccess"), 'success');
         } catch (e) {
-            showStatus(browser.i18n.getMessage("shortcutUpdateError") + " (" + e.message + ")", 'error');
+            showStatus(getMessage("shortcutUpdateError") + " (" + e.message + ")", 'error');
         }
     }
 });
@@ -231,7 +233,7 @@ document.getElementById('export-btn').onclick = async () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        showStatus(browser.i18n.getMessage("exportSuccess"), 'success');
+        showStatus(getMessage("exportSuccess"), 'success');
     } catch (e) {
         const msg = "Export failed: " + e.message;
         showStatus(msg, 'error');
@@ -251,10 +253,42 @@ document.getElementById('export-btn').onclick = async () => {
     }
 };
 
-// Import data
+// Import data source selection
 document.getElementById('import-btn').onclick = () => {
-    document.getElementById('import-file').click();
+    const sourceModal = document.getElementById('import-source-modal');
+    sourceModal.classList.add('visible');
+    
+    document.getElementById('import-source-file-btn').onclick = () => {
+        sourceModal.classList.remove('visible');
+        document.getElementById('import-file').click();
+    };
+    
+    document.getElementById('import-source-memory-btn').onclick = () => {
+        sourceModal.classList.remove('visible');
+        showAutoBackupsModal();
+    };
+    
+    document.getElementById('import-source-cancel-btn').onclick = () => {
+        sourceModal.classList.remove('visible');
+    };
+    
+    sourceModal.onclick = (e) => {
+        if (e.target === sourceModal) sourceModal.classList.remove('visible');
+    };
 };
+
+function handleImportData(data) {
+    if (!data.workspaces) throw new Error("Invalid format: missing workspaces");
+
+    showImportModal(async (mode) => {
+        await browser.runtime.sendMessage({
+            action: 'RESTORE_DATA',
+            data: data,
+            mode: mode
+        });
+        showStatus(getMessage("importSuccess"), 'success');
+    });
+}
 
 document.getElementById('import-file').onchange = (e) => {
     const file = e.target.files[0];
@@ -264,23 +298,91 @@ document.getElementById('import-file').onchange = (e) => {
     reader.onload = async (ev) => {
         try {
             const data = JSON.parse(ev.target.result);
-            if (!data.workspaces) throw new Error("Invalid format: missing workspaces");
-
-            showImportModal(async (mode) => {
-                await browser.runtime.sendMessage({
-                    action: 'RESTORE_DATA',
-                    data: data,
-                    mode: mode
-                });
-
-                showStatus(browser.i18n.getMessage("importSuccess"), 'success');
-            });
+            handleImportData(data);
         } catch (err) {
             showStatus("Import failed: " + err.message, 'error');
         }
     };
     reader.readAsText(file);
+    e.target.value = ''; // Reset input
 };
+
+// Formatting date cleanly
+function formatBackupDate(timestamp) {
+    const date = new Date(timestamp);
+    const langCode = (currentLang === 'auto' ? navigator.language : currentLang) || 'en';
+    
+    return new Intl.DateTimeFormat(langCode, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(date);
+}
+
+async function showAutoBackupsModal() {
+    const modal = document.getElementById('auto-backups-modal');
+    const list = document.getElementById('auto-backups-modal-list');
+    
+    const res = await browser.storage.local.get('autoBackups');
+    const backups = res.autoBackups || [];
+    
+    list.innerHTML = '';
+    
+    if (backups.length === 0) {
+        list.innerHTML = `<div style="padding: 20px; text-align: center; color: #888;">No backups found</div>`;
+    } else {
+        // Reverse array to show newest first
+        const sortedBackups = [...backups].reverse();
+        
+        sortedBackups.forEach((b, index) => {
+            const item = document.createElement('div');
+            item.style.padding = '10px 15px';
+            item.style.borderBottom = '1px solid #333';
+            item.style.display = 'flex';
+            item.style.justifyContent = 'space-between';
+            item.style.alignItems = 'center';
+            item.style.cursor = 'pointer';
+            
+            const wsCount = b.workspaces ? b.workspaces.length : 0;
+            let tabCount = 0;
+            if (b.tabs) {
+                Object.values(b.tabs).forEach(tabsArr => { tabCount += tabsArr.length; });
+            }
+            
+            const title = document.createElement('div');
+            title.innerHTML = `<strong>${formatBackupDate(b.timestamp)}</strong><br>
+                               <span style="font-size: 12px; color: #888;">${wsCount} workspaces, ${tabCount} tabs</span>`;
+            
+            item.appendChild(title);
+            
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-primary';
+            btn.textContent = getMessage("restoreBtn") || "Restore";
+            btn.style.padding = '5px 10px';
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                modal.classList.remove('visible');
+                handleImportData(b);
+            };
+            
+            item.appendChild(btn);
+            list.appendChild(item);
+        });
+    }
+    
+    modal.classList.add('visible');
+    
+    document.getElementById('auto-backups-cancel-btn').onclick = () => {
+        modal.classList.remove('visible');
+    };
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.classList.remove('visible');
+    };
+}
+
 
 // Show import modal window
 function showImportModal(onConfirm) {
@@ -300,19 +402,22 @@ function showImportModal(onConfirm) {
         cancelBtn.onclick = null;
     };
 
-    noTabsBtn.onclick = () => {
+    const handleConfirm = (mode) => {
         close();
-        onConfirm('NO_TABS');
+        alert(getMessage("importWarning") || "Please do not perform any actions in the browser during tab restoration to avoid issues.");
+        onConfirm(mode);
+    };
+
+    noTabsBtn.onclick = () => {
+        handleConfirm('NO_TABS');
     };
 
     mergeBtn.onclick = () => {
-        close();
-        onConfirm('MERGE');
+        handleConfirm('MERGE');
     };
 
     replaceBtn.onclick = () => {
-        close();
-        onConfirm('REPLACE');
+        handleConfirm('REPLACE');
     };
 
     cancelBtn.onclick = () => {
@@ -335,8 +440,8 @@ function showConfirmModal(title, message, onConfirm) {
     titleEl.textContent = title;
     msgEl.textContent = message;
     
-    yesBtn.textContent = browser.i18n.getMessage("yes") || "Yes";
-    noBtn.textContent = browser.i18n.getMessage("no") || "No";
+    yesBtn.textContent = getMessage("yes") || "Yes";
+    noBtn.textContent = getMessage("no") || "No";
 
     modal.classList.add('visible');
 
@@ -363,12 +468,12 @@ function showConfirmModal(title, message, onConfirm) {
 // Clear storage
 document.getElementById('clear-storage-btn').onclick = () => {
     showConfirmModal(
-        browser.i18n.getMessage("dangerZone"), 
-        browser.i18n.getMessage("clearStorageConfirm"), 
+        getMessage("dangerZone"), 
+        getMessage("clearStorageConfirm"), 
         async () => {
             try {
                 await browser.runtime.sendMessage({ action: 'RESET_DATA' });
-                showStatus(browser.i18n.getMessage("clearStorageSuccess"), 'success');
+                showStatus(getMessage("clearStorageSuccess"), 'success');
                 setTimeout(() => location.reload(), 1500);
             } catch (e) {
                 showStatus("Error: " + e.message, 'error');
@@ -388,7 +493,230 @@ function showStatus(msg, type = 'success') {
     }, 4000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.initI18n) await window.initI18n();
     localizePage();
     loadShortcuts();
+    
+    // Init Auto Backup Settings
+    browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup', 'autoBackups', 'autoBackupMax']).then(res => {
+        const freqSelect = document.getElementById('auto-backup-frequency');
+        const startupCheck = document.getElementById('backup-on-startup');
+        const maxInput = document.getElementById('auto-backup-max');
+        const clearBtn = document.getElementById('clear-all-backups-btn');
+        let backups = res.autoBackups || [];
+        
+        if (res.autoBackupEnabled === false) {
+            freqSelect.value = "0";
+        } else {
+            freqSelect.value = (res.autoBackupFrequency || 72).toString();
+        }
+        
+        startupCheck.checked = !!res.backupOnStartup;
+        maxInput.value = (res.autoBackupMax || 100).toString();
+        
+        freqSelect.addEventListener('change', () => {
+            const val = parseInt(freqSelect.value);
+            if (val === 0) {
+                browser.storage.local.set({ autoBackupEnabled: false });
+            } else {
+                browser.storage.local.set({ 
+                    autoBackupEnabled: true,
+                    autoBackupFrequency: val
+                });
+            }
+        });
+        
+        startupCheck.addEventListener('change', () => {
+            browser.storage.local.set({ backupOnStartup: startupCheck.checked });
+        });
+        
+        document.getElementById('auto-backup-max').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            if (val > 10000) e.target.value = 10000;
+            if (val < 1) e.target.value = 1;
+            
+            const statsCountEl = document.getElementById('stats-count');
+            if (statsCountEl) {
+                statsCountEl.textContent = `${backups.length} / ${e.target.value}`;
+            }
+        });
+
+        maxInput.addEventListener('change', () => {
+            let val = parseInt(maxInput.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 10000) val = 10000;
+            maxInput.value = val;
+            browser.storage.local.set({ autoBackupMax: val });
+        });
+        
+        const createBtn = document.getElementById('create-backup-now-btn');
+        if (createBtn) {
+            createBtn.addEventListener('click', () => {
+                browser.storage.local.set({ triggerManualBackup: Date.now() });
+                showStatus(getMessage('statusSaved') || "Creating backup...", 'success');
+            });
+        }
+        
+        const clearModal = document.getElementById('clear-backups-modal');
+        const clearConfirm = document.getElementById('clear-backups-confirm-btn');
+        const clearCancel = document.getElementById('clear-backups-cancel-btn');
+        
+        clearBtn.addEventListener('click', () => {
+            clearModal.classList.add('visible');
+        });
+        
+        clearCancel.addEventListener('click', () => {
+            clearModal.classList.remove('visible');
+        });
+        
+        clearConfirm.addEventListener('click', () => {
+            browser.storage.local.set({ autoBackups: [] }).then(() => {
+                renderBackups([]);
+                clearModal.classList.remove('visible');
+            });
+        });
+        
+        browser.storage.onChanged.addListener((changes, area) => {
+            if (area === 'local' && changes.autoBackups) {
+                renderBackups(changes.autoBackups.newValue || []);
+            }
+        });
+        // Language Switcher Logic
+        const langSelect = document.getElementById('ui-language-select');
+        browser.storage.local.get('ui_language').then(langRes => {
+            if (langRes.ui_language) {
+                currentLang = langRes.ui_language;
+                langSelect.value = langRes.ui_language;
+            }
+        });
+        
+        langSelect.addEventListener('change', () => {
+            const newLang = langSelect.value;
+            browser.storage.local.set({ ui_language: newLang }).then(() => {
+                showStatus(getMessage('statusSaved') || "Language updated. Reloading...", 'success');
+                setTimeout(() => location.reload(), 800);
+            });
+        });
+        
+        const list = document.getElementById('auto-backup-list');
+        
+        function renderBackups(currentBackups) {
+            const statsCountEl = document.getElementById('stats-count');
+            const statsSizeEl = document.getElementById('stats-size');
+            const maxVal = parseInt(document.getElementById('auto-backup-max').value) || 100;
+            
+            if (statsCountEl) {
+                statsCountEl.textContent = `${currentBackups.length} / ${maxVal}`;
+            }
+            
+            let totalSizeBytes = 0;
+            
+            if (currentBackups.length === 0) {
+                list.innerHTML = `<div style="padding: 15px; color: #888; font-size: 14px;" data-i18n="noBackupsFound">${getMessage('noBackupsFound') || "No backups found"}</div>`;
+                if (statsSizeEl) statsSizeEl.textContent = `0 ${getMessage('backupSizeKB') || 'KB'}`;
+            } else {
+                list.innerHTML = '';
+                // Render all backups in reverse chronological order
+                const sortedBackups = [...currentBackups].reverse();
+                sortedBackups.forEach((b, idx) => {
+                    const item = document.createElement('div');
+                    item.style.padding = '10px 15px';
+                    item.style.borderBottom = '1px solid #333';
+                    item.style.display = 'flex';
+                    item.style.justifyContent = 'space-between';
+                    item.style.alignItems = 'center';
+                    item.style.fontSize = '14px';
+                    
+                    const wsCount = b.workspaces ? b.workspaces.length : 0;
+                    let tabCount = 0;
+                    if (b.tabs) {
+                        Object.values(b.tabs).forEach(tabsArr => { tabCount += tabsArr.length; });
+                    }
+                    
+                    // Calculate size
+                    const jsonStr = JSON.stringify(b);
+                    const blobSize = new Blob([jsonStr]).size;
+                    totalSizeBytes += blobSize;
+                    const sizeKB = (blobSize / 1024).toFixed(1);
+                    const sizeTxt = `${sizeKB} ${getMessage('backupSizeKB') || 'KB'}`;
+                    
+                    const wsText = getMessage('wsCount') || 'Workspaces';
+                    const tabsText = getMessage('tabsCount') || 'Tabs';
+                    
+                    const infoDiv = document.createElement('div');
+                    infoDiv.innerHTML = `<strong>${formatBackupDate(b.timestamp)}</strong><br>
+                                         <span style="color: #888; font-size: 12px;">${wsText}: ${wsCount} | ${tabsText}: ${tabCount} | ${sizeTxt}</span>`;
+                    
+                    const actionDiv = document.createElement('div');
+                    actionDiv.style.display = 'flex';
+                    actionDiv.style.gap = '8px';
+                    
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'btn';
+                    downloadBtn.style.padding = '4px 8px';
+                    downloadBtn.style.fontSize = '12px';
+                    downloadBtn.textContent = getMessage('downloadBackup') || 'Download';
+                    downloadBtn.onclick = () => {
+                        const blob = new Blob([jsonStr], { type: "application/json" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const dateStr = new Date(b.timestamp).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                        a.download = `workspaces-backup-${dateStr}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+                    
+                    const restoreBtn = document.createElement('button');
+                    restoreBtn.className = 'btn btn-primary';
+                    restoreBtn.style.padding = '4px 8px';
+                    restoreBtn.style.fontSize = '12px';
+                    restoreBtn.textContent = getMessage('restoreBtn') || 'Restore';
+                    restoreBtn.onclick = () => {
+                        browser.storage.local.set({ triggerManualBackup: Date.now() });
+                        showStatus(getMessage('statusSaved') || "Creating backup...", 'success');
+                        setTimeout(() => handleImportData(b), 300);
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-danger';
+                    deleteBtn.style.padding = '4px 8px';
+                    deleteBtn.style.fontSize = '12px';
+                    deleteBtn.textContent = getMessage('deleteBackup') || 'Delete';
+                    deleteBtn.onclick = () => {
+                        const realIdx = currentBackups.indexOf(b);
+                        if (realIdx > -1) {
+                            currentBackups.splice(realIdx, 1);
+                            browser.storage.local.set({ autoBackups: currentBackups }).then(() => {
+                                renderBackups(currentBackups);
+                            });
+                        }
+                    };
+                    
+                    actionDiv.appendChild(restoreBtn);
+                    actionDiv.appendChild(downloadBtn);
+                    actionDiv.appendChild(deleteBtn);
+                    
+                    item.appendChild(infoDiv);
+                    item.appendChild(actionDiv);
+                    list.appendChild(item);
+                });
+                
+                if (statsSizeEl) {
+                    const totalKB = (totalSizeBytes / 1024).toFixed(1);
+                    const mbSize = totalSizeBytes > 1024 * 1024 ? (totalSizeBytes / 1024 / 1024).toFixed(2) : null;
+                    if (mbSize) {
+                        statsSizeEl.textContent = `${mbSize} MB`;
+                    } else {
+                        statsSizeEl.textContent = `${totalKB} ${getMessage('backupSizeKB') || 'KB'}`;
+                    }
+                }
+            }
+        }
+        
+        renderBackups(backups);
+    });
 });

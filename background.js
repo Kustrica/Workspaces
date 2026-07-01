@@ -7,6 +7,7 @@ let workspaceActiveTabMap = {};
 let actionLogs = [];
 const TAB_WORKSPACE_SESSION_KEY = 'workspaceId';
 let isInitializingState = true;
+let isRestoringData = false;
 
 // Add entry to action log
 function addLog(action, details, undoData = null) {
@@ -25,11 +26,11 @@ function addLog(action, details, undoData = null) {
 
 // Get default workspaces with localized names
 const getLocalizedDefaults = () => [
-    { id: 'ws_default', name: browser.i18n.getMessage("defaultWsMain") || 'Main', icon: 'img:icons/main-64.png' },
-    { id: 'ws_study', name: browser.i18n.getMessage("defaultWsStudy") || 'Study', icon: 'img:icons/study-64.png' },
-    { id: 'ws_work', name: browser.i18n.getMessage("defaultWsWork") || 'Work', icon: 'img:icons/work-64.png' },
-    { id: 'ws_music', name: browser.i18n.getMessage("defaultWsMusic") || 'Music', icon: 'img:icons/music-64.png' },
-    { id: 'ws_cooking', name: browser.i18n.getMessage("defaultWsCooking") || 'Cooking', icon: 'img:icons/cooking-64.png' }
+    { id: 'ws_default', name: getMessage("defaultWsMain") || 'Main', icon: 'img:icons/main-64.png' },
+    { id: 'ws_study', name: getMessage("defaultWsStudy") || 'Study', icon: 'img:icons/study-64.png' },
+    { id: 'ws_work', name: getMessage("defaultWsWork") || 'Work', icon: 'img:icons/work-64.png' },
+    { id: 'ws_music', name: getMessage("defaultWsMusic") || 'Music', icon: 'img:icons/music-64.png' },
+    { id: 'ws_cooking', name: getMessage("defaultWsCooking") || 'Cooking', icon: 'img:icons/cooking-64.png' }
 ];
 
 let workspaces = [];
@@ -89,6 +90,22 @@ function unassignTab(tabId) {
     clearSessionWorkspace(tabId);
 }
 
+async function enforceNoCloseOnLastTabSetting() {
+    if (!browser.browserSettings || !browser.browserSettings.closeWindowWithLastTab || !browser.browserSettings.closeWindowWithLastTab.set) return;
+    try {
+        await browser.browserSettings.closeWindowWithLastTab.set({ value: false });
+    } catch (e) {
+    }
+}
+
+async function clearNoCloseOnLastTabSetting() {
+    if (!browser.browserSettings || !browser.browserSettings.closeWindowWithLastTab || !browser.browserSettings.closeWindowWithLastTab.clear) return;
+    try {
+        await browser.browserSettings.closeWindowWithLastTab.clear({});
+    } catch (e) {
+    }
+}
+
 async function rebuildTabWorkspaceMapFromOpenTabs() {
     const tabs = await browser.tabs.query({});
     const rebuiltMap = {};
@@ -108,7 +125,7 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
             continue;
         }
 
-        const fallbackWorkspaceId = normalizeWorkspaceId(currentWorkspaceId);
+        const fallbackWorkspaceId = workspaces.length > 0 ? workspaces[0].id : 'ws_default';
         if (fallbackWorkspaceId) {
             rebuiltMap[tab.id] = fallbackWorkspaceId;
             setSessionWorkspace(tab.id, fallbackWorkspaceId);
@@ -120,6 +137,7 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
 
 // Initialize state on startup
 browser.storage.local.get(['currentWorkspaceId', 'tabWorkspaceMap', 'workspaces', 'workspaceActiveTabMap', 'isAllTabsMode', 'actionLogs']).then(async (res) => {
+    if (window.initI18n) await window.initI18n();
     if ('currentWorkspaceId' in res) currentWorkspaceId = res.currentWorkspaceId;
     if (res.tabWorkspaceMap) tabWorkspaceMap = res.tabWorkspaceMap;
     if (res.workspaceActiveTabMap) workspaceActiveTabMap = res.workspaceActiveTabMap;
@@ -140,6 +158,7 @@ browser.storage.local.get(['currentWorkspaceId', 'tabWorkspaceMap', 'workspaces'
     }
 
     await rebuildTabWorkspaceMapFromOpenTabs();
+    await enforceNoCloseOnLastTabSetting();
     await saveState();
     updateContextMenus();
     if (!isAllTabsMode && currentWorkspaceId) {
@@ -300,6 +319,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
         
         await browser.tabs.hide(toHide);
     }
+
 }
 
 // Move specified tabs to the end of the list
@@ -329,7 +349,7 @@ async function updateContextMenus() {
     
     menuAPI.create({
         id: parentId,
-        title: browser.i18n.getMessage("moveTab"),
+        title: getMessage("moveTab"),
         contexts: ["tab"]
     }, () => {
         if (browser.runtime.lastError) return;
@@ -375,11 +395,11 @@ function updateMenuTitle(tabCount) {
 
     if (tabCount > 1) {
         menuAPI.update("move-to-workspace", {
-            title: browser.i18n.getMessage("moveTabs", [tabCount.toString()])
+            title: getMessage("moveTabs", [tabCount.toString()])
         }, () => browser.runtime.lastError); 
     } else {
         menuAPI.update("move-to-workspace", {
-            title: browser.i18n.getMessage("moveTab")
+            title: getMessage("moveTab")
         }, () => browser.runtime.lastError);
     }
 }
@@ -391,17 +411,20 @@ browser.tabs.onHighlighted.addListener(async (highlightInfo) => {
 
 // Extension installation listener
 browser.runtime.onInstalled.addListener(() => {
+    enforceNoCloseOnLastTabSetting();
     updateContextMenus();
 });
 
 // Browser startup listener
 browser.runtime.onStartup.addListener(() => {
+    enforceNoCloseOnLastTabSetting();
     updateContextMenus();
 });
 
 // Move tabs to specified workspace
 async function moveTabsToWorkspace(info, tab, targetWsId) {
-    const highlightedTabs = await browser.tabs.query({ highlighted: true, currentWindow: true });
+    const highlightedTabsQuery = await browser.tabs.query({ highlighted: true, currentWindow: true });
+    const highlightedTabs = highlightedTabsQuery.filter(t => tabWorkspaceMap[t.id] === currentWorkspaceId || tabWorkspaceMap[t.id] === undefined);
     
     let tabsToMove = [];
     const isClickedTabHighlighted = highlightedTabs.some(t => t.id === tab.id);
@@ -426,7 +449,7 @@ async function moveTabsToWorkspace(info, tab, targetWsId) {
 
 // New tab creation listener
 browser.tabs.onCreated.addListener(async (tab) => {
-    if (isInitializingState) return;
+    if (isInitializingState || isRestoringData) return;
 
     const restoredWorkspaceId = normalizeWorkspaceId(await getSessionWorkspace(tab.id));
     const targetWorkspaceId = restoredWorkspaceId || normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
@@ -438,8 +461,24 @@ browser.tabs.onCreated.addListener(async (tab) => {
     saveState();
 });
 
+// Tab replaced listener (for suspended/discarded tabs)
+if (browser.tabs.onReplaced) {
+    browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
+        const ws = tabWorkspaceMap[removedTabId];
+        if (ws) {
+            assignTabToWorkspace(addedTabId, ws);
+            unassignTab(removedTabId);
+            
+            if (workspaceActiveTabMap[ws] === removedTabId) {
+                workspaceActiveTabMap[ws] = addedTabId;
+            }
+            saveState();
+        }
+    });
+}
+
 // Tab removal listener
-browser.tabs.onRemoved.addListener((tabId) => {
+browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     const removedWorkspaceId = tabWorkspaceMap[tabId];
     unassignTab(tabId);
     if (removedWorkspaceId && workspaceActiveTabMap[removedWorkspaceId] === tabId) {
@@ -534,10 +573,12 @@ browser.runtime.onMessage.addListener(async (message) => {
         workspaces = newWorkspaces;
         
         if (mode !== 'NO_TABS') {
+            isRestoringData = true;
             for (const ws of workspaces) {
                 const tabsList = tabsData[ws.id];
                 if (tabsList && Array.isArray(tabsList)) {
                     const groupMap = {}; 
+                    let lastTabId = null;
 
                     for (const tabInfo of tabsList) {
                         try {
@@ -549,6 +590,7 @@ browser.runtime.onMessage.addListener(async (message) => {
                                 active: false 
                             });
                             assignTabToWorkspace(newTab.id, ws.id);
+                            lastTabId = newTab.id;
 
                             if (oldGroupId !== -1 && oldGroupId !== undefined && browser.tabs.group) {
                                 let newGroupId = groupMap[oldGroupId];
@@ -563,8 +605,12 @@ browser.runtime.onMessage.addListener(async (message) => {
                         } catch (e) {
                         }
                     }
+                    if (lastTabId) {
+                        workspaceActiveTabMap[ws.id] = lastTabId;
+                    }
                 }
             }
+            isRestoringData = false;
         }
         
         if (mode === 'REPLACE' && oldTabIds.length > 0) {
@@ -662,7 +708,20 @@ browser.runtime.onMessage.addListener(async (message) => {
         }
         
         if (tabsToRemove.length > 0) {
-            await browser.tabs.remove(tabsToRemove);
+            const tabs = await browser.tabs.query({ currentWindow: true });
+            const visibleTabs = tabs.filter(t => !tabsToRemove.includes(t.id));
+            
+            if (visibleTabs.length === 0) {
+                const targetWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
+                const newTab = await browser.tabs.create({ active: true });
+                assignTabToWorkspace(newTab.id, targetWorkspaceId);
+                workspaceActiveTabMap[targetWorkspaceId] = newTab.id;
+                await saveState();
+            }
+            
+            try {
+                await browser.tabs.remove(tabsToRemove);
+            } catch (e) {}
         }
     } else if (message.action === 'UNMAP_WORKSPACE_TABS') {
         const { wsId } = message;
@@ -969,6 +1028,7 @@ if (browser.action && browser.action.onClicked && browser.sidebarAction) {
 // Safety: Show all tabs when extension is suspended/disabled
 browser.runtime.onSuspend.addListener(() => {
     saveState();
+    clearNoCloseOnLastTabSetting();
     browser.tabs.query({}).then(tabs => {
         const ids = tabs.map(t => t.id);
         if (ids.length > 0) {
@@ -976,3 +1036,78 @@ browser.runtime.onSuspend.addListener(() => {
         }
     });
 });
+
+// --- Auto-Backup Implementation ---
+
+async function createAutoBackup(reason = 'scheduled') {
+    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'autoBackups', 'autoBackupMax']);
+    if (res.autoBackupEnabled === false && reason === 'scheduled') return;
+    
+    // Generate backup data
+    const backupData = {
+        timestamp: Date.now(),
+        reason: reason,
+        workspaces: workspaces,
+        tabs: {}
+    };
+    
+    const allTabs = await browser.tabs.query({});
+    for (let ws of workspaces) {
+        backupData.tabs[ws.id] = [];
+    }
+    
+    for (let tab of allTabs) {
+        let wsId = tabWorkspaceMap[tab.id];
+        if (wsId && backupData.tabs[wsId]) {
+            backupData.tabs[wsId].push({
+                url: tab.url,
+                groupId: tab.groupId !== undefined ? tab.groupId : -1
+            });
+        }
+    }
+    
+    let backups = res.autoBackups || [];
+    backups.push(backupData);
+    
+    const maxBackups = res.autoBackupMax || 100;
+    if (backups.length > maxBackups) {
+        backups = backups.slice(backups.length - maxBackups);
+    }
+    
+    await browser.storage.local.set({ autoBackups: backups });
+}
+
+async function checkAutoBackupAlarms() {
+    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup']);
+    if (browser.alarms) {
+        await browser.alarms.clear('autoBackupAlarm');
+        if (res.autoBackupEnabled !== false) {
+            let hours = parseInt(res.autoBackupFrequency) || 72;
+            browser.alarms.create('autoBackupAlarm', { periodInMinutes: hours * 60 });
+        }
+    }
+    
+    if (res.backupOnStartup) {
+        createAutoBackup('startup');
+    }
+}
+
+if (browser.alarms) {
+    browser.alarms.onAlarm.addListener((alarm) => {
+        if (alarm.name === 'autoBackupAlarm') {
+            createAutoBackup('scheduled');
+        }
+    });
+}
+
+// Ensure settings change updates the alarm
+browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && (changes.autoBackupEnabled || changes.autoBackupFrequency)) {
+        checkAutoBackupAlarms();
+    }
+    if (area === 'local' && changes.triggerManualBackup) {
+        createAutoBackup('manual');
+    }
+});
+
+setTimeout(checkAutoBackupAlarms, 2000);

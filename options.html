@@ -136,9 +136,32 @@
     </style>
 </head>
 <body>
+    <script src="i18n.js"></script>
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 30px;">
         <h1 data-i18n="settingsTitle" style="border: none; padding: 0; margin: 0;">Settings</h1>
         <div style="display: flex; align-items: center; gap: 15px;">
+            <select id="ui-language-select" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 4px 8px; border-radius: 4px; outline: none; margin-right: 15px;">
+                <option value="auto">Auto (Browser)</option>
+                <option value="ar">العربية (Arabic)</option>
+                <option value="be">Беларуская (Belarusian)</option>
+                <option value="de">Deutsch (German)</option>
+                <option value="en">English</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="fr">Français (French)</option>
+                <option value="id">Bahasa Indonesia</option>
+                <option value="it">Italiano (Italian)</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="ko">한국어 (Korean)</option>
+                <option value="nl">Nederlands (Dutch)</option>
+                <option value="pl">Polski (Polish)</option>
+                <option value="pt_BR">Português (Brasil)</option>
+                <option value="ru">Русский (Russian)</option>
+                <option value="tr">Türkçe (Turkish)</option>
+                <option value="uk">Українська (Ukrainian)</option>
+                <option value="vi">Tiếng Việt (Vietnamese)</option>
+                <option value="zh_CN">简体中文 (Chinese Simplified)</option>
+                <option value="zh_TW">繁體中文 (Chinese Traditional)</option>
+            </select>
             <!-- GitHub Button -->
             <a href="https://github.com/Kustrica/Workspaces" target="_blank" title="GitHub" style="display: flex; align-items: center; text-decoration: none; opacity: 0.8; transition: opacity 0.2s;">
                 <img src="icons/github-64.png" style="width: 32px; height: 32px;">
@@ -176,7 +199,7 @@
                 <!-- Label spacer to align with workspace list (120px) -->
                 <div style="width: 120px; display: none;"></div> 
                 <input type="text" id="shortcut-input" class="shortcut-input" placeholder="Press keys..." readonly style="flex: 1;">
-                <button id="reset-shortcut-btn" class="btn" data-i18n="resetDefault" style="width: 80px; justify-content: center;">Reset</button>
+                <button id="reset-shortcut-btn" class="btn" data-i18n="resetDefault" style="min-width: 80px; justify-content: center;">Reset</button>
             </div>
         </div>
 
@@ -197,6 +220,62 @@
             <button id="import-btn" class="btn" data-i18n="importBtn">Import Data</button>
         </div>
         <input type="file" id="import-file" accept=".json" style="display: none;">
+    </div>
+    
+    <div class="section">
+        <h2 data-i18n="autoBackupTitle">Auto-Backups</h2>
+        <p class="info-text" data-i18n="autoBackupDesc">Configure automatic backups to prevent data loss.</p>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <!-- Left column: Settings -->
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+                <label style="display: flex; align-items: center; cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="backup-on-startup" style="width: 16px; height: 16px;">
+                    <span data-i18n="backupOnStartupLabel">Backup on browser startup</span>
+                </label>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span data-i18n="autoBackupFrequencyLabel">Frequency:</span>
+                    <select id="auto-backup-frequency" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 6px 10px; border-radius: 4px; outline: none; flex: 1;">
+                        <option value="0" data-i18n="autoBackupDisabled">Disabled</option>
+                        <option value="1" data-i18n="autoBackup1h">1 hour</option>
+                        <option value="3" data-i18n="autoBackup3h">3 hours</option>
+                        <option value="6" data-i18n="autoBackup6h">6 hours</option>
+                        <option value="8" data-i18n="autoBackup8h">8 hours</option>
+                        <option value="12" data-i18n="autoBackup12h">12 hours</option>
+                        <option value="24" data-i18n="autoBackup1d">1 day</option>
+                        <option value="72" data-i18n="autoBackup3d">3 days</option>
+                        <option value="168" data-i18n="autoBackup1w">1 week</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span data-i18n="maxBackupsLabel">Max Auto-Backups:</span>
+                    <input type="number" id="auto-backup-max" min="1" max="10000" value="100" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 6px 10px; border-radius: 4px; outline: none; width: 80px;">
+                </div>
+            </div>
+            
+            <!-- Right column: Stats -->
+            <div style="flex: 0 0 240px; align-self: flex-start; background: #26252d; padding: 12px 15px; border-radius: 4px; border: 1px solid #3a3942; display: flex; flex-direction: column; justify-content: center; gap: 8px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #888;" data-i18n="currentBackups">Current Backups:</span>
+                    <strong id="stats-count" style="color: #ddd;">0 / 100</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #888;" data-i18n="totalSize">Total Size:</span>
+                    <strong id="stats-size" style="color: #ddd;">0 KB</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+            <button id="create-backup-now-btn" class="btn" style="flex: 1;" data-i18n="createBackupNow">Create Backup Now</button>
+            <button id="clear-all-backups-btn" class="btn btn-danger" style="flex: 1; margin-right: 0;" data-i18n="clearAllBackups">Clear All Backups</button>
+        </div>
+        
+        <div id="auto-backup-list" style="max-height: 250px; overflow-y: auto; background: #1c1b22; border-radius: 6px; border: 1px solid #444;">
+            <!-- Auto backups will be rendered here -->
+        </div>
     </div>
 
     <div class="section" style="border: 1px solid #553333;">
@@ -221,6 +300,18 @@
         </div>
     </div>
     
+    <!-- Clear Backups Modal -->
+    <div id="clear-backups-modal" class="modal-overlay">
+        <div class="modal">
+            <h3 data-i18n="clearAllBackups">Clear All Backups</h3>
+            <p style="margin: 10px 0; font-size: 14px;" data-i18n="clearBackupsConfirm">Are you sure you want to delete all auto-backups?</p>
+            <div class="modal-buttons">
+                <button id="clear-backups-confirm-btn" class="modal-btn confirm" style="background-color: #ff4444;" data-i18n="yes">Yes</button>
+                <button id="clear-backups-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Import Options Modal -->
     <div id="import-modal" class="modal-overlay">
         <div class="modal">
@@ -231,6 +322,32 @@
                 <button id="import-merge-btn" class="modal-btn import-opt" data-i18n="importMerge">Merge (Append Tabs)</button>
                 <button id="import-replace-btn" class="modal-btn confirm" style="background-color: #ff4444;" data-i18n="importReplace">Replace (Overwrite Tabs)</button>
                 <button id="import-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Source Modal (File vs Memory) -->
+    <div id="import-source-modal" class="modal-overlay">
+        <div class="modal">
+            <h3 data-i18n="importSourceTitle">Select Import Source</h3>
+            <p style="margin: 10px 0; font-size: 14px;" data-i18n="importSourceDesc">Where do you want to import from?</p>
+            <div class="modal-buttons" style="flex-direction: column; gap: 10px;">
+                <button id="import-source-file-btn" class="modal-btn import-opt" data-i18n="importFromFile">Import from File (.json)</button>
+                <button id="import-source-memory-btn" class="modal-btn import-opt" data-i18n="importFromAutoBackups">Import from Auto-Backups</button>
+                <button id="import-source-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Auto-Backups Select Modal -->
+    <div id="auto-backups-modal" class="modal-overlay">
+        <div class="modal" style="width: 500px;">
+            <h3 data-i18n="selectBackupTitle">Select Auto-Backup</h3>
+            <div id="auto-backups-modal-list" style="margin: 15px 0; max-height: 300px; overflow-y: auto; background: #1c1b22; border-radius: 6px; border: 1px solid #444;">
+                <!-- List populated by JS -->
+            </div>
+            <div class="modal-buttons">
+                <button id="auto-backups-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
             </div>
         </div>
     </div>
@@ -326,7 +443,7 @@
             }
         }
     </style>
-
+    <script src="i18n.js"></script>
     <script src="options.js"></script>
 </body>
 </html>
