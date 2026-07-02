@@ -9,6 +9,7 @@
   "permissions": [
     "tabs",
     "storage",
+    "unlimitedStorage",
     "sessions",
     "tabHide",
     "menus",

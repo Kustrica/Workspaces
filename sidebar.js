@@ -472,11 +472,26 @@ if (resetCancelBtn) {
 
 if (resetConfirmBtn) {
     resetConfirmBtn.onclick = async () => {
-        await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES' });
-        workspaces = [];
-        activeWsId = null;
-        resetModal.classList.remove('visible');
-        render();
+        if (confirm(browser.i18n.getMessage("areYouSureReset") || "Are you sure you want to reset all workspaces? Tabs will be kept.")) {
+            await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: false });
+            workspaces = [];
+            activeWsId = null;
+            resetModal.classList.remove('visible');
+            render();
+        }
+    };
+}
+
+const resetCloseTabsBtn = document.getElementById('reset-close-tabs-btn');
+if (resetCloseTabsBtn) {
+    resetCloseTabsBtn.onclick = async () => {
+        if (confirm(browser.i18n.getMessage("areYouSureResetClose") || "Are you sure you want to reset all workspaces AND close all tabs?")) {
+            await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: true });
+            workspaces = [];
+            activeWsId = null;
+            resetModal.classList.remove('visible');
+            render();
+        }
     };
 }
 
@@ -1368,6 +1383,26 @@ browser.storage.onChanged.addListener((changes, area) => {
         if (changes.currentWorkspaceId) {
             activeWsId = changes.currentWorkspaceId.newValue;
             render();
+        }
+    }
+});
+
+browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'RESTORE_PROGRESS') {
+        const overlay = document.getElementById('restore-progress-overlay');
+        const textEl = document.getElementById('restore-progress-text');
+        
+        if (overlay && textEl) {
+            const countText = message.total !== undefined ? ` (${message.restored}/${message.total})` : '';
+            if (message.progress < 100) {
+                overlay.style.display = 'flex';
+                textEl.textContent = `${message.progress}%${countText}`;
+            } else {
+                textEl.textContent = `100%${countText}`;
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
         }
     }
 });

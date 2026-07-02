@@ -1,462 +1,514 @@
 {
-  "actionRedone": {
-    "message": "Yinelendi"
-  },
-  "actionUndone": {
-    "message": "Geri alındı"
-  },
-  "addWorkspace": {
-    "message": "Alan Ekle"
-  },
-  "allTabs": {
-    "message": "Tüm Sekmeler"
-  },
-  "cancel": {
-    "message": "İptal"
-  },
-  "clearLogs": {
-    "message": "Temizle"
-  },
-  "clearLogsConfirm": {
-    "message": "Hepsini temizle?"
-  },
-  "clearStorageBtn": {
-    "message": "Verileri Temizle"
-  },
-  "clearStorageConfirm": {
-    "message": "Emin misiniz? Bu ayarları sıfırlayacaktır. Tüm sekmeler tek bir çalışma alanına taşınacak, hiçbiri kapatılmayacak"
-  },
-  "clearStorageSuccess": {
-    "message": "Sıfırlandı"
-  },
-  "closeTabsOnly": {
-    "message": "Sekmeleri Kapat"
-  },
-  "confirmMoveDelete": {
-    "message": "Taşı ve Sil"
-  },
-  "copied": {
-    "message": "Kopyalandı"
-  },
-  "copyUrls": {
-    "message": "URL'leri Kopyala"
-  },
-  "create": {
-    "message": "Oluştur"
-  },
-  "createDefaultsBtn": {
-    "message": "Varsayılan Oluştur"
-  },
-  "customIcons": {
-    "message": "Özel Simgeler"
-  },
-  "dangerZone": {
-    "message": "Tehlike Bölgesi"
-  },
-  "dangerZoneWarning": {
-    "message": "Uyarı: Geri alınamaz"
-  },
-  "dataManagementDesc": {
-    "message": "Çalışma alanlarını ve sekmeleri yedekleyin ve geri yükleyin"
-  },
-  "dataManagementTitle": {
-    "message": "Veri Yönetimi"
-  },
-  "defaultWsCooking": {
-    "message": "Yemek"
-  },
-  "defaultWsMain": {
-    "message": "Ana"
-  },
-  "defaultWsMusic": {
-    "message": "Müzik"
-  },
-  "defaultWsStudy": {
-    "message": "Ders"
-  },
-  "defaultWsWork": {
-    "message": "İş"
-  },
-  "deleteConfirm": {
-    "message": "\"$NAME$\" silinsin ve sekmeler KAPATILSIN mı?",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
+    "actionRedone": {
+        "message": "Yinelendi"
+    },
+    "actionUndone": {
+        "message": "Geri alındı"
+    },
+    "addWorkspace": {
+        "message": "Alan Ekle"
+    },
+    "allTabs": {
+        "message": "Tüm Sekmeler"
+    },
+    "cancel": {
+        "message": "İptal"
+    },
+    "clearLogs": {
+        "message": "Temizle"
+    },
+    "clearLogsConfirm": {
+        "message": "Hepsini temizle?"
+    },
+    "clearStorageBtn": {
+        "message": "Verileri Temizle"
+    },
+    "clearStorageConfirm": {
+        "message": "Emin misiniz? Bu ayarları sıfırlayacaktır. Tüm sekmeler tek bir çalışma alanına taşınacak, hiçbiri kapatılmayacak"
+    },
+    "clearStorageSuccess": {
+        "message": "Sıfırlandı"
+    },
+    "closeTabsOnly": {
+        "message": "Sekmeleri Kapat"
+    },
+    "confirmMoveDelete": {
+        "message": "Taşı ve Sil"
+    },
+    "copied": {
+        "message": "Kopyalandı"
+    },
+    "copyUrls": {
+        "message": "URL'leri Kopyala"
+    },
+    "create": {
+        "message": "Oluştur"
+    },
+    "createDefaultsBtn": {
+        "message": "Varsayılan Oluştur"
+    },
+    "customIcons": {
+        "message": "Özel Simgeler"
+    },
+    "dangerZone": {
+        "message": "Tehlike Bölgesi"
+    },
+    "dangerZoneWarning": {
+        "message": "Uyarı: Geri alınamaz"
+    },
+    "dataManagementDesc": {
+        "message": "Çalışma alanlarını ve sekmeleri yedekleyin ve geri yükleyin"
+    },
+    "dataManagementTitle": {
+        "message": "Veri Yönetimi"
+    },
+    "defaultWsCooking": {
+        "message": "Yemek"
+    },
+    "defaultWsMain": {
+        "message": "Ana"
+    },
+    "defaultWsMusic": {
+        "message": "Müzik"
+    },
+    "defaultWsStudy": {
+        "message": "Ders"
+    },
+    "defaultWsWork": {
+        "message": "İş"
+    },
+    "deleteConfirm": {
+        "message": "\"$NAME$\" silinsin ve sekmeler KAPATILSIN mı?",
+        "placeholders": {
+            "name": {
+                "content": "$1"
+            }
+        }
+    },
+    "deleteMoveConfirm": {
+        "message": "Sekmeler taşınıp \"$NAME$\" silinsin mi?",
+        "placeholders": {
+            "name": {
+                "content": "$1"
+            }
+        }
+    },
+    "deleteWs": {
+        "message": "Sil"
+    },
+    "emptyStateText": {
+        "message": "Alan yok"
+    },
+    "exportBtn": {
+        "message": "Dışa Aktar"
+    },
+    "exportSuccess": {
+        "message": "Dışa aktarıldı"
+    },
+    "extName": {
+        "message": "Workspaces"
+    },
+    "extensionDescription": {
+        "message": "Sekmeleri çalışma alanlarında düzenleyin"
+    },
+    "extensionName": {
+        "message": "Workspaces"
+    },
+    "hideActions": {
+        "message": "Gizle"
+    },
+    "icon": {
+        "message": "Simge"
+    },
+    "importBtn": {
+        "message": "İçe Aktar"
+    },
+    "importConfirm": {
+        "message": "Mevcut alanlar silinecek. Devam?"
+    },
+    "importMerge": {
+        "message": "Mevcut olanlara ekle"
+    },
+    "importNoTabs": {
+        "message": "Sadece Alanlar"
+    },
+    "importOptionsDesc": {
+        "message": "Yöntem:"
+    },
+    "importOptionsTitle": {
+        "message": "İçe Aktarma"
+    },
+    "importReplace": {
+        "message": "Değiştir"
+    },
+    "importSuccess": {
+        "message": "İçe aktarıldı"
+    },
+    "importWarning": {
+        "message": "Sorunları önlemek için sekmeler geri yüklenirken lütfen tarayıcıda hiçbir işlem yapmayın."
+    },
+    "justDelete": {
+        "message": "Sil ve Kapat"
+    },
+    "logCreated": {
+        "message": "Oluşturuldu"
+    },
+    "logDeleted": {
+        "message": "Silindi"
+    },
+    "logDetailsCreated": {
+        "message": "\"$1\""
+    },
+    "logDetailsDeleted": {
+        "message": "\"$1\""
+    },
+    "logDetailsMoved": {
+        "message": "$1 (\"$2\" -> \"$3\")"
+    },
+    "logDetailsRenamed": {
+        "message": "\"$1\" -> \"$2\""
+    },
+    "logDetailsReset": {
+        "message": "Sıfırlandı"
+    },
+    "logMoved": {
+        "message": "Taşındı"
+    },
+    "logRenamed": {
+        "message": "Ad değiştirildi"
+    },
+    "logsTitle": {
+        "message": "Geçmiş"
+    },
+    "manageWsDesc": {
+        "message": "\"$NAME$\" işlemi:",
+        "placeholders": {
+            "name": {
+                "content": "$1"
+            }
+        }
+    },
+    "manageWsTitle": {
+        "message": "Yönet"
+    },
+    "moveAll": {
+        "message": "Hepsini Taşı"
+    },
+    "moveAllTitle": {
+        "message": "Hepsini şuraya taşı:"
+    },
+    "moveAndDelete": {
+        "message": "Taşı ve Sil"
+    },
+    "moveTab": {
+        "message": "Şuraya taşı"
+    },
+    "moveTabs": {
+        "message": "$COUNT$ sekmeyi taşı",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            }
+        }
+    },
+    "movedTabs": {
+        "message": "$COUNT$ sekme $TARGET$ alanına taşındı",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            },
+            "target": {
+                "content": "$2"
+            }
+        }
+    },
+    "name": {
+        "message": "İsim"
+    },
+    "no": {
+        "message": "Hayır"
+    },
+    "noLogs": {
+        "message": "Kayıt yok"
+    },
+    "noOtherWorkspaces": {
+        "message": "Başka alan yok"
+    },
+    "onboardingSkip": {
+        "message": "Atla"
+    },
+    "onboardingText": {
+        "message": "Güvenlik için tüm sekmelerinizi ve çalışma alanlarınızı dışa aktaralım"
+    },
+    "onboardingTitle": {
+        "message": "Güvenlik"
+    },
+    "redoAction": {
+        "message": "Yinele?"
+    },
+    "renameWs": {
+        "message": "Yeniden Adlandır"
+    },
+    "resetConfirmBtn": {
+        "message": "Sıfırla"
+    },
+    "resetConfirmText": {
+        "message": "Alanları siler. Sekmeler kalır"
+    },
+    "resetConfirmTitle": {
+        "message": "Hepsini sıfırla?"
+    },
+    "resetDefault": {
+        "message": "Sıfırla"
+    },
+    "resetWorkspaces": {
+        "message": "Alanları Sıfırla"
+    },
+    "selectEmoji": {
+        "message": "Emoji Seç"
+    },
+    "settingsTitle": {
+        "message": "Ayarlar"
+    },
+    "shortcutHint": {
+        "message": "Tuşlara basın"
+    },
+    "shortcutUpdateError": {
+        "message": "Hata"
+    },
+    "shortcutUpdateSuccess": {
+        "message": "Güncellendi"
+    },
+    "shortcutsTitle": {
+        "message": "Kısayollar"
+    },
+    "showActions": {
+        "message": "Eylemleri Göster"
+    },
+    "showAllTabs": {
+        "message": "Hepsini Göster"
+    },
+    "showLogs": {
+        "message": "Geçmişi Göster"
+    },
+    "sidebarToggle": {
+        "message": "Kenar Çubuğu:"
+    },
+    "supportBoosty": {
+        "message": "Boosty ile Destekle"
+    },
+    "supportKofi": {
+        "message": "Ko-fi ile Destekle"
+    },
+    "supportPatreon": {
+        "message": "Patreon ile Destekle"
+    },
+    "switchToDarkTheme": {
+        "message": "Koyu Tema"
+    },
+    "switchToLightTheme": {
+        "message": "Açık Tema"
+    },
+    "tabsClosed": {
+        "message": "Kapatıldı"
+    },
+    "toggleTheme": {
+        "message": "Tema Değiştir"
+    },
+    "tourFinish": {
+        "message": "Başla"
+    },
+    "tourNext": {
+        "message": "İleri"
+    },
+    "tourPrev": {
+        "message": "Geri"
+    },
+    "tourSkip": {
+        "message": "Atla"
+    },
+    "tourStep1Text": {
+        "message": "Sekmeleri görevlere göre ayırın. Tarayıcınızı düzenli tutun"
+    },
+    "tourStep1Title": {
+        "message": "Çalışma Alanları"
+    },
+    "tourStep2Text": {
+        "message": "Tek tıkla çalışma alanları arasında geçiş yapın. Sekmeler otomatik olarak kaydedilir"
+    },
+    "tourStep2Title": {
+        "message": "Geçiş"
+    },
+    "tourStep3Text": {
+        "message": "Taşımak için sekmelere sağ tıklayın. Çalışma alanı oluşturmak için '+'ya tıklayın"
+    },
+    "tourStep3Title": {
+        "message": "Yönetim"
+    },
+    "undoAction": {
+        "message": "Geri al?"
+    },
+    "undoFailed": {
+        "message": "Başarısız"
+    },
+    "workspaceDefaultName": {
+        "message": "Çalışma Alanı"
+    },
+    "workspaceSwitching": {
+        "message": "Alan Değiştirme:"
+    },
+    "yes": {
+        "message": "Evet"
+    },
+    "autoBackupTitle": {
+        "message": "Otomatik Yedekler"
+    },
+    "autoBackupDesc": {
+        "message": "Otomatik yedeklemeleri yapılandırın."
+    },
+    "backupOnStartupLabel": {
+        "message": "Başlangıçta yedekle"
+    },
+    "autoBackupFrequencyLabel": {
+        "message": "Sıklık:"
+    },
+    "autoBackupDisabled": {
+        "message": "Devre dışı"
+    },
+    "autoBackup1h": {
+        "message": "1 saat"
+    },
+    "autoBackup3h": {
+        "message": "3 saat"
+    },
+    "autoBackup6h": {
+        "message": "6 saat"
+    },
+    "autoBackup8h": {
+        "message": "8 saat"
+    },
+    "autoBackup12h": {
+        "message": "12 saat"
+    },
+    "autoBackup1d": {
+        "message": "1 gün"
+    },
+    "autoBackup3d": {
+        "message": "3 gün"
+    },
+    "autoBackup1w": {
+        "message": "1 hafta"
+    },
+    "importSourceTitle": {
+        "message": "Kaynak Seç"
+    },
+    "importSourceDesc": {
+        "message": "Nereden içe aktarılacak?"
+    },
+    "importFromFile": {
+        "message": "Dosyadan İçe Aktar"
+    },
+    "importFromAutoBackups": {
+        "message": "Otomatik Yedeklerden"
+    },
+    "selectBackupTitle": {
+        "message": "Yedek Seçin"
+    },
+    "restoreBtn": {
+        "message": "Geri Yükle"
+    },
+    "noBackupsFound": {
+        "message": "Yedek bulunamadı"
+    },
+    "downloadBackup": {
+        "message": "İndir"
+    },
+    "deleteBackup": {
+        "message": "Sil"
+    },
+    "clearAllBackups": {
+        "message": "Tümünü Temizle"
+    },
+    "maxBackupsLabel": {
+        "message": "Maks. Otomatik Yedek:"
+    },
+    "backupSizeKB": {
+        "message": "KB"
+    },
+    "createBackupNow": {
+        "message": "Şimdi Yedekle",
+        "description": "createBackupNow"
+    },
+    "clearBackupsConfirm": {
+        "message": "Tüm otomatik yedeklemeleri silmek istediğinizden emin misiniz?",
+        "description": "clearBackupsConfirm"
+    },
+    "wsCount": {
+        "message": "Çalışma Alanları",
+        "description": "wsCount"
+    },
+    "tabsCount": {
+        "message": "Sekmeler",
+        "description": "tabsCount"
+    },
+    "currentBackups": {
+        "message": "Mevcut Yedekler",
+        "description": "currentBackups"
+    },
+    "totalSize": {
+        "message": "Toplam Boyut",
+        "description": "totalSize"
+    },
+    "nextBackup": {
+        "message": "Sonraki Yedek:",
+        "description": "nextBackup"
+    },
+    "oldestBackup": {
+        "message": "En Eski:",
+        "description": "oldestBackup"
+    },
+    "na": {
+        "message": "Yok",
+        "description": "na"
+    },
+    "disabled": {
+        "message": "Devre dışı",
+        "description": "disabled"
+    },
+    "maxStorageLabel": {
+        "message": "Depolama Sınırı (MB):",
+        "description": "maxStorageLabel"
+    },
+    "creatingBackup": {
+        "message": "Yedek oluşturuluyor...",
+        "description": "creatingBackup"
+    },
+    "restoringTabs": {
+        "message": "Sekmeler geri yükleniyor...",
+        "description": "restoringTabs"
+    },
+    "ok": {
+        "message": "Tamam"
+    },
+    "pleaseWaitRestoring": {
+        "message": "Lütfen bekleyin, bu biraz zaman alabilir..."
+    },
+    "importWarningTitle": {
+        "message": "Uyarı"
+    },
+    "statusSaved": {
+        "message": "Dil güncellendi. Yeniden yükleniyor..."
+    },
+    "resetCloseTabsBtn": {
+        "message": "Sekmeleri Sıfırla ve Kapat",
+        "description": "Button to reset workspaces and close all tabs"
+    },
+    "areYouSureReset": {
+        "message": "Tüm çalışma alanlarını sıfırlamak istediğinizden emin misiniz? Sekmeleriniz tutulacaktır.",
+        "description": "Confirmation message before resetting workspaces"
+    },
+    "areYouSureResetClose": {
+        "message": "Tüm çalışma alanlarını sıfırlamak VE tüm sekmeleri kapatmak istediğinizden emin misiniz?",
+        "description": "Confirmation message before resetting and closing tabs"
     }
-  },
-  "deleteMoveConfirm": {
-    "message": "Sekmeler taşınıp \"$NAME$\" silinsin mi?",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
-  },
-  "deleteWs": {
-    "message": "Sil"
-  },
-  "emptyStateText": {
-    "message": "Alan yok"
-  },
-  "exportBtn": {
-    "message": "Dışa Aktar"
-  },
-  "exportSuccess": {
-    "message": "Dışa aktarıldı"
-  },
-  "extName": {
-    "message": "Workspaces"
-  },
-  "extensionDescription": {
-    "message": "Sekmeleri çalışma alanlarında düzenleyin"
-  },
-  "extensionName": {
-    "message": "Workspaces"
-  },
-  "hideActions": {
-    "message": "Gizle"
-  },
-  "icon": {
-    "message": "Simge"
-  },
-  "importBtn": {
-    "message": "İçe Aktar"
-  },
-  "importConfirm": {
-    "message": "Mevcut alanlar silinecek. Devam?"
-  },
-  "importMerge": {
-    "message": "Mevcut olanlara ekle"
-  },
-  "importNoTabs": {
-    "message": "Sadece Alanlar"
-  },
-  "importOptionsDesc": {
-    "message": "Yöntem:"
-  },
-  "importOptionsTitle": {
-    "message": "İçe Aktarma"
-  },
-  "importReplace": {
-    "message": "Değiştir"
-  },
-  "importSuccess": {
-    "message": "İçe aktarıldı"
-  },
-  "importWarning": {
-    "message": "Sorunları önlemek için sekmeler geri yüklenirken lütfen tarayıcıda hiçbir işlem yapmayın."
-  },
-  "justDelete": {
-    "message": "Sil ve Kapat"
-  },
-  "logCreated": {
-    "message": "Oluşturuldu"
-  },
-  "logDeleted": {
-    "message": "Silindi"
-  },
-  "logDetailsCreated": {
-    "message": "\"$1\""
-  },
-  "logDetailsDeleted": {
-    "message": "\"$1\""
-  },
-  "logDetailsMoved": {
-    "message": "$1 (\"$2\" -> \"$3\")"
-  },
-  "logDetailsRenamed": {
-    "message": "\"$1\" -> \"$2\""
-  },
-  "logDetailsReset": {
-    "message": "Sıfırlandı"
-  },
-  "logMoved": {
-    "message": "Taşındı"
-  },
-  "logRenamed": {
-    "message": "Ad değiştirildi"
-  },
-  "logsTitle": {
-    "message": "Geçmiş"
-  },
-  "manageWsDesc": {
-    "message": "\"$NAME$\" işlemi:",
-    "placeholders": {
-      "name": {
-        "content": "$1"
-      }
-    }
-  },
-  "manageWsTitle": {
-    "message": "Yönet"
-  },
-  "moveAll": {
-    "message": "Hepsini Taşı"
-  },
-  "moveAllTitle": {
-    "message": "Hepsini şuraya taşı:"
-  },
-  "moveAndDelete": {
-    "message": "Taşı ve Sil"
-  },
-  "moveTab": {
-    "message": "Şuraya taşı"
-  },
-  "moveTabs": {
-    "message": "$COUNT$ sekmeyi taşı",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "movedTabs": {
-    "message": "$COUNT$ sekme $TARGET$ alanına taşındı",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      },
-      "target": {
-        "content": "$2"
-      }
-    }
-  },
-  "name": {
-    "message": "İsim"
-  },
-  "no": {
-    "message": "Hayır"
-  },
-  "noLogs": {
-    "message": "Kayıt yok"
-  },
-  "noOtherWorkspaces": {
-    "message": "Başka alan yok"
-  },
-  "onboardingSkip": {
-    "message": "Atla"
-  },
-  "onboardingText": {
-    "message": "Güvenlik için tüm sekmelerinizi ve çalışma alanlarınızı dışa aktaralım"
-  },
-  "onboardingTitle": {
-    "message": "Güvenlik"
-  },
-  "redoAction": {
-    "message": "Yinele?"
-  },
-  "renameWs": {
-    "message": "Yeniden Adlandır"
-  },
-  "resetConfirmBtn": {
-    "message": "Sıfırla"
-  },
-  "resetConfirmText": {
-    "message": "Alanları siler. Sekmeler kalır"
-  },
-  "resetConfirmTitle": {
-    "message": "Hepsini sıfırla?"
-  },
-  "resetDefault": {
-    "message": "Sıfırla"
-  },
-  "resetWorkspaces": {
-    "message": "Alanları Sıfırla"
-  },
-  "selectEmoji": {
-    "message": "Emoji Seç"
-  },
-  "settingsTitle": {
-    "message": "Ayarlar"
-  },
-  "shortcutHint": {
-    "message": "Tuşlara basın"
-  },
-  "shortcutUpdateError": {
-    "message": "Hata"
-  },
-  "shortcutUpdateSuccess": {
-    "message": "Güncellendi"
-  },
-  "shortcutsTitle": {
-    "message": "Kısayollar"
-  },
-  "showActions": {
-    "message": "Eylemleri Göster"
-  },
-  "showAllTabs": {
-    "message": "Hepsini Göster"
-  },
-  "showLogs": {
-    "message": "Geçmişi Göster"
-  },
-  "sidebarToggle": {
-    "message": "Kenar Çubuğu:"
-  },
-  "supportBoosty": {
-    "message": "Boosty ile Destekle"
-  },
-  "supportKofi": {
-    "message": "Ko-fi ile Destekle"
-  },
-  "supportPatreon": {
-    "message": "Patreon ile Destekle"
-  },
-  "switchToDarkTheme": {
-    "message": "Koyu Tema"
-  },
-  "switchToLightTheme": {
-    "message": "Açık Tema"
-  },
-  "tabsClosed": {
-    "message": "Kapatıldı"
-  },
-  "toggleTheme": {
-    "message": "Tema Değiştir"
-  },
-  "tourFinish": {
-    "message": "Başla"
-  },
-  "tourNext": {
-    "message": "İleri"
-  },
-  "tourPrev": {
-    "message": "Geri"
-  },
-  "tourSkip": {
-    "message": "Atla"
-  },
-  "tourStep1Text": {
-    "message": "Sekmeleri görevlere göre ayırın. Tarayıcınızı düzenli tutun"
-  },
-  "tourStep1Title": {
-    "message": "Çalışma Alanları"
-  },
-  "tourStep2Text": {
-    "message": "Tek tıkla çalışma alanları arasında geçiş yapın. Sekmeler otomatik olarak kaydedilir"
-  },
-  "tourStep2Title": {
-    "message": "Geçiş"
-  },
-  "tourStep3Text": {
-    "message": "Taşımak için sekmelere sağ tıklayın. Çalışma alanı oluşturmak için '+'ya tıklayın"
-  },
-  "tourStep3Title": {
-    "message": "Yönetim"
-  },
-  "undoAction": {
-    "message": "Geri al?"
-  },
-  "undoFailed": {
-    "message": "Başarısız"
-  },
-  "workspaceDefaultName": {
-    "message": "Çalışma Alanı"
-  },
-  "workspaceSwitching": {
-    "message": "Alan Değiştirme:"
-  },
-  "yes": {
-    "message": "Evet"
-  },
-  "autoBackupTitle": {
-    "message": "Otomatik Yedekler"
-  },
-  "autoBackupDesc": {
-    "message": "Otomatik yedeklemeleri yapılandırın."
-  },
-  "backupOnStartupLabel": {
-    "message": "Başlangıçta yedekle"
-  },
-  "autoBackupFrequencyLabel": {
-    "message": "Sıklık:"
-  },
-  "autoBackupDisabled": {
-    "message": "Devre dışı"
-  },
-  "autoBackup1h": {
-    "message": "1 saat"
-  },
-  "autoBackup3h": {
-    "message": "3 saat"
-  },
-  "autoBackup6h": {
-    "message": "6 saat"
-  },
-  "autoBackup8h": {
-    "message": "8 saat"
-  },
-  "autoBackup12h": {
-    "message": "12 saat"
-  },
-  "autoBackup1d": {
-    "message": "1 gün"
-  },
-  "autoBackup3d": {
-    "message": "3 gün"
-  },
-  "autoBackup1w": {
-    "message": "1 hafta"
-  },
-  "importSourceTitle": {
-    "message": "Kaynak Seç"
-  },
-  "importSourceDesc": {
-    "message": "Nereden içe aktarılacak?"
-  },
-  "importFromFile": {
-    "message": "Dosyadan İçe Aktar"
-  },
-  "importFromAutoBackups": {
-    "message": "Otomatik Yedeklerden"
-  },
-  "selectBackupTitle": {
-    "message": "Yedek Seçin"
-  },
-  "restoreBtn": {
-    "message": "Geri Yükle"
-  },
-  "noBackupsFound": {
-    "message": "Yedek bulunamadı"
-  },
-  "downloadBackup": {
-    "message": "İndir"
-  },
-  "deleteBackup": {
-    "message": "Sil"
-  },
-  "clearAllBackups": {
-    "message": "Tümünü Temizle"
-  },
-  "maxBackupsLabel": {
-    "message": "Maks. Otomatik Yedek:"
-  },
-  "backupSizeKB": {
-    "message": "KB"
-  },
-  "createBackupNow": {
-    "message": "Şimdi Yedekle",
-    "description": "createBackupNow"
-  },
-  "clearBackupsConfirm": {
-    "message": "Tüm otomatik yedeklemeleri silmek istediğinizden emin misiniz?",
-    "description": "clearBackupsConfirm"
-  },
-  "wsCount": {
-    "message": "Çalışma Alanları",
-    "description": "wsCount"
-  },
-  "tabsCount": {
-    "message": "Sekmeler",
-    "description": "tabsCount"
-  },
-  "currentBackups": {
-    "message": "Mevcut Yedekler",
-    "description": "currentBackups"
-  },
-  "totalSize": {
-    "message": "Toplam Boyut",
-    "description": "totalSize"
-  }
 }

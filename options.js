@@ -310,15 +310,25 @@ document.getElementById('import-file').onchange = (e) => {
 // Formatting date cleanly
 function formatBackupDate(timestamp) {
     const date = new Date(timestamp);
-    const langCode = (currentLang === 'auto' ? navigator.language : currentLang) || 'en';
+    const langCode = ((currentLang === 'auto' ? navigator.language : currentLang) || 'en').replace('_', '-');
     
-    return new Intl.DateTimeFormat(langCode, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
+    try {
+        return new Intl.DateTimeFormat(langCode, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    } catch (e) {
+        return new Intl.DateTimeFormat('en', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
 }
 
 async function showAutoBackupsModal() {
@@ -404,8 +414,24 @@ function showImportModal(onConfirm) {
 
     const handleConfirm = (mode) => {
         close();
-        alert(getMessage("importWarning") || "Please do not perform any actions in the browser during tab restoration to avoid issues.");
-        onConfirm(mode);
+        const warningModal = document.getElementById('import-warning-modal');
+        const warningOkBtn = document.getElementById('import-warning-ok-btn');
+        const warningCancelBtn = document.getElementById('import-warning-cancel-btn');
+        
+        warningModal.classList.add('visible');
+        
+        warningCancelBtn.onclick = () => {
+            warningModal.classList.remove('visible');
+        };
+        
+        warningOkBtn.onclick = () => {
+            warningModal.classList.remove('visible');
+            onConfirm(mode);
+        };
+        
+        warningModal.onclick = (e) => {
+            if (e.target === warningModal) warningModal.classList.remove('visible');
+        };
     };
 
     noTabsBtn.onclick = () => {
@@ -498,33 +524,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     localizePage();
     loadShortcuts();
     
-    // Init Auto Backup Settings
-    browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup', 'autoBackups', 'autoBackupMax']).then(res => {
+    // Init Auto Backup Settings and Language
+    browser.storage.local.get(['ui_language', 'autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup', 'autoBackups', 'autoBackupMax', 'autoBackupStorageMax']).then(res => {
         const freqSelect = document.getElementById('auto-backup-frequency');
         const startupCheck = document.getElementById('backup-on-startup');
         const maxInput = document.getElementById('auto-backup-max');
+        const storageMaxInput = document.getElementById('auto-backup-storage-max');
         const clearBtn = document.getElementById('clear-all-backups-btn');
         let backups = res.autoBackups || [];
         
         if (res.autoBackupEnabled === false) {
             freqSelect.value = "0";
         } else {
-            freqSelect.value = (res.autoBackupFrequency || 72).toString();
+            freqSelect.value = (res.autoBackupFrequency || 3).toString();
         }
         
-        startupCheck.checked = !!res.backupOnStartup;
-        maxInput.value = (res.autoBackupMax || 100).toString();
+        startupCheck.checked = res.backupOnStartup !== undefined ? !!res.backupOnStartup : true;
+        maxInput.value = (res.autoBackupMax || 1000).toString();
+        storageMaxInput.value = (res.autoBackupStorageMax || 200).toString();
         
         freqSelect.addEventListener('change', () => {
             const val = parseInt(freqSelect.value);
             if (val === 0) {
                 browser.storage.local.set({ autoBackupEnabled: false });
             } else {
-                browser.storage.local.set({ 
-                    autoBackupEnabled: true,
-                    autoBackupFrequency: val
-                });
+                browser.alarms.create('autoBackupCheck', { periodInMinutes: 60 });
             }
+            browser.storage.local.set({ autoBackupEnabled: val !== 0, autoBackupFrequency: val });
+            
+            // Re-render to update the Next Backup stats
+            renderBackups(backups);
         });
         
         startupCheck.addEventListener('change', () => {
@@ -550,11 +579,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             browser.storage.local.set({ autoBackupMax: val });
         });
         
+        storageMaxInput.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value);
+            if (val > 5000) e.target.value = 5000;
+            if (val < 1) e.target.value = 1;
+            
+            renderBackups(backups);
+        });
+
+        storageMaxInput.addEventListener('change', () => {
+            let val = parseInt(storageMaxInput.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 5000) val = 5000;
+            storageMaxInput.value = val;
+            browser.storage.local.set({ autoBackupStorageMax: val });
+        });
+        
         const createBtn = document.getElementById('create-backup-now-btn');
         if (createBtn) {
             createBtn.addEventListener('click', () => {
                 browser.storage.local.set({ triggerManualBackup: Date.now() });
-                showStatus(getMessage('statusSaved') || "Creating backup...", 'success');
+                showStatus(getMessage('creatingBackup') || "Creating backup...", 'success');
             });
         }
         
@@ -584,12 +629,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         // Language Switcher Logic
         const langSelect = document.getElementById('ui-language-select');
-        browser.storage.local.get('ui_language').then(langRes => {
-            if (langRes.ui_language) {
-                currentLang = langRes.ui_language;
-                langSelect.value = langRes.ui_language;
-            }
-        });
+        if (res.ui_language) {
+            currentLang = res.ui_language;
+            langSelect.value = res.ui_language;
+        }
         
         langSelect.addEventListener('change', () => {
             const newLang = langSelect.value;
@@ -610,11 +653,41 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statsCountEl.textContent = `${currentBackups.length} / ${maxVal}`;
             }
             
+            const statsOldestEl = document.getElementById('stats-oldest');
+            const statsNextEl = document.getElementById('stats-next');
+            const freqVal = parseInt(document.getElementById('auto-backup-frequency').value) || 0;
+            
+            if (statsOldestEl) {
+                if (currentBackups.length > 0) {
+                    const oldestTime = currentBackups[0].timestamp; // oldest is at index 0 because reverse is done later
+                    statsOldestEl.textContent = formatBackupDate(oldestTime);
+                } else {
+                    statsOldestEl.textContent = getMessage('na') || 'N/A';
+                }
+            }
+            
+            if (statsNextEl) {
+                if (freqVal === 0) {
+                    statsNextEl.textContent = getMessage('disabled') || 'Disabled';
+                } else if (currentBackups.length > 0) {
+                    const newestTime = currentBackups[currentBackups.length - 1].timestamp;
+                    const nextTimeMs = newestTime + (freqVal * 60 * 60 * 1000);
+                    statsNextEl.textContent = formatBackupDate(nextTimeMs);
+                } else {
+                    // if enabled but no backups yet, next backup could be any time the alarm fires.
+                    // Just show N/A since we can't be perfectly accurate without querying the alarm.
+                    statsNextEl.textContent = getMessage('na') || 'N/A';
+                }
+            }
+            
             let totalSizeBytes = 0;
             
             if (currentBackups.length === 0) {
                 list.innerHTML = `<div style="padding: 15px; color: #888; font-size: 14px;" data-i18n="noBackupsFound">${getMessage('noBackupsFound') || "No backups found"}</div>`;
-                if (statsSizeEl) statsSizeEl.textContent = `0 ${getMessage('backupSizeKB') || 'KB'}`;
+                if (statsSizeEl) {
+                    const maxStorageMB = parseInt(document.getElementById('auto-backup-storage-max').value) || 200;
+                    statsSizeEl.textContent = `0 / ${maxStorageMB} MB`;
+                }
             } else {
                 list.innerHTML = '';
                 // Render all backups in reverse chronological order
@@ -677,7 +750,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     restoreBtn.textContent = getMessage('restoreBtn') || 'Restore';
                     restoreBtn.onclick = () => {
                         browser.storage.local.set({ triggerManualBackup: Date.now() });
-                        showStatus(getMessage('statusSaved') || "Creating backup...", 'success');
+                        showStatus(getMessage('creatingBackup') || "Creating backup...", 'success');
                         setTimeout(() => handleImportData(b), 300);
                     };
                     
@@ -706,17 +779,33 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 
                 if (statsSizeEl) {
-                    const totalKB = (totalSizeBytes / 1024).toFixed(1);
-                    const mbSize = totalSizeBytes > 1024 * 1024 ? (totalSizeBytes / 1024 / 1024).toFixed(2) : null;
-                    if (mbSize) {
-                        statsSizeEl.textContent = `${mbSize} MB`;
-                    } else {
-                        statsSizeEl.textContent = `${totalKB} ${getMessage('backupSizeKB') || 'KB'}`;
-                    }
+                    const maxStorageMB = parseInt(document.getElementById('auto-backup-storage-max').value) || 200;
+                    const mbSize = (totalSizeBytes / 1024 / 1024).toFixed(2);
+                    statsSizeEl.textContent = `${mbSize} / ${maxStorageMB} MB`;
                 }
             }
         }
         
         renderBackups(backups);
     });
+});
+
+browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'RESTORE_PROGRESS') {
+        const overlay = document.getElementById('restore-progress-overlay');
+        const textEl = document.getElementById('restore-progress-text');
+        
+        if (overlay && textEl) {
+            const countText = message.total !== undefined ? ` (${message.restored}/${message.total})` : '';
+            if (message.progress < 100) {
+                overlay.style.display = 'flex';
+                textEl.textContent = `${message.progress}%${countText}`;
+            } else {
+                textEl.textContent = `100%${countText}`;
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
+        }
+    }
 });

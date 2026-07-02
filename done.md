@@ -1,37 +1,3 @@
-# Changelog / История изменений
-
-## 🇷🇺 Русский
-
-### Исправлено (Fixed)
-- Исправлена ошибка импорта резервных копий (JSON), при которой все восстанавливаемые вкладки ошибочно помещались в одно текущее пространство. Теперь восстановленные вкладки корректно распределяются по своим изначальным пространствам.
-- Добавлен флаг `isRestoringData` для временной блокировки события `browser.tabs.onCreated`, которое переопределяло пространства при массовом создании вкладок из бекапа.
-- **Исправлен критический баг:** Закрытие браузера при удалении пространства. Теперь расширение безопасно удаляет фоновые вкладки и гарантирует, что активное окно браузера не закроется случайно.
-- **Исправлен баг миграции вкладок:** Вкладки больше не перемещаются случайно в `Main` (по умолчанию) при переходе в спящий режим браузером или при использовании контекстного меню. Добавлена поддержка `browser.tabs.onReplaced`.
-
-### Добавлено (Added)
-- Добавлено предупреждающее диалоговое окно перед началом импорта.
-- Добавлена система локализации предупреждений на 19 языков.
-- **Авто-Бэкапы (Auto-Backups):** Добавлена полноценная система автоматического резервного копирования вкладок и пространств.
-  - Сохранение бекапов в памяти браузера.
-  - Настройки частоты (1, 3, 6, 8, 12 часов, 1 день, 3 дня, 1 неделя).
-  - Настройка создания бэкапа при запуске браузера.
-  - Красивый интерфейс в настройках (Options) для просмотра истории бэкапов (с локализованным форматом даты) и восстановления в 1 клик.
-  - Улучшенное управление бэкапами: отображение размера в КБ, кнопки Восстановить (Restore), Скачать (Download) и Удалить (Delete) для каждого бэкапа отдельно, а также кнопка "Clear All Backups".
-  - Возможность ручной настройки лимита сохраняемых бэкапов (от 1 до 10000, встроена защита от ввода большего числа).
-  - Добавлена кнопка "Создать бэкап сейчас" (Create Backup Now) для мгновенного ручного сохранения.
-  - При нажатии на кнопку Восстановить у бэкапа, автоматически создается бэкап ТЕКУЩЕГО состояния, чтобы ничего не потерялось, после чего открывается удобное окно импорта.
-  - Улучшен дизайн кнопки "Очистить все" и добавлено красивое кастомное диалоговое окно (модалка) для подтверждения очистки бэкапов вместо стандартного окна браузера.
-  - Полностью переработан дизайн раздела Авто-бэкапов: теперь настройки сгруппированы слева, а справа выведена удобная статистика — видно **текущее количество сохраненных бэкапов (и их лимит)**, а также **общий занимаемый ими объем памяти (в КБ или МБ)**.
-  - Перевод всех новых функций авто-бэкапов на 19 языков.
-- **Языковой переключатель:** 
-  - Добавлен выпадающий список в настройках для ручной смены языка интерфейса.
-  - Опция "Auto" теперь динамически показывает, какой язык системы будет использован (например, "Русский (Auto)").
-  - Исправлен баг: изменение языка в настройках теперь **мгновенно** синхронизируется и переводит боковую панель (sidebar) без необходимости перезапуска.
-
----
-
-## 🇬🇧 English
-
 ### Fixed
 - Fixed a JSON backup import bug where all restored tabs were mistakenly placed into the single current workspace. Now restored tabs are correctly distributed to their original workspaces.
 - Added `isRestoringData` flag to temporarily block the `browser.tabs.onCreated` event, which was overriding workspaces during bulk tab creation from backups.
@@ -40,7 +6,6 @@
 
 ### Added
 - Added a warning dialog before starting an import.
-- Added localization system for warnings across 19 languages.
 - **Auto-Backups:** Added a fully-featured automated backup system for tabs and workspaces.
   - Saves backups directly in browser storage.
   - Frequency settings (1, 3, 6, 8, 12 hours, 1 day, 3 days, 1 week).
@@ -48,12 +13,34 @@
   - Beautiful UI in Options to view backup history (with localized date formats) and 1-click restore.
   - Advanced backup management: displays size in KB, Restore, Download, and Delete buttons for each individual backup, and a "Clear All Backups" button.
   - Configurable max limit for saved backups (from 1 up to 10000, with built-in validation preventing higher inputs).
-  - Added a "Create Backup Now" button for instant manual backups.
-  - Clicking Restore on an auto-backup now automatically creates a fresh backup of the current state before opening the import modal, preventing data loss.
-  - Improved UI for the "Clear All Backups" button and replaced the native browser confirm dialog with a beautiful custom modal.
+  - Added a "Restore" (Восстановить) button for instant manual restoration directly from the list.
+  - Clicking "Restore" automatically creates a safety backup of the current state before applying the chosen backup.
+  - Added new statistics: "Next Backup" (Следующий бэкап) and "Oldest Backup" (Самый старый бэкап) times.
+  - Added the `unlimitedStorage` permission to bypass the 5MB browser quota for large backups.
+  - **New Feature:** Added a "Max Storage Limit (MB)" setting (default 200 MB, up to 5000 MB). The background worker now calculates the total byte size of all backups; if the limit is exceeded, it automatically deletes the oldest backups until there is enough space.
+  - **Bug Fix:** Fixed the "Creating backup..." green toast notification which was stuck in English. It now correctly translates into all 19 supported languages.
+  - **Bug Fix:** Fixed a critical bug where the backup history would disappear when switching to Chinese (Simplified/Traditional) or Portuguese (Brazil). This was caused by the date formatter crashing due to an underscore in the locale code (`zh_CN` vs `zh-CN`).
+  - Improved the statistics panel to always show the total size explicitly in Megabytes alongside the limit (e.g. "0.45 / 200 MB").
   - Completely redesigned the Auto-Backups section layout: settings are now neatly grouped on the left, and a new statistics panel on the right displays the **current number of backups (out of the maximum limit)** and their **total size in storage (KB or MB)**.
   - Translated all new auto-backup features into 19 languages.
+  - Added a visual percentage progress indicator in the sidebar during data restoration to keep the user informed when importing large backups.
 - **Language Switcher:** 
-  - Added a dropdown in settings for manual UI language switching. 
+  - Standardized the dropdown format for Bahasa Indonesia so it correctly displays as `Bahasa Indonesia (Indonesian)` alongside other languages.
+  - Now uses a native `select` element that instantly persists changes across all active tabs and popups (reloads the UI in 800ms) without requiring a manual refresh.
   - The "Auto" option now dynamically displays the system language name that will be used (e.g. "English (Auto)").
   - Fixed a bug where changing the language in settings didn't immediately update the sidebar. The language now synchronizes instantly across the extension.
+- **Race Condition & Restoration Fixes:**
+  - **Bug Fix:** Fixed a critical race condition when restoring and replacing tabs. The extension now properly locks the `isRestoringData` state so that `onRemoved` listeners do not trigger rapid, conflicting `switchWorkspace` calls, which previously caused the browser window to close unexpectedly.
+  - **Bug Fix:** Fixed a severe bug where deleting a background workspace or closing its tabs from the sidebar would crash and close the entire browser window. The extension now correctly identifies hidden tabs in the current window and avoids closing the window if other workspaces' tabs are still active.
+  - **Bug Fix:** Fixed a critical bug during data restoration (import/restore) where tabs would open, but sometimes- **Workspace Reset Improvements:**
+  - **Feature Enhancement:** Added a new "Reset All & Close Tabs" option to the global reset modal in the sidebar. Users can now choose whether to keep their existing tabs or wipe the slate completely clean.
+  - **Safety Confirmations:** Added strict secondary confirmation dialogs (`confirm()`) before executing a global reset. The browser will ask "Are you sure?" before deleting all workspaces or closing all tabs to prevent accidental clicks.
+  - **Translation:** Generated and applied translations for the new reset buttons and confirmation texts across all 19 supported languages.
+  - **Crash Prevention / Bug Fix:** Fixed a critical issue where selecting "Replace current tabs" during restore, or "Reset All & Close Tabs", would sometimes crash or unexpectedly close the entire browser window. The background script was occasionally targeting the wrong window context (`currentWindow: true` can fail in background scripts when focus shifts). We now explicitly bind all tab creation and removal to a specific `windowId`. Additionally, mass tab deletions (which can trigger native Firefox crashes when 50+ tabs are destroyed simultaneously) are now safely chunked into smaller batches of 5 tabs with a micro-delay.
+  - **Bug Fix:** Fixed a syntax regression introduced during the crash prevention update, which caused the tab creation loop to be skipped entirely during imports, resulting in a false "Success" message without actually restoring any tabs.
+  - **Feature Enhancement:** The "Restoring Tabs..." progress overlay is now displayed globally on the Settings/Options page as well as the sidebar. This blocks interaction with the settings page while a restore is in progress (appearing right in the center of the screen) and keeps you fully updated on the import progress.
+  - **Bug Fix:** Fixed an issue where the "Restoring..." progress overlay would disappear prematurely (at 100%) while the browser was still freezing to switch workspaces and assign tabs. The progress is now held at 99% until the entire workspace assignment and switching process is fully completed, keeping the user informed.
+  - **Bug Fix:** Added an asynchronous lock to `switchWorkspace()` and fixed `saveState()` to return a Promise. This prevents race conditions, state corruption, and ghost tabs when switching workspaces very rapidly.
+  - **UI/Translation Fix:** Updated the "Import Warning" modal and "Restore Progress" overlay to match the standard theme. 
+  - **Translation Fix:** Added missing translations for `importWarningTitle`, `statusSaved`, `ok`, `restoringTabs`, and `pleaseWaitRestoring` across all supported languages, ensuring no untranslated fallback text is displayed.
+  - **Performance Optimization:** Added a smart throttling mechanism (yielding 30ms every 3 tabs) during mass tab restoration. This gives the browser's event loop time to breathe and process UI updates, preventing the extension and sidebar progress bar from completely freezing when opening 80+ tabs simultaneously.

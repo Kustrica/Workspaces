@@ -617,6 +617,14 @@
     </style>
 </head>
 <body>
+    <div id="restore-progress-overlay" class="modal-overlay" style="z-index: 999; display: none;">
+        <div class="modal" style="text-align: center; border: 1px solid #ff9400;">
+            <div id="restore-progress-title" style="margin-bottom: 15px; font-weight: bold; font-size: 16px;" data-i18n="restoringTabs">Restoring Tabs...</div>
+            <div id="restore-progress-text" style="font-size: 24px; color: #ff9400; font-weight: bold;">0%</div>
+            <p style="margin-top: 15px; font-size: 13px; color: #aaa;" data-i18n="pleaseWaitRestoring">Please wait, this might take a moment...</p>
+        </div>
+    </div>
+    
     <div class="sidebar-header">
          <div style="display: flex; width: 100%; justify-content: space-between; padding: 0 4px;">
              <button id="toggle-actions-btn" title="__MSG_showActions__" data-i18n-title="showActions" style="background:none; border:none; cursor:pointer; font-size: 18px; padding: 4px; border-radius: 4px; transition: background 0.2s; display: flex; align-items: center;">
@@ -805,7 +813,8 @@
             <h3 data-i18n="resetConfirmTitle">__MSG_resetConfirmTitle__</h3>
             <p style="margin: 10px 0; font-size: 14px;" data-i18n="resetConfirmText">__MSG_resetConfirmText__</p>
             <div class="modal-buttons">
-                <button id="reset-confirm-btn" class="modal-btn confirm" style="background-color: #ff4444;" data-i18n="resetConfirmBtn">__MSG_resetConfirmBtn__</button>
+                <button id="reset-confirm-btn" class="modal-btn confirm" style="background-color: #ff9400; color: #fff;" data-i18n="resetConfirmBtn">__MSG_resetConfirmBtn__</button>
+                <button id="reset-close-tabs-btn" class="modal-btn confirm" style="background-color: #ff4444; color: #fff;" data-i18n="resetCloseTabsBtn">__MSG_resetCloseTabsBtn__</button>
                 <button id="reset-cancel-btn" class="modal-btn cancel" data-i18n="cancel">__MSG_cancel__</button>
             </div>
         </div>

@@ -136,6 +136,13 @@
     </style>
 </head>
 <body>
+    <div id="restore-progress-overlay" class="modal-overlay" style="z-index: 9999; display: none;">
+        <div class="modal" style="text-align: center; border: 1px solid #ff9400;">
+            <div id="restore-progress-title" style="margin-bottom: 15px; font-weight: bold; font-size: 16px;" data-i18n="restoringTabs">Restoring Tabs...</div>
+            <div id="restore-progress-text" style="font-size: 24px; color: #ff9400; font-weight: bold;">0%</div>
+            <p style="margin-top: 15px; font-size: 13px; color: #aaa;" data-i18n="pleaseWaitRestoring">Please wait, this might take a moment...</p>
+        </div>
+    </div>
     <script src="i18n.js"></script>
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 30px;">
         <h1 data-i18n="settingsTitle" style="border: none; padding: 0; margin: 0;">Settings</h1>
@@ -148,7 +155,7 @@
                 <option value="en">English</option>
                 <option value="es">Español (Spanish)</option>
                 <option value="fr">Français (French)</option>
-                <option value="id">Bahasa Indonesia</option>
+                <option value="id">Bahasa Indonesia (Indonesian)</option>
                 <option value="it">Italiano (Italian)</option>
                 <option value="ja">日本語 (Japanese)</option>
                 <option value="ko">한국어 (Korean)</option>
@@ -249,9 +256,14 @@
                     </select>
                 </div>
                 
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span data-i18n="maxBackupsLabel">Max Auto-Backups:</span>
-                    <input type="number" id="auto-backup-max" min="1" max="10000" value="100" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 6px 10px; border-radius: 4px; outline: none; width: 80px;">
+                    <input type="number" id="auto-backup-max" value="1000" min="1" max="10000" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 4px 8px; border-radius: 4px; outline: none; width: 80px;">
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span data-i18n="maxStorageLabel">Max Storage Limit (MB):</span>
+                    <input type="number" id="auto-backup-storage-max" value="200" min="1" max="5000" style="background: #1c1b22; color: #ccc; border: 1px solid #555; padding: 4px 8px; border-radius: 4px; outline: none; width: 80px;">
                 </div>
             </div>
             
@@ -264,6 +276,15 @@
                 <div style="display: flex; justify-content: space-between;">
                     <span style="color: #888;" data-i18n="totalSize">Total Size:</span>
                     <strong id="stats-size" style="color: #ddd;">0 KB</strong>
+                </div>
+                <div style="height: 1px; background: #3a3942; margin: 2px 0;"></div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #888;" data-i18n="oldestBackup">Oldest Backup:</span>
+                    <strong id="stats-oldest" style="color: #ddd;">N/A</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #888;" data-i18n="nextBackup">Next Backup:</span>
+                    <strong id="stats-next" style="color: #ddd;">N/A</strong>
                 </div>
             </div>
         </div>
@@ -322,6 +343,18 @@
                 <button id="import-merge-btn" class="modal-btn import-opt" data-i18n="importMerge">Merge (Append Tabs)</button>
                 <button id="import-replace-btn" class="modal-btn confirm" style="background-color: #ff4444;" data-i18n="importReplace">Replace (Overwrite Tabs)</button>
                 <button id="import-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Warning Modal -->
+    <div id="import-warning-modal" class="modal-overlay">
+        <div class="modal">
+            <h3 style="color: #ff9400;" data-i18n="importWarningTitle">Warning</h3>
+            <p style="margin: 10px 0; font-size: 14px;" data-i18n="importWarning">Please do not perform any actions in the browser during tab restoration to avoid issues.</p>
+            <div class="modal-buttons">
+                <button id="import-warning-ok-btn" class="modal-btn" style="background-color: #ff9400; color: #fff;" data-i18n="ok">OK</button>
+                <button id="import-warning-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
             </div>
         </div>
     </div>

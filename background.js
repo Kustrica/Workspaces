@@ -184,7 +184,7 @@ browser.commands.onCommand.addListener(async (command) => {
 
 // Save current state to local storage
 function saveState() {
-    browser.storage.local.set({ currentWorkspaceId, tabWorkspaceMap, workspaceActiveTabMap, isAllTabsMode });
+    return browser.storage.local.set({ currentWorkspaceId, tabWorkspaceMap, workspaceActiveTabMap, isAllTabsMode });
 }
 
 // Track tab activation to update active tab map
@@ -195,9 +195,19 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
     saveState();
 });
 
+let isSwitchingWorkspace = false;
+let pendingWorkspaceSwitch = null;
+
 // Switch active workspace
 async function switchWorkspace(workspaceId, preserveActiveTab = false) {
-    const previousWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
+    if (isSwitchingWorkspace) {
+        pendingWorkspaceSwitch = { workspaceId, preserveActiveTab };
+        return;
+    }
+    isSwitchingWorkspace = true;
+
+    try {
+        const previousWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
 
     if (currentWorkspaceId) {
         const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -319,7 +329,14 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
         
         await browser.tabs.hide(toHide);
     }
-
+    } finally {
+        isSwitchingWorkspace = false;
+        if (pendingWorkspaceSwitch) {
+            const next = pendingWorkspaceSwitch;
+            pendingWorkspaceSwitch = null;
+            switchWorkspace(next.workspaceId, next.preserveActiveTab);
+        }
+    }
 }
 
 // Move specified tabs to the end of the list
@@ -479,6 +496,7 @@ if (browser.tabs.onReplaced) {
 
 // Tab removal listener
 browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    if (isRestoringData) return;
     const removedWorkspaceId = tabWorkspaceMap[tabId];
     unassignTab(tabId);
     if (removedWorkspaceId && workspaceActiveTabMap[removedWorkspaceId] === tabId) {
@@ -488,7 +506,7 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 });
 
 browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-    if (isInitializingState || isAllTabsMode) return;
+    if (isInitializingState || isAllTabsMode || isRestoringData) return;
     if (removeInfo && removeInfo.isWindowClosing) return;
     if (!currentWorkspaceId) return;
 
@@ -548,14 +566,18 @@ browser.runtime.onMessage.addListener(async (message) => {
     } else if (message.action === 'RESTORE_DATA') {
         const { workspaces: newWorkspaces, tabs: tabsData } = message.data;
         const mode = message.mode || 'REPLACE';
+        
+        // Explicitly get the current window to avoid background script context loss
+        const targetWindow = await browser.windows.getCurrent();
+        const targetWindowId = targetWindow.id;
 
-        const safetyTab = await browser.tabs.create({ url: 'about:blank', active: true });
+        const safetyTab = await browser.tabs.create({ windowId: targetWindowId, url: 'about:blank', active: true });
         
         await new Promise(r => setTimeout(r, 500));
 
         let oldTabIds = [];
         if (mode === 'REPLACE') {
-            const winTabs = await browser.tabs.query({ currentWindow: true });
+            const winTabs = await browser.tabs.query({ windowId: targetWindowId });
             oldTabIds = winTabs.map(t => t.id).filter(id => id !== safetyTab.id);
             
             tabWorkspaceMap = {};
@@ -572,8 +594,16 @@ browser.runtime.onMessage.addListener(async (message) => {
         
         workspaces = newWorkspaces;
         
+        let totalTabs = 0;
+        
         if (mode !== 'NO_TABS') {
             isRestoringData = true;
+            
+            for (const ws of workspaces) {
+                if (tabsData[ws.id]) totalTabs += tabsData[ws.id].length;
+            }
+            
+            let restoredTabs = 0;
             for (const ws of workspaces) {
                 const tabsList = tabsData[ws.id];
                 if (tabsList && Array.isArray(tabsList)) {
@@ -586,8 +616,9 @@ browser.runtime.onMessage.addListener(async (message) => {
                             const oldGroupId = typeof tabInfo === 'object' ? tabInfo.groupId : -1;
 
                             const newTab = await browser.tabs.create({ 
+                                windowId: targetWindowId,
                                 url: url, 
-                                active: false 
+                                active: false
                             });
                             assignTabToWorkspace(newTab.id, ws.id);
                             lastTabId = newTab.id;
@@ -602,7 +633,17 @@ browser.runtime.onMessage.addListener(async (message) => {
                                 }
                             }
 
+                            restoredTabs++;
+                            const progress = totalTabs > 0 ? Math.round((restoredTabs / totalTabs) * 99) : 99; // Cap at 99% until fully done
+                            browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: progress, restored: restoredTabs, total: totalTabs }).catch(() => {});
+                            
+                            // Yield to the event loop every few tabs to prevent UI freezing and massive slowdowns
+                            if (restoredTabs % 3 === 0) {
+                                await new Promise(r => setTimeout(r, 30));
+                            }
+
                         } catch (e) {
+                            console.error("Failed to restore tab:", e);
                         }
                     }
                     if (lastTabId) {
@@ -610,13 +651,26 @@ browser.runtime.onMessage.addListener(async (message) => {
                     }
                 }
             }
-            isRestoringData = false;
         }
         
         if (mode === 'REPLACE' && oldTabIds.length > 0) {
-             try {
-                 await browser.tabs.remove(oldTabIds);
-             } catch (e) { }
+             if (totalTabs === 0) {
+                 // Prevent window from closing if the backup was completely empty
+                 const newTab = await browser.tabs.create({ windowId: targetWindowId, active: true });
+                 assignTabToWorkspace(newTab.id, workspaces.length > 0 ? workspaces[0].id : 'ws_default');
+             }
+             
+             // Safely close old tabs in small chunks to avoid browser crash
+             const chunkSize = 5;
+             for (let i = 0; i < oldTabIds.length; i += chunkSize) {
+                 const chunk = oldTabIds.slice(i, i + chunkSize);
+                 try {
+                     await browser.tabs.remove(chunk);
+                     await new Promise(r => setTimeout(r, 50));
+                 } catch (e) {
+                     console.error("Failed to remove old tab chunk:", e);
+                 }
+             }
         }
         
         if (workspaces.length > 0) {
@@ -636,6 +690,12 @@ browser.runtime.onMessage.addListener(async (message) => {
         try {
             await browser.tabs.remove(safetyTab.id);
         } catch (e) { }
+        
+        isRestoringData = false;
+        
+        if (mode !== 'NO_TABS') {
+            browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: 100, restored: totalTabs, total: totalTabs }).catch(() => {});
+        }
         
         return { success: true };
     } else if (message.action === 'MOVE_ALL_TABS') {
@@ -677,6 +737,13 @@ browser.runtime.onMessage.addListener(async (message) => {
         }
         
         if (tabsToClose.length > 0) {
+            const tabs = await browser.tabs.query({ currentWindow: true });
+            const visibleTabs = tabs.filter(t => !tabsToClose.includes(t.id) && !t.hidden);
+            if (visibleTabs.length === 0) {
+                const newTab = await browser.tabs.create({ active: true });
+                assignTabToWorkspace(newTab.id, currentWorkspaceId);
+                workspaceActiveTabMap[currentWorkspaceId] = newTab.id;
+            }
             await browser.tabs.remove(tabsToClose);
         }
         
@@ -709,7 +776,9 @@ browser.runtime.onMessage.addListener(async (message) => {
         
         if (tabsToRemove.length > 0) {
             const tabs = await browser.tabs.query({ currentWindow: true });
-            const visibleTabs = tabs.filter(t => !tabsToRemove.includes(t.id));
+            // Only count tabs that will remain and are actually visible.
+            // If all remaining tabs are hidden, Firefox will close the window!
+            const visibleTabs = tabs.filter(t => !tabsToRemove.includes(t.id) && !t.hidden);
             
             if (visibleTabs.length === 0) {
                 const targetWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
@@ -760,7 +829,9 @@ browser.runtime.onMessage.addListener(async (message) => {
             }
         }
 
-        if (tabsToShow.length > 0) {
+        if (tabsToShow.length === 0) {
+            await browser.tabs.create({ active: true });
+        } else {
             await browser.tabs.show(tabsToShow);
         }
         
@@ -823,6 +894,28 @@ browser.runtime.onMessage.addListener(async (message) => {
         
         if (tabsToClose.length > 0) {
             await browser.tabs.remove(tabsToClose);
+        }
+        
+        if (message.closeTabs) {
+            // User requested to close ALL tabs and wipe the slate clean
+            const targetWindow = await browser.windows.getCurrent();
+            const finalTabs = await browser.tabs.query({ windowId: targetWindow.id });
+            
+            // We must leave at least one tab open so the window doesn't crash
+            await browser.tabs.create({ windowId: targetWindow.id, active: true, url: 'about:newtab' });
+            
+            // Now remove all old tabs safely in chunks
+            const finalTabIds = finalTabs.map(t => t.id);
+            const chunkSize = 5;
+            for (let i = 0; i < finalTabIds.length; i += chunkSize) {
+                const chunk = finalTabIds.slice(i, i + chunkSize);
+                try {
+                    await browser.tabs.remove(chunk);
+                    await new Promise(r => setTimeout(r, 50));
+                } catch (e) {
+                    console.error("Failed to remove all tabs during reset:", e);
+                }
+            }
         }
         
         tabWorkspaceMap = {};
@@ -1040,7 +1133,7 @@ browser.runtime.onSuspend.addListener(() => {
 // --- Auto-Backup Implementation ---
 
 async function createAutoBackup(reason = 'scheduled') {
-    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'autoBackups', 'autoBackupMax']);
+    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'autoBackups', 'autoBackupMax', 'autoBackupStorageMax']);
     if (res.autoBackupEnabled === false && reason === 'scheduled') return;
     
     // Generate backup data
@@ -1069,9 +1162,19 @@ async function createAutoBackup(reason = 'scheduled') {
     let backups = res.autoBackups || [];
     backups.push(backupData);
     
-    const maxBackups = res.autoBackupMax || 100;
+    const maxBackups = res.autoBackupMax || 1000;
     if (backups.length > maxBackups) {
         backups = backups.slice(backups.length - maxBackups);
+    }
+    
+    // Enforce Max Storage (MB) Limit
+    const maxStorageMB = res.autoBackupStorageMax || 200;
+    const maxStorageBytes = maxStorageMB * 1024 * 1024;
+    
+    let currentBytes = new Blob([JSON.stringify(backups)]).size;
+    while (currentBytes > maxStorageBytes && backups.length > 1) {
+        backups.shift(); // Remove the oldest backup
+        currentBytes = new Blob([JSON.stringify(backups)]).size;
     }
     
     await browser.storage.local.set({ autoBackups: backups });
@@ -1082,12 +1185,12 @@ async function checkAutoBackupAlarms() {
     if (browser.alarms) {
         await browser.alarms.clear('autoBackupAlarm');
         if (res.autoBackupEnabled !== false) {
-            let hours = parseInt(res.autoBackupFrequency) || 72;
+            let hours = parseInt(res.autoBackupFrequency) || 3;
             browser.alarms.create('autoBackupAlarm', { periodInMinutes: hours * 60 });
         }
     }
     
-    if (res.backupOnStartup) {
+    if (res.backupOnStartup !== false) {
         createAutoBackup('startup');
     }
 }
