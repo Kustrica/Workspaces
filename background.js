@@ -91,19 +91,11 @@ function unassignTab(tabId) {
 }
 
 async function enforceNoCloseOnLastTabSetting() {
-    if (!browser.browserSettings || !browser.browserSettings.closeWindowWithLastTab || !browser.browserSettings.closeWindowWithLastTab.set) return;
-    try {
-        await browser.browserSettings.closeWindowWithLastTab.set({ value: false });
-    } catch (e) {
-    }
+    // Unsupported by Firefox WebExtensions API
 }
 
 async function clearNoCloseOnLastTabSetting() {
-    if (!browser.browserSettings || !browser.browserSettings.closeWindowWithLastTab || !browser.browserSettings.closeWindowWithLastTab.clear) return;
-    try {
-        await browser.browserSettings.closeWindowWithLastTab.clear({});
-    } catch (e) {
-    }
+    // Unsupported by Firefox WebExtensions API
 }
 
 async function rebuildTabWorkspaceMapFromOpenTabs() {

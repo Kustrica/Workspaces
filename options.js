@@ -365,8 +365,15 @@ async function showAutoBackupsModal() {
             const tabLabel = getMessage("tabsCount") || "Tabs";
             
             const title = document.createElement('div');
-            title.innerHTML = `<strong>${formatBackupDate(b.timestamp)}</strong><br>
-                               <span style="font-size: 12px; color: #888;">${wsLabel}: ${wsCount} | ${tabLabel}: ${tabCount}</span>`;
+            const titleStrong = document.createElement('strong');
+            titleStrong.textContent = formatBackupDate(b.timestamp);
+            title.appendChild(titleStrong);
+            title.appendChild(document.createElement('br'));
+            const titleSpan = document.createElement('span');
+            titleSpan.style.fontSize = '12px';
+            titleSpan.style.color = '#888';
+            titleSpan.textContent = `${wsLabel}: ${wsCount} | ${tabLabel}: ${tabCount}`;
+            title.appendChild(titleSpan);
             
             item.appendChild(title);
             
@@ -686,7 +693,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             let totalSizeBytes = 0;
             
             if (currentBackups.length === 0) {
-                list.innerHTML = `<div style="padding: 15px; color: #888; font-size: 14px;" data-i18n="noBackupsFound">${getMessage('noBackupsFound') || "No backups found"}</div>`;
+                list.innerHTML = '';
+                const emptyDiv = document.createElement('div');
+                emptyDiv.style.padding = '15px';
+                emptyDiv.style.color = '#888';
+                emptyDiv.style.fontSize = '14px';
+                emptyDiv.setAttribute('data-i18n', 'noBackupsFound');
+                emptyDiv.textContent = getMessage('noBackupsFound') || "No backups found";
+                list.appendChild(emptyDiv);
                 if (statsSizeEl) {
                     const maxStorageMB = parseInt(document.getElementById('auto-backup-storage-max').value) || 200;
                     statsSizeEl.textContent = `0 / ${maxStorageMB} MB`;
@@ -721,8 +735,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const tabsText = getMessage('tabsCount') || 'Tabs';
                     
                     const infoDiv = document.createElement('div');
-                    infoDiv.innerHTML = `<strong>${formatBackupDate(b.timestamp)}</strong><br>
-                                         <span style="color: #888; font-size: 12px;">${wsText}: ${wsCount} | ${tabsText}: ${tabCount} | ${sizeTxt}</span>`;
+                    const titleStrong = document.createElement('strong');
+                    titleStrong.textContent = formatBackupDate(b.timestamp);
+                    infoDiv.appendChild(titleStrong);
+                    infoDiv.appendChild(document.createElement('br'));
+                    const titleSpan = document.createElement('span');
+                    titleSpan.style.color = '#888';
+                    titleSpan.style.fontSize = '12px';
+                    titleSpan.textContent = `${wsText}: ${wsCount} | ${tabsText}: ${tabCount} | ${sizeTxt}`;
+                    infoDiv.appendChild(titleSpan);
                     
                     const actionDiv = document.createElement('div');
                     actionDiv.style.display = 'flex';
