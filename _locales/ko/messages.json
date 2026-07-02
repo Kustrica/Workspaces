@@ -250,13 +250,13 @@
         "message": "이름 변경"
     },
     "resetConfirmBtn": {
-        "message": "모두 초기화"
+        "message": "작업 공간 초기화"
     },
     "resetConfirmText": {
-        "message": "공간을 삭제합니다. 탭은 유지됩니다"
+        "message": "모든 작업 공간을 초기화합니다. 현재 탭은 유지됩니다."
     },
     "resetConfirmTitle": {
-        "message": "모두 초기화?"
+        "message": "모든 작업 공간을 초기화하시겠습니까?"
     },
     "resetDefault": {
         "message": "초기화"

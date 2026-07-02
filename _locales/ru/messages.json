@@ -250,13 +250,13 @@
         "message": "Переименовать"
     },
     "resetConfirmBtn": {
-        "message": "Сбросить всё"
+        "message": "Сбросить пространство"
     },
     "resetConfirmText": {
-        "message": "Удалит пространства. Вкладки останутся"
+        "message": "Сбросить все пространства, ваши текущие вкладки останутся."
     },
     "resetConfirmTitle": {
-        "message": "Сбросить всё?"
+        "message": "Сбросить все пространства?"
     },
     "resetDefault": {
         "message": "Сброс"

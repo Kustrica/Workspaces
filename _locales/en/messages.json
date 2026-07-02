@@ -250,13 +250,13 @@
         "message": "Rename"
     },
     "resetConfirmBtn": {
-        "message": "Reset Everything"
+        "message": "Reset workspace"
     },
     "resetConfirmText": {
-        "message": "This will delete all workspaces and show all tabs. No tabs will be closed"
+        "message": "Reset all workspaces, your current tabs will remain."
     },
     "resetConfirmTitle": {
-        "message": "Reset Everything?"
+        "message": "Reset all workspaces?"
     },
     "resetDefault": {
         "message": "Reset"

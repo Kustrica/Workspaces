@@ -361,9 +361,12 @@ async function showAutoBackupsModal() {
                 Object.values(b.tabs).forEach(tabsArr => { tabCount += tabsArr.length; });
             }
             
+            const wsLabel = getMessage("wsCount") || "Workspaces";
+            const tabLabel = getMessage("tabsCount") || "Tabs";
+            
             const title = document.createElement('div');
             title.innerHTML = `<strong>${formatBackupDate(b.timestamp)}</strong><br>
-                               <span style="font-size: 12px; color: #888;">${wsCount} workspaces, ${tabCount} tabs</span>`;
+                               <span style="font-size: 12px; color: #888;">${wsLabel}: ${wsCount} | ${tabLabel}: ${tabCount}</span>`;
             
             item.appendChild(title);
             

@@ -250,13 +250,13 @@
         "message": "Đổi tên"
     },
     "resetConfirmBtn": {
-        "message": "Đặt lại tất cả"
+        "message": "Đặt lại không gian"
     },
     "resetConfirmText": {
-        "message": "Xóa không gian. Tab vẫn giữ"
+        "message": "Đặt lại tất cả không gian làm việc, các tab hiện tại của bạn sẽ được giữ lại."
     },
     "resetConfirmTitle": {
-        "message": "Đặt lại tất cả?"
+        "message": "Đặt lại tất cả không gian làm việc?"
     },
     "resetDefault": {
         "message": "Đặt lại"

@@ -250,13 +250,13 @@
         "message": "Umbenennen"
     },
     "resetConfirmBtn": {
-        "message": "Alles zurücksetzen"
+        "message": "Arbeitsbereich zurücksetzen"
     },
     "resetConfirmText": {
-        "message": "Löscht alle Bereiche. Tabs bleiben offen"
+        "message": "Alle Arbeitsbereiche zurücksetzen, Ihre aktuellen Tabs bleiben erhalten."
     },
     "resetConfirmTitle": {
-        "message": "Alles zurücksetzen?"
+        "message": "Alle Arbeitsbereiche zurücksetzen?"
     },
     "resetDefault": {
         "message": "Zurücksetzen"

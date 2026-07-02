@@ -250,13 +250,13 @@
         "message": "Hernoem"
     },
     "resetConfirmBtn": {
-        "message": "Alles resetten"
+        "message": "Werkruimte resetten"
     },
     "resetConfirmText": {
-        "message": "Verwijdert ruimtes. Tabbladen blijven"
+        "message": "Alle werkruimten resetten, uw huidige tabbladen blijven behouden."
     },
     "resetConfirmTitle": {
-        "message": "Alles resetten?"
+        "message": "Alle werkruimten resetten?"
     },
     "resetDefault": {
         "message": "Reset"

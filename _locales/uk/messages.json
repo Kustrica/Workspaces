@@ -250,13 +250,13 @@
         "message": "Перейменувати"
     },
     "resetConfirmBtn": {
-        "message": "Скинути все"
+        "message": "Скинути простір"
     },
     "resetConfirmText": {
-        "message": "Видалить простори. Вкладки залишаться"
+        "message": "Скинути всі простори, ваші поточні вкладки залишаться."
     },
     "resetConfirmTitle": {
-        "message": "Скинути все?"
+        "message": "Скинути всі простори?"
     },
     "resetDefault": {
         "message": "Скидання"

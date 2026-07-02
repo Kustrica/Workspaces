@@ -44,3 +44,8 @@
   - **UI/Translation Fix:** Updated the "Import Warning" modal and "Restore Progress" overlay to match the standard theme. 
   - **Translation Fix:** Added missing translations for `importWarningTitle`, `statusSaved`, `ok`, `restoringTabs`, and `pleaseWaitRestoring` across all supported languages, ensuring no untranslated fallback text is displayed.
   - **Performance Optimization:** Added a smart throttling mechanism (yielding 30ms every 3 tabs) during mass tab restoration. This gives the browser's event loop time to breathe and process UI updates, preventing the extension and sidebar progress bar from completely freezing when opening 80+ tabs simultaneously.
+- **Action History / Undo Fixes:**
+  - **Bug Fix:** Fixed a race condition where rapidly fetching and rendering action logs would cause the history list to appear empty because concurrent renders were erasing each other's appended elements.
+  - **Bug Fix:** Handled an edge case during `UNDO_ACTION` where `switchWorkspace()` could fail on native browser tab operations (such as hidden or pinned tabs). This prevents the "undoFailed" error message and allows the undo process to complete successfully.
+  - **UI/UX Improvement:** Added an active state highlight (rounded square) to the History (Logs) icon in the sidebar when the logs view is open. The highlight adapts perfectly to both light and dark themes.
+  - **Translation Update:** Updated the "Reset All" confirmation strings to clearly communicate that *all* workspaces are affected. Applied this translated string across all 19 supported languages.

@@ -250,13 +250,13 @@
         "message": "Renombrar"
     },
     "resetConfirmBtn": {
-        "message": "Reiniciar todo"
+        "message": "Restablecer espacio"
     },
     "resetConfirmText": {
-        "message": "Se borrarán los espacios. Las pestañas no se cerrarán"
+        "message": "Restablecer todos los espacios, las pestañas se mantendrán."
     },
     "resetConfirmTitle": {
-        "message": "¿Reiniciar todo?"
+        "message": "¿Restablecer todos los espacios?"
     },
     "resetDefault": {
         "message": "Reiniciar"

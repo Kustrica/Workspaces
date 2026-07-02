@@ -13,6 +13,7 @@ let workspaces = [];
 let activeWsId = 'ws_default';
 let areActionsVisible = true;
 let areLogsVisible = false;
+let renderLogsCounter = 0;
 let currentTheme = 'dark';
 
 const listEl = document.getElementById('workspace-list');
@@ -127,6 +128,7 @@ if (toggleActionsBtn) {
 if (logsBtn) {
     logsBtn.onclick = () => {
         areLogsVisible = !areLogsVisible;
+        logsBtn.classList.toggle('active', areLogsVisible);
         const emptyStateContainer = document.getElementById('empty-state-container');
         
         if (areLogsVisible) {
@@ -472,26 +474,24 @@ if (resetCancelBtn) {
 
 if (resetConfirmBtn) {
     resetConfirmBtn.onclick = async () => {
-        if (confirm(browser.i18n.getMessage("areYouSureReset") || "Are you sure you want to reset all workspaces? Tabs will be kept.")) {
-            await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: false });
-            workspaces = [];
-            activeWsId = null;
-            resetModal.classList.remove('visible');
-            render();
-        }
+        const currentWin = await browser.windows.getCurrent();
+        await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: false, windowId: currentWin.id });
+        workspaces = [];
+        activeWsId = null;
+        resetModal.classList.remove('visible');
+        render();
     };
 }
 
 const resetCloseTabsBtn = document.getElementById('reset-close-tabs-btn');
 if (resetCloseTabsBtn) {
     resetCloseTabsBtn.onclick = async () => {
-        if (confirm(browser.i18n.getMessage("areYouSureResetClose") || "Are you sure you want to reset all workspaces AND close all tabs?")) {
-            await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: true });
-            workspaces = [];
-            activeWsId = null;
-            resetModal.classList.remove('visible');
-            render();
-        }
+        const currentWin = await browser.windows.getCurrent();
+        await browser.runtime.sendMessage({ action: 'DELETE_ALL_WORKSPACES', closeTabs: true, windowId: currentWin.id });
+        workspaces = [];
+        activeWsId = null;
+        resetModal.classList.remove('visible');
+        render();
     };
 }
 
@@ -501,7 +501,7 @@ if (createDefaultsBtn) {
         const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true });
         const initialActiveTabId = currentTab ? currentTab.id : null;
 
-        workspaces = DEFAULT_WORKSPACES;
+        workspaces = getDefaultWorkspaces();
         activeWsId = 'ws_default';
         
         await browser.storage.local.set({ workspaces, currentWorkspaceId: activeWsId });
@@ -555,6 +555,10 @@ function render() {
 
     if (addBtn) {
         addBtn.style.display = areLogsVisible ? 'none' : 'block';
+    }
+    
+    if (logsBtn) {
+        logsBtn.classList.toggle('active', areLogsVisible);
     }
     
     if (allTabsItem) {
@@ -1175,6 +1179,7 @@ if (clearLogsConfirmBtn) {
 // Render action log
 async function renderLogs() {
     if (!logsListEl) return;
+    const currentRender = ++renderLogsCounter;
     clearElement(logsListEl);
     
     const header = document.createElement('div');
@@ -1205,6 +1210,7 @@ async function renderLogs() {
     logsListEl.appendChild(header);
 
     const res = await browser.runtime.sendMessage({ action: 'GET_LOGS' });
+    if (currentRender !== renderLogsCounter) return;
     if (res && res.logs) {
         
         if (res.logs.length === 0) {

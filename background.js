@@ -275,7 +275,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     saveState();
     
     if (toShow.length > 0) {
-        await browser.tabs.show(toShow);
+        try { await browser.tabs.show(toShow); } catch(e) {}
         
         if (!preserveActiveTab) {
             let tabToActivate = workspaceActiveTabMap[workspaceId];
@@ -309,9 +309,9 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
 
             if (tabToActivate) {
                 if (toShow.includes(tabToActivate)) {
-                    await browser.tabs.update(tabToActivate, { active: true });
+                    try { await browser.tabs.update(tabToActivate, { active: true }); } catch(e) {}
                 } else if (toShow.length > 0) {
-                    await browser.tabs.update(toShow[toShow.length - 1], { active: true });
+                    try { await browser.tabs.update(toShow[toShow.length - 1], { active: true }); } catch(e) {}
                 }
             }
         }
@@ -327,7 +327,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
              }
         }
         
-        await browser.tabs.hide(toHide);
+        try { await browser.tabs.hide(toHide); } catch(e) {}
     }
     } finally {
         isSwitchingWorkspace = false;
@@ -897,24 +897,28 @@ browser.runtime.onMessage.addListener(async (message) => {
         }
         
         if (message.closeTabs) {
-            // User requested to close ALL tabs and wipe the slate clean
-            const targetWindow = await browser.windows.getCurrent();
-            const finalTabs = await browser.tabs.query({ windowId: targetWindow.id });
-            
-            // We must leave at least one tab open so the window doesn't crash
-            await browser.tabs.create({ windowId: targetWindow.id, active: true, url: 'about:newtab' });
-            
-            // Now remove all old tabs safely in chunks
-            const finalTabIds = finalTabs.map(t => t.id);
-            const chunkSize = 5;
-            for (let i = 0; i < finalTabIds.length; i += chunkSize) {
-                const chunk = finalTabIds.slice(i, i + chunkSize);
-                try {
-                    await browser.tabs.remove(chunk);
-                    await new Promise(r => setTimeout(r, 50));
-                } catch (e) {
-                    console.error("Failed to remove all tabs during reset:", e);
+            try {
+                // User requested to close ALL tabs and wipe the slate clean
+                const targetWindowId = message.windowId || (await browser.windows.getCurrent()).id;
+                const finalTabs = await browser.tabs.query({ windowId: targetWindowId });
+                
+                // We must leave at least one tab open so the window doesn't crash
+                await browser.tabs.create({ windowId: targetWindowId, active: true });
+                
+                // Now remove all old tabs safely in chunks
+                const finalTabIds = finalTabs.map(t => t.id);
+                const chunkSize = 5;
+                for (let i = 0; i < finalTabIds.length; i += chunkSize) {
+                    const chunk = finalTabIds.slice(i, i + chunkSize);
+                    try {
+                        await browser.tabs.remove(chunk);
+                        await new Promise(r => setTimeout(r, 50));
+                    } catch (e) {
+                        console.error("Failed to remove all tabs during reset:", e);
+                    }
                 }
+            } catch (e) {
+                console.error("Critical error in closeTabs block:", e);
             }
         }
         
@@ -981,7 +985,8 @@ browser.runtime.onMessage.addListener(async (message) => {
         return { success: true };
     } else if (message.action === 'UNDO_ACTION') {
         const { logId } = message;
-        const logIndex = actionLogs.findIndex(l => l.id === logId);
+        try {
+            const logIndex = actionLogs.findIndex(l => l.id === logId);
         if (logIndex === -1) return { success: false, error: "Log not found" };
         
         const log = actionLogs[logIndex];
@@ -1090,15 +1095,23 @@ browser.runtime.onMessage.addListener(async (message) => {
                 updateContextMenus();
                 
                 if (currentWorkspaceId) {
-                    await switchWorkspace(currentWorkspaceId);
+                    try {
+                        await switchWorkspace(currentWorkspaceId);
+                    } catch (e) {
+                        console.error("switchWorkspace failed in UNDO:", e);
+                    }
                 }
             }
             
             log.isUndone = true;
         }
         
-        await browser.storage.local.set({ actionLogs });
-        return { success: true, isRedo: isRedo };
+            await browser.storage.local.set({ actionLogs });
+            return { success: true, isRedo: isRedo };
+        } catch (e) {
+            console.error('UNDO_ACTION failed:', e);
+            return { success: false, error: e.message };
+        }
         
     } else if (message.action === 'LOG_ACTION') {
         addLog(message.logAction, message.details, message.undoData);

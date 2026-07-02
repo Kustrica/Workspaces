@@ -250,13 +250,13 @@
         "message": "重命名"
     },
     "resetConfirmBtn": {
-        "message": "重置所有"
+        "message": "重置工作区"
     },
     "resetConfirmText": {
-        "message": "删除工作区。标签页保留。"
+        "message": "重置所有工作区，您当前的标签页将保留。"
     },
     "resetConfirmTitle": {
-        "message": "重置所有？"
+        "message": "重置所有工作区？"
     },
     "resetDefault": {
         "message": "重置"

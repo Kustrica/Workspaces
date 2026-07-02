@@ -250,13 +250,13 @@
         "message": "Renommer"
     },
     "resetConfirmBtn": {
-        "message": "Tout réinitialiser"
+        "message": "Réinitialiser l'espace"
     },
     "resetConfirmText": {
-        "message": "Supprime tous les espaces. Les onglets restent ouverts"
+        "message": "Réinitialiser tous les espaces, vos onglets actuels resteront."
     },
     "resetConfirmTitle": {
-        "message": "Tout réinitialiser ?"
+        "message": "Réinitialiser tous les espaces ?"
     },
     "resetDefault": {
         "message": "Réinitialiser"

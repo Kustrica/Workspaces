@@ -250,13 +250,13 @@
         "message": "Rinomina"
     },
     "resetConfirmBtn": {
-        "message": "Reset tutto"
+        "message": "Ripristina spazio"
     },
     "resetConfirmText": {
-        "message": "Elimina spazi. Schede rimangono"
+        "message": "Reimpostare tutti gli spazi, le tue schede rimarranno."
     },
     "resetConfirmTitle": {
-        "message": "Resettare tutto?"
+        "message": "Reimpostare tutti gli spazi?"
     },
     "resetDefault": {
         "message": "Reset"

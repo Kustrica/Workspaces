@@ -250,13 +250,13 @@
         "message": "إعادة تسمية"
     },
     "resetConfirmBtn": {
-        "message": "إعادة تعيين الكل"
+        "message": "إعادة تعيين مساحة العمل"
     },
     "resetConfirmText": {
-        "message": "سيحذف المساحات. ستبقى علامات التبويب"
+        "message": "إعادة تعيين جميع مساحات العمل، ستبقى علامات التبويب الحالية."
     },
     "resetConfirmTitle": {
-        "message": "إعادة تعيين الكل؟"
+        "message": "إعادة تعيين جميع مساحات العمل؟"
     },
     "resetDefault": {
         "message": "إعادة تعيين"

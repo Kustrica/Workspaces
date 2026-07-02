@@ -614,6 +614,18 @@
             font-weight: bold;
         }
         .log-undo-btn:hover { opacity: 0.9; }
+        #settings-btn:hover, #toggle-actions-btn:hover, #reset-btn:hover, #logs-btn:hover, #theme-btn:hover {
+            background-color: var(--item-hover) !important;
+        }
+        #logs-btn.active {
+            background-color: var(--active-border) !important;
+        }
+        #logs-btn.active img {
+            filter: brightness(0) invert(1) !important;
+        }
+        body.light-theme #logs-btn.active img {
+            filter: brightness(0) invert(1) !important;
+        }
     </style>
 </head>
 <body>

@@ -250,13 +250,13 @@
         "message": "Ubah Nama"
     },
     "resetConfirmBtn": {
-        "message": "Reset Semua"
+        "message": "Atur ulang ruang"
     },
     "resetConfirmText": {
-        "message": "Menghapus ruang. Tab tetap ada"
+        "message": "Reset all workspaces, your current tabs will remain."
     },
     "resetConfirmTitle": {
-        "message": "Reset semua?"
+        "message": "Reset all workspaces?"
     },
     "resetDefault": {
         "message": "Reset"

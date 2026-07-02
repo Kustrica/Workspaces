@@ -250,13 +250,13 @@
         "message": "名前変更"
     },
     "resetConfirmBtn": {
-        "message": "リセット"
+        "message": "ワークスペースをリセット"
     },
     "resetConfirmText": {
-        "message": "すべて削除されます。タブは閉じません。"
+        "message": "すべてのワークスペースをリセットしますが、現在のタブは保持されます。"
     },
     "resetConfirmTitle": {
-        "message": "すべてリセット？"
+        "message": "すべてのワークスペースをリセットしますか？"
     },
     "resetDefault": {
         "message": "リセット"

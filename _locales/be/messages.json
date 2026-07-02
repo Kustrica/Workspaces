@@ -250,13 +250,13 @@
         "message": "Перайменаваць"
     },
     "resetConfirmBtn": {
-        "message": "Скінуць усё"
+        "message": "Скінуць прастору"
     },
     "resetConfirmText": {
-        "message": "Выдаліць прасторы. Укладкі застануцца"
+        "message": "Reset all workspaces, your current tabs will remain."
     },
     "resetConfirmTitle": {
-        "message": "Скінуць усё?"
+        "message": "Reset all workspaces?"
     },
     "resetDefault": {
         "message": "Скiнуць"

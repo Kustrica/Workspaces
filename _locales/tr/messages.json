@@ -250,13 +250,13 @@
         "message": "Yeniden Adlandır"
     },
     "resetConfirmBtn": {
-        "message": "Sıfırla"
+        "message": "Çalışma alanını sıfırla"
     },
     "resetConfirmText": {
-        "message": "Alanları siler. Sekmeler kalır"
+        "message": "Tüm çalışma alanlarını sıfırla, mevcut sekmeleriniz kalacaktır."
     },
     "resetConfirmTitle": {
-        "message": "Hepsini sıfırla?"
+        "message": "Tüm çalışma alanlarını sıfırla?"
     },
     "resetDefault": {
         "message": "Sıfırla"

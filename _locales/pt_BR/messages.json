@@ -250,13 +250,13 @@
         "message": "Renomear"
     },
     "resetConfirmBtn": {
-        "message": "Resetar tudo"
+        "message": "Redefinir espaço"
     },
     "resetConfirmText": {
-        "message": "Exclui áreas. Abas permanecem"
+        "message": "Redefinir todos os espaços, suas abas atuais permanecerão."
     },
     "resetConfirmTitle": {
-        "message": "Resetar tudo?"
+        "message": "Redefinir todos os espaços?"
     },
     "resetDefault": {
         "message": "Resetar"

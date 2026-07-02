@@ -250,13 +250,13 @@
         "message": "Zmień nazwę"
     },
     "resetConfirmBtn": {
-        "message": "Resetuj wszystko"
+        "message": "Zresetuj obszar"
     },
     "resetConfirmText": {
-        "message": "Usuwa obszary. Karty zostają"
+        "message": "Zresetuj wszystkie przestrzenie, twoje obecne karty pozostaną."
     },
     "resetConfirmTitle": {
-        "message": "Resetować wszystko?"
+        "message": "Zresetować wszystkie przestrzenie?"
     },
     "resetDefault": {
         "message": "Reset"
