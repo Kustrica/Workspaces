@@ -11,6 +11,7 @@ function getDefaultWorkspaces() {
 
 let workspaces = [];
 let activeWsId = 'ws_default';
+let lastActiveWsId = 'ws_default';
 let areActionsVisible = true;
 let areLogsVisible = false;
 let renderLogsCounter = 0;
@@ -276,9 +277,19 @@ async function init() {
     localizePage();
     initEmojiPicker();
     
-    const res = await browser.storage.local.get(['workspaces', 'currentWorkspaceId', 'areActionsVisible', 'theme', 'isAllTabsMode', 'tourComplete', 'onboardingComplete']);
+    const res = await browser.storage.local.get(['workspaces', 'currentWorkspaceId', 'areActionsVisible', 'theme', 'isAllTabsMode', 'tourComplete', 'onboardingComplete', 'lastActiveWsId']);
     workspaces = res.workspaces || getDefaultWorkspaces();
-    activeWsId = res.currentWorkspaceId || 'ws_default';
+
+    isAllTabsMode = !!res.isAllTabsMode;
+    lastActiveWsId = res.lastActiveWsId
+        || (!isAllTabsMode && res.currentWorkspaceId)
+        || (workspaces[0] ? workspaces[0].id : 'ws_default');
+
+    if (isAllTabsMode) {
+        activeWsId = null;
+    } else {
+        activeWsId = res.currentWorkspaceId || lastActiveWsId || 'ws_default';
+    }
     
     if (!res.onboardingComplete) {
         const onboardingContainer = document.getElementById('onboarding-container');
@@ -311,7 +322,7 @@ async function init() {
 
     areActionsVisible = res.areActionsVisible !== undefined ? res.areActionsVisible : true;
     
-    isAllTabsMode = res.isAllTabsMode || false;
+    // isAllTabsMode already restored above from storage
     
     if (res.theme) {
         currentTheme = res.theme;
@@ -954,7 +965,9 @@ document.getElementById('settings-btn').onclick = () => {
 if (allTabsItem) {
     allTabsItem.onclick = () => {
         if (isAllTabsMode) {
-            activateWorkspace(lastActiveWsId);
+            const targetId = lastActiveWsId
+                || (workspaces[0] ? workspaces[0].id : 'ws_default');
+            activateWorkspace(targetId);
         } else {
             activateAllTabs();
         }
@@ -1386,8 +1399,20 @@ browser.storage.onChanged.addListener((changes, area) => {
             workspaces = changes.workspaces.newValue || [];
             render();
         }
+        if (changes.isAllTabsMode) {
+            isAllTabsMode = !!changes.isAllTabsMode.newValue;
+        }
+        if (changes.lastActiveWsId && changes.lastActiveWsId.newValue) {
+            lastActiveWsId = changes.lastActiveWsId.newValue;
+        }
         if (changes.currentWorkspaceId) {
             activeWsId = changes.currentWorkspaceId.newValue;
+            if (activeWsId) {
+                lastActiveWsId = activeWsId;
+                isAllTabsMode = false;
+            }
+            render();
+        } else if (changes.isAllTabsMode) {
             render();
         }
     }

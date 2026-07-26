@@ -78,6 +78,73 @@ async function clearSessionWorkspaceForTabs(tabIds) {
     await Promise.all(tabIds.map(tabId => clearSessionWorkspace(tabId)));
 }
 
+function resolveExistingWorkspaceId(workspaceId) {
+    if (!workspaceId) return null;
+    if (workspaceExists(workspaceId)) return workspaceId;
+    return null;
+}
+
+function getFallbackWorkspaceId() {
+    if (workspaces.length > 0) return workspaces[0].id;
+    return 'ws_default';
+}
+
+function resolveNewTabWorkspaceSync(tab) {
+    if (tab && tab.openerTabId != null) {
+        const openerWs = resolveExistingWorkspaceId(tabWorkspaceMap[tab.openerTabId]);
+        if (openerWs) return openerWs;
+    }
+    if (!isAllTabsMode) {
+        const current = resolveExistingWorkspaceId(currentWorkspaceId);
+        if (current) return current;
+    }
+    const lastActive = resolveExistingWorkspaceId(lastActiveWsId);
+    if (lastActive) return lastActive;
+    return getFallbackWorkspaceId();
+}
+
+async function resolveNewTabWorkspaceAsync(tab) {
+    let fresh = tab;
+    try {
+        fresh = await browser.tabs.get(tab.id);
+    } catch (e) {
+        fresh = tab;
+    }
+
+    // 1) Opener tab workspace (middle-click / Ctrl+click / "Open in new tab")
+    const openerId = fresh && fresh.openerTabId != null ? fresh.openerTabId : (tab && tab.openerTabId);
+    if (openerId != null) {
+        const openerWs = resolveExistingWorkspaceId(tabWorkspaceMap[openerId]);
+        if (openerWs) return openerWs;
+        try {
+            const openerSession = resolveExistingWorkspaceId(await getSessionWorkspace(openerId));
+            if (openerSession) return openerSession;
+        } catch (e) {}
+    }
+
+    // 2) Active tab in the same window (page the user was viewing)
+    try {
+        const windowId = fresh.windowId != null ? fresh.windowId : tab.windowId;
+        const [active] = await browser.tabs.query({ active: true, windowId });
+        if (active && active.id !== tab.id) {
+            const activeWs = resolveExistingWorkspaceId(tabWorkspaceMap[active.id]);
+            if (activeWs) return activeWs;
+            const activeSession = resolveExistingWorkspaceId(await getSessionWorkspace(active.id));
+            if (activeSession) return activeSession;
+        }
+    } catch (e) {}
+
+    // 3) Current / last-active workspace from extension state
+    if (!isAllTabsMode) {
+        const current = resolveExistingWorkspaceId(currentWorkspaceId);
+        if (current) return current;
+    }
+    const lastActive = resolveExistingWorkspaceId(lastActiveWsId);
+    if (lastActive) return lastActive;
+
+    return getFallbackWorkspaceId();
+}
+
 function assignTabToWorkspace(tabId, workspaceId) {
     if (!tabId || !workspaceId) return;
     tabWorkspaceMap[tabId] = workspaceId;
@@ -87,8 +154,16 @@ function assignTabToWorkspace(tabId, workspaceId) {
 function unassignTab(tabId) {
     if (!tabId) return;
     delete tabWorkspaceMap[tabId];
+    pendingTabAssignments.delete(tabId);
     clearSessionWorkspace(tabId);
 }
+
+let pendingTabAssignments = new Set();
+let lastActiveWsId = null;
+let resolveInitReady = null;
+const initReadyPromise = new Promise((resolve) => {
+    resolveInitReady = resolve;
+});
 
 async function enforceNoCloseOnLastTabSetting() {
     // Unsupported by Firefox WebExtensions API
@@ -101,26 +176,28 @@ async function clearNoCloseOnLastTabSetting() {
 async function rebuildTabWorkspaceMapFromOpenTabs() {
     const tabs = await browser.tabs.query({});
     const rebuiltMap = {};
+    const preferredFallback = resolveExistingWorkspaceId(currentWorkspaceId)
+        || resolveExistingWorkspaceId(lastActiveWsId)
+        || (workspaces.length > 0 ? workspaces[0].id : 'ws_default');
 
     for (const tab of tabs) {
-        const sessionWorkspaceId = normalizeWorkspaceId(await getSessionWorkspace(tab.id));
+        const sessionWorkspaceId = resolveExistingWorkspaceId(await getSessionWorkspace(tab.id));
         if (sessionWorkspaceId) {
             rebuiltMap[tab.id] = sessionWorkspaceId;
             setSessionWorkspace(tab.id, sessionWorkspaceId);
             continue;
         }
 
-        const legacyWorkspaceId = normalizeWorkspaceId(tabWorkspaceMap[tab.id]);
+        const legacyWorkspaceId = resolveExistingWorkspaceId(tabWorkspaceMap[tab.id]);
         if (legacyWorkspaceId) {
             rebuiltMap[tab.id] = legacyWorkspaceId;
             setSessionWorkspace(tab.id, legacyWorkspaceId);
             continue;
         }
 
-        const fallbackWorkspaceId = workspaces.length > 0 ? workspaces[0].id : 'ws_default';
-        if (fallbackWorkspaceId) {
-            rebuiltMap[tab.id] = fallbackWorkspaceId;
-            setSessionWorkspace(tab.id, fallbackWorkspaceId);
+        if (preferredFallback) {
+            rebuiltMap[tab.id] = preferredFallback;
+            setSessionWorkspace(tab.id, preferredFallback);
         }
     }
 
@@ -128,35 +205,44 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
 }
 
 // Initialize state on startup
-browser.storage.local.get(['currentWorkspaceId', 'tabWorkspaceMap', 'workspaces', 'workspaceActiveTabMap', 'isAllTabsMode', 'actionLogs']).then(async (res) => {
-    if (window.initI18n) await window.initI18n();
-    if ('currentWorkspaceId' in res) currentWorkspaceId = res.currentWorkspaceId;
-    if (res.tabWorkspaceMap) tabWorkspaceMap = res.tabWorkspaceMap;
-    if (res.workspaceActiveTabMap) workspaceActiveTabMap = res.workspaceActiveTabMap;
-    if ('isAllTabsMode' in res) isAllTabsMode = !!res.isAllTabsMode;
-    if (res.actionLogs) actionLogs = res.actionLogs;
-    
-    if (res.workspaces && res.workspaces.length > 0) {
-        workspaces = res.workspaces;
-    } else {
-        workspaces = getLocalizedDefaults();
-        await browser.storage.local.set({ workspaces });
-    }
+browser.storage.local.get(['currentWorkspaceId', 'tabWorkspaceMap', 'workspaces', 'workspaceActiveTabMap', 'isAllTabsMode', 'actionLogs', 'lastActiveWsId']).then(async (res) => {
+    try {
+        if (window.initI18n) await window.initI18n();
+        if ('currentWorkspaceId' in res) currentWorkspaceId = res.currentWorkspaceId;
+        if (res.tabWorkspaceMap) tabWorkspaceMap = res.tabWorkspaceMap;
+        if (res.workspaceActiveTabMap) workspaceActiveTabMap = res.workspaceActiveTabMap;
+        if ('isAllTabsMode' in res) isAllTabsMode = !!res.isAllTabsMode;
+        if (res.actionLogs) actionLogs = res.actionLogs;
+        if (res.lastActiveWsId) lastActiveWsId = res.lastActiveWsId;
+        
+        if (res.workspaces && res.workspaces.length > 0) {
+            workspaces = res.workspaces;
+        } else {
+            workspaces = getLocalizedDefaults();
+            await browser.storage.local.set({ workspaces });
+        }
 
-    if (currentWorkspaceId) {
-        currentWorkspaceId = normalizeWorkspaceId(currentWorkspaceId);
-    } else if (!isAllTabsMode) {
-        currentWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
-    }
+        if (currentWorkspaceId) {
+            currentWorkspaceId = normalizeWorkspaceId(currentWorkspaceId);
+            lastActiveWsId = currentWorkspaceId;
+        } else if (!isAllTabsMode) {
+            currentWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
+            lastActiveWsId = currentWorkspaceId;
+        } else if (!lastActiveWsId && workspaces.length > 0) {
+            lastActiveWsId = workspaces[0].id;
+        }
 
-    await rebuildTabWorkspaceMapFromOpenTabs();
-    await enforceNoCloseOnLastTabSetting();
-    await saveState();
-    updateContextMenus();
-    if (!isAllTabsMode && currentWorkspaceId) {
-        await switchWorkspace(currentWorkspaceId, true);
+        await rebuildTabWorkspaceMapFromOpenTabs();
+        await enforceNoCloseOnLastTabSetting();
+        await saveState();
+        updateContextMenus();
+        if (!isAllTabsMode && currentWorkspaceId) {
+            await switchWorkspace(currentWorkspaceId, true);
+        }
+    } finally {
+        isInitializingState = false;
+        if (resolveInitReady) resolveInitReady();
     }
-    isInitializingState = false;
 });
 
 // Keyboard command handler
@@ -176,7 +262,9 @@ browser.commands.onCommand.addListener(async (command) => {
 
 // Save current state to local storage
 function saveState() {
-    return browser.storage.local.set({ currentWorkspaceId, tabWorkspaceMap, workspaceActiveTabMap, isAllTabsMode });
+    const payload = { currentWorkspaceId, tabWorkspaceMap, workspaceActiveTabMap, isAllTabsMode };
+    if (lastActiveWsId) payload.lastActiveWsId = lastActiveWsId;
+    return browser.storage.local.set(payload);
 }
 
 // Track tab activation to update active tab map
@@ -199,15 +287,12 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     isSwitchingWorkspace = true;
 
     try {
-        const previousWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
-
     if (currentWorkspaceId) {
         const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true });
         if (currentTab) {
             workspaceActiveTabMap[currentWorkspaceId] = currentTab.id;
-            if (!tabWorkspaceMap[currentTab.id]) {
-                assignTabToWorkspace(currentTab.id, currentWorkspaceId);
-            }
+            // Do not claim unmapped active tabs into the workspace we are leaving —
+            // that race with onCreated was pushing tabs into Main.
         }
     }
     
@@ -215,6 +300,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
 
     currentWorkspaceId = workspaceId;
     isAllTabsMode = false;
+    if (workspaceId) lastActiveWsId = workspaceId;
     await saveState();
     
     const tabs = await browser.tabs.query({ currentWindow: true });
@@ -232,13 +318,16 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     
     for (let tab of tabs) {
         let ws = tabWorkspaceMap[tab.id];
-        
+
         if (!ws) {
-            ws = previousWorkspaceId || 'ws_default';
-            if (!ws && workspaces.length > 0) {
-                ws = workspaces[0].id;
+            if (pendingTabAssignments.has(tab.id)) {
+                // Race with onCreated — do not claim into previous/Main; hide until assignment finishes.
+                toHide.push(tab.id);
+                continue;
             }
-            assignTabToWorkspace(tab.id, ws);
+            // True orphan (not mid-assignment): attach to destination workspace so the tab is not lost.
+            assignTabToWorkspace(tab.id, currentWorkspaceId);
+            ws = currentWorkspaceId;
         }
 
         if (ws === currentWorkspaceId) {
@@ -260,7 +349,9 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     if (!hasWorkspaceTabs) {
         const newTab = await browser.tabs.create({ active: true });
         toShow.push(newTab.id);
+        pendingTabAssignments.add(newTab.id);
         assignTabToWorkspace(newTab.id, currentWorkspaceId);
+        pendingTabAssignments.delete(newTab.id);
         workspaceActiveTabMap[currentWorkspaceId] = newTab.id;
     }
     
@@ -268,9 +359,13 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     
     if (toShow.length > 0) {
         try { await browser.tabs.show(toShow); } catch(e) {}
-        
-        if (!preserveActiveTab) {
-            let tabToActivate = workspaceActiveTabMap[workspaceId];
+
+        let tabToActivate = null;
+        const [activeNow] = await browser.tabs.query({ active: true, currentWindow: true });
+        const activeBelongsHere = activeNow && tabWorkspaceMap[activeNow.id] === workspaceId && toShow.includes(activeNow.id);
+
+        if (!preserveActiveTab || !activeBelongsHere) {
+            tabToActivate = workspaceActiveTabMap[workspaceId];
             
             let isValidActiveTab = false;
             if (tabToActivate && toShow.includes(tabToActivate)) {
@@ -310,13 +405,28 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     }
 
     if (toHide.length > 0) {
-        const activeTab = await browser.tabs.query({ active: true, currentWindow: true });
-        if (activeTab && activeTab.length > 0) {
-             const activeId = activeTab[0].id;
-             if (toHide.includes(activeId)) {
-                 const idx = toHide.indexOf(activeId);
-                 if (idx > -1) toHide.splice(idx, 1);
-             }
+        const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        if (activeTab && toHide.includes(activeTab.id)) {
+            let fallback = null;
+            for (let i = toShow.length - 1; i >= 0; i--) {
+                const id = toShow[i];
+                if (tabWorkspaceMap[id] === workspaceId) {
+                    fallback = id;
+                    break;
+                }
+            }
+            if (!fallback && toShow.length > 0) {
+                fallback = toShow[toShow.length - 1];
+            }
+            if (fallback) {
+                try { await browser.tabs.update(fallback, { active: true }); } catch(e) {}
+            }
+        }
+
+        const [stillActive] = await browser.tabs.query({ active: true, currentWindow: true });
+        if (stillActive && toHide.includes(stillActive.id)) {
+            const idx = toHide.indexOf(stillActive.id);
+            if (idx > -1) toHide.splice(idx, 1);
         }
         
         try { await browser.tabs.hide(toHide); } catch(e) {}
@@ -419,15 +529,21 @@ browser.tabs.onHighlighted.addListener(async (highlightInfo) => {
 });
 
 // Extension installation listener
-browser.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(async () => {
     enforceNoCloseOnLastTabSetting();
     updateContextMenus();
+    await checkAutoBackupAlarms();
 });
 
 // Browser startup listener
-browser.runtime.onStartup.addListener(() => {
+browser.runtime.onStartup.addListener(async () => {
     enforceNoCloseOnLastTabSetting();
     updateContextMenus();
+    await checkAutoBackupAlarms();
+    const res = await browser.storage.local.get('backupOnStartup');
+    if (res.backupOnStartup !== false) {
+        createAutoBackup('startup');
+    }
 });
 
 // Move tabs to specified workspace
@@ -458,16 +574,47 @@ async function moveTabsToWorkspace(info, tab, targetWsId) {
 
 // New tab creation listener
 browser.tabs.onCreated.addListener(async (tab) => {
-    if (isInitializingState || isRestoringData) return;
+    if (isRestoringData) return;
 
-    const restoredWorkspaceId = normalizeWorkspaceId(await getSessionWorkspace(tab.id));
-    const targetWorkspaceId = restoredWorkspaceId || normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
-    assignTabToWorkspace(tab.id, targetWorkspaceId);
+    // Provisional sync assignment before any await — prevents switchWorkspace races.
+    const provisionalWorkspaceId = resolveNewTabWorkspaceSync(tab);
+    pendingTabAssignments.add(tab.id);
+    assignTabToWorkspace(tab.id, provisionalWorkspaceId);
 
-    if (targetWorkspaceId) {
-        workspaceActiveTabMap[targetWorkspaceId] = tab.id;
+    try {
+        // Background may wake cold: wait until storage/map are loaded before final assign.
+        if (isInitializingState) {
+            await initReadyPromise;
+        }
+
+        // Do NOT use this tab's session value here — for user-opened tabs it is empty or
+        // races with our own setTabValue; stale/fallback session was pushing tabs into Main.
+        const targetWorkspaceId = await resolveNewTabWorkspaceAsync(tab);
+
+        if (targetWorkspaceId !== tabWorkspaceMap[tab.id]) {
+            assignTabToWorkspace(tab.id, targetWorkspaceId);
+        }
+
+        if (targetWorkspaceId) {
+            workspaceActiveTabMap[targetWorkspaceId] = tab.id;
+        }
+        saveState();
+
+        if (!isInitializingState && !isAllTabsMode && currentWorkspaceId) {
+            try {
+                if (targetWorkspaceId === currentWorkspaceId) {
+                    await browser.tabs.show(tab.id);
+                } else {
+                    const [active] = await browser.tabs.query({ active: true, windowId: tab.windowId });
+                    if (!active || active.id !== tab.id) {
+                        await browser.tabs.hide(tab.id);
+                    }
+                }
+            } catch (e) {}
+        }
+    } finally {
+        pendingTabAssignments.delete(tab.id);
     }
-    saveState();
 });
 
 // Tab replaced listener (for suspended/discarded tabs)
@@ -532,9 +679,20 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 
 // Storage change listener
 browser.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && changes.workspaces) {
+    if (area !== 'local') return;
+    if (changes.workspaces) {
         workspaces = changes.workspaces.newValue || [];
         updateContextMenus();
+    }
+    // Sidebar writes these before SWITCH_WORKSPACE — keep memory in sync for new-tab assignment.
+    if (changes.currentWorkspaceId && !isSwitchingWorkspace) {
+        currentWorkspaceId = changes.currentWorkspaceId.newValue;
+    }
+    if (changes.isAllTabsMode) {
+        isAllTabsMode = !!changes.isAllTabsMode.newValue;
+    }
+    if (changes.lastActiveWsId && changes.lastActiveWsId.newValue) {
+        lastActiveWsId = changes.lastActiveWsId.newValue;
     }
 });
 
@@ -938,6 +1096,11 @@ browser.runtime.onMessage.addListener(async (message) => {
         
         return { success: true };
     } else if (message.action === 'SHOW_ALL_TABS') {
+        isAllTabsMode = true;
+        if (currentWorkspaceId) lastActiveWsId = currentWorkspaceId;
+        currentWorkspaceId = null;
+        await saveState();
+
         const allTabs = await browser.tabs.query({ currentWindow: true });
         const tabsToShow = [];
         let hasShownNewTab = false;
@@ -1186,17 +1349,25 @@ async function createAutoBackup(reason = 'scheduled') {
 }
 
 async function checkAutoBackupAlarms() {
-    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup']);
-    if (browser.alarms) {
+    if (!browser.alarms) return;
+
+    const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency']);
+    const isEnabled = res.autoBackupEnabled !== false;
+    const hours = parseInt(res.autoBackupFrequency) || 3;
+    const periodInMinutes = hours * 60;
+    const existingAlarm = await browser.alarms.get('autoBackupAlarm');
+
+    if (!isEnabled) {
         await browser.alarms.clear('autoBackupAlarm');
-        if (res.autoBackupEnabled !== false) {
-            let hours = parseInt(res.autoBackupFrequency) || 3;
-            browser.alarms.create('autoBackupAlarm', { periodInMinutes: hours * 60 });
-        }
+        return;
     }
-    
-    if (res.backupOnStartup !== false) {
-        createAutoBackup('startup');
+
+    if (!existingAlarm || existingAlarm.periodInMinutes !== periodInMinutes) {
+        await browser.alarms.clear('autoBackupAlarm');
+        await browser.alarms.create('autoBackupAlarm', {
+            delayInMinutes: periodInMinutes,
+            periodInMinutes
+        });
     }
 }
 
@@ -1218,4 +1389,5 @@ browser.storage.onChanged.addListener((changes, area) => {
     }
 });
 
+checkAutoBackupAlarms();
 setTimeout(checkAutoBackupAlarms, 2000);

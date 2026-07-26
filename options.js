@@ -555,11 +555,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         freqSelect.addEventListener('change', () => {
             const val = parseInt(freqSelect.value);
-            if (val === 0) {
-                browser.storage.local.set({ autoBackupEnabled: false });
-            } else {
-                browser.alarms.create('autoBackupCheck', { periodInMinutes: 60 });
-            }
             browser.storage.local.set({ autoBackupEnabled: val !== 0, autoBackupFrequency: val });
             
             // Re-render to update the Next Backup stats
@@ -679,14 +674,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (statsNextEl) {
                 if (freqVal === 0) {
                     statsNextEl.textContent = getMessage('disabled') || 'Disabled';
-                } else if (currentBackups.length > 0) {
-                    const newestTime = currentBackups[currentBackups.length - 1].timestamp;
-                    const nextTimeMs = newestTime + (freqVal * 60 * 60 * 1000);
-                    statsNextEl.textContent = formatBackupDate(nextTimeMs);
                 } else {
-                    // if enabled but no backups yet, next backup could be any time the alarm fires.
-                    // Just show N/A since we can't be perfectly accurate without querying the alarm.
-                    statsNextEl.textContent = getMessage('na') || 'N/A';
+                    const updateNextFromAlarm = async () => {
+                        try {
+                            if (browser.alarms && browser.alarms.get) {
+                                const alarm = await browser.alarms.get('autoBackupAlarm');
+                                if (alarm && alarm.scheduledTime) {
+                                    statsNextEl.textContent = formatBackupDate(alarm.scheduledTime);
+                                    return;
+                                }
+                            }
+                        } catch (e) {}
+                        if (currentBackups.length > 0) {
+                            const newestTime = currentBackups[currentBackups.length - 1].timestamp;
+                            const nextTimeMs = newestTime + (freqVal * 60 * 60 * 1000);
+                            statsNextEl.textContent = formatBackupDate(nextTimeMs);
+                        } else {
+                            statsNextEl.textContent = getMessage('na') || 'N/A';
+                        }
+                    };
+                    updateNextFromAlarm();
                 }
             }
             
