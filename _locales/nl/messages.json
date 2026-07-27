@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Toon acties"
     },
+    "showTabCounts": {
+        "message": "Aantal tabbladen weergeven"
+    },
     "showAllTabs": {
         "message": "Alles tonen"
     },

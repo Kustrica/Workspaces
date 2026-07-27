@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Показати дії"
     },
+    "showTabCounts": {
+        "message": "Показати кількість вкладок"
+    },
     "showAllTabs": {
         "message": "Показати всі"
     },

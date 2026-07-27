@@ -291,6 +291,9 @@
     "showActions": {
         "message": "显示操作"
     },
+    "showTabCounts": {
+        "message": "显示标签页数量"
+    },
     "showAllTabs": {
         "message": "显示所有"
     },

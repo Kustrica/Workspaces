@@ -291,6 +291,9 @@
     "showActions": {
         "message": "إظهار الإجراءات"
     },
+    "showTabCounts": {
+        "message": "إظهار أعداد علامات التبويب"
+    },
     "showAllTabs": {
         "message": "إظهار الكل"
     },

@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Aktionen zeigen"
     },
+    "showTabCounts": {
+        "message": "Anzahl der Registerkarten anzeigen"
+    },
     "showAllTabs": {
         "message": "Alle Tabs zeigen"
     },

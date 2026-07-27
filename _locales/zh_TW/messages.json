@@ -291,6 +291,9 @@
     "showActions": {
         "message": "顯示操作"
     },
+    "showTabCounts": {
+        "message": "顯示分頁數量"
+    },
     "showAllTabs": {
         "message": "顯示所有"
     },

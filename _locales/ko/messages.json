@@ -291,6 +291,9 @@
     "showActions": {
         "message": "작업 표시"
     },
+    "showTabCounts": {
+        "message": "탭 수 표시"
+    },
     "showAllTabs": {
         "message": "모두 보기"
     },

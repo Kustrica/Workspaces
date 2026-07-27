@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Hiện hành động"
     },
+    "showTabCounts": {
+        "message": "Hiển thị số lượng tab"
+    },
     "showAllTabs": {
         "message": "Hiện tất cả"
     },

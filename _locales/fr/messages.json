@@ -289,7 +289,10 @@
         "message": "Raccourcis"
     },
     "showActions": {
-        "message": "Afficher actions"
+        "message": "Afficher les actions"
+    },
+    "showTabCounts": {
+        "message": "Afficher le nombre d'onglets"
     },
     "showAllTabs": {
         "message": "Voir tout"

@@ -188,158 +188,6 @@ function getOtherTabIdsInWindow(windowId, excludeTabId) {
     return ids;
 }
 
-function buildCrashRecoverySnapshot() {
-    const tabsByWorkspace = {};
-    for (const ws of workspaces) {
-        tabsByWorkspace[ws.id] = [];
-    }
-    for (const idStr of Object.keys(tabWorkspaceMap)) {
-        const id = parseInt(idStr, 10);
-        const wsId = tabWorkspaceMap[id];
-        if (!wsId) continue;
-        if (!tabsByWorkspace[wsId]) tabsByWorkspace[wsId] = [];
-        const url = tabUrlCache[id];
-        if (!url || url === 'about:blank') continue;
-        tabsByWorkspace[wsId].push({ url, tabId: id, windowId: tabWindowMap[id] });
-    }
-    return {
-        timestamp: Date.now(),
-        currentWorkspaceId,
-        lastActiveWsId,
-        isAllTabsMode: !!isAllTabsMode,
-        workspaces: workspaces,
-        tabsByWorkspace
-    };
-}
-
-function fireCrashRecoverySnapshot() {
-    try {
-        const snapshot = buildCrashRecoverySnapshot();
-        browser.storage.local.set({ crashRecoverySnapshot: snapshot }).catch(() => {});
-    } catch (e) {}
-}
-
-function countSnapshotTabs(snapshot) {
-    if (!snapshot || !snapshot.tabsByWorkspace) return 0;
-    return Object.values(snapshot.tabsByWorkspace).reduce((n, arr) => n + (arr ? arr.length : 0), 0);
-}
-
-async function remapOpenTabsFromSnapshot(snapshot) {
-    if (!snapshot || !snapshot.tabsByWorkspace) return;
-    const tabs = await browser.tabs.query({});
-    const urlToWsQueue = {};
-    for (const [wsId, list] of Object.entries(snapshot.tabsByWorkspace)) {
-        if (!Array.isArray(list)) continue;
-        for (const info of list) {
-            if (!info || !info.url) continue;
-            if (!urlToWsQueue[info.url]) urlToWsQueue[info.url] = [];
-            urlToWsQueue[info.url].push(wsId);
-        }
-    }
-    for (const tab of tabs) {
-        const url = tab.url || '';
-        if (!url || url === 'about:blank' || url === 'about:newtab') continue;
-        const queue = urlToWsQueue[url];
-        if (queue && queue.length > 0) {
-            const wsId = queue.shift();
-            assignTabToWorkspace(tab.id, wsId);
-        }
-        rememberTabMeta(tab);
-    }
-    await saveState({ force: true });
-}
-
-async function restoreTabsFromSnapshot(snapshot) {
-    if (!snapshot || !snapshot.tabsByWorkspace) return;
-    isRestoringData = true;
-    try {
-        const targetWs = resolveExistingWorkspaceId(snapshot.currentWorkspaceId)
-            || resolveExistingWorkspaceId(snapshot.lastActiveWsId)
-            || (snapshot.workspaces && snapshot.workspaces[0] && snapshot.workspaces[0].id)
-            || getFallbackWorkspaceId();
-
-        if (Array.isArray(snapshot.workspaces) && snapshot.workspaces.length > 0) {
-            workspaces = snapshot.workspaces;
-            await browser.storage.local.set({ workspaces });
-        }
-
-        for (const [wsId, list] of Object.entries(snapshot.tabsByWorkspace)) {
-            if (!Array.isArray(list)) continue;
-            for (const info of list) {
-                if (!info || !info.url) continue;
-                if (info.url.startsWith('about:') && info.url !== 'about:blank') continue;
-                try {
-                    const newTab = await browser.tabs.create({ url: info.url, active: false });
-                    assignTabToWorkspace(newTab.id, wsId);
-                    rememberTabMeta(newTab);
-                } catch (e) {}
-            }
-        }
-
-        currentWorkspaceId = targetWs;
-        isAllTabsMode = false;
-        if (targetWs) lastActiveWsId = targetWs;
-        await saveState({ force: true });
-        await switchWorkspace(targetWs, true);
-    } finally {
-        isRestoringData = false;
-    }
-}
-
-async function maybeRecoverAfterUnexpectedClose() {
-    const res = await browser.storage.local.get('crashRecoverySnapshot');
-    const snap = res.crashRecoverySnapshot;
-    if (!snap || !snap.timestamp) return;
-
-    const ageMs = Date.now() - snap.timestamp;
-    // Only auto-recover a very recent snapshot (window just died from last-visible-tab close).
-    if (ageMs > 45 * 60 * 1000) return;
-
-    const snapCount = countSnapshotTabs(snap);
-    if (snapCount < 2) return;
-
-    const tabs = await browser.tabs.query({});
-    for (const t of tabs) rememberTabMeta(t);
-    const realTabs = tabs.filter(t => {
-        const url = t.url || '';
-        return url && url !== 'about:blank' && url !== 'about:newtab' && url !== 'about:home';
-    });
-
-    // Browser already restored a normal session — just remap if needed.
-    if (realTabs.length >= Math.min(snapCount, 3)) {
-        await remapOpenTabsFromSnapshot(snap);
-        return;
-    }
-
-    // Prefer Firefox's own recently-closed window (what Ctrl+Shift+T uses under the hood).
-    try {
-        if (browser.sessions && browser.sessions.getRecentlyClosed) {
-            const recent = await browser.sessions.getRecentlyClosed({ maxResults: 25 });
-            for (const entry of recent) {
-                if (entry.window && entry.window.tabs && entry.window.tabs.length >= 2) {
-                    await browser.sessions.restore(entry.window.sessionId);
-                    await new Promise(r => setTimeout(r, 800));
-                    await remapOpenTabsFromSnapshot(snap);
-                    addLog(
-                        'CRASH_RECOVERY',
-                        `Restored ${entry.window.tabs.length} tab(s) after the window closed when the last visible workspace tab was closed.`,
-                        null
-                    );
-                    return;
-                }
-            }
-        }
-    } catch (e) {}
-
-    // Last resort: recreate tabs from our snapshot URLs.
-    await restoreTabsFromSnapshot(snap);
-    addLog(
-        'CRASH_RECOVERY',
-        `Recreated ${snapCount} tab(s) from the emergency snapshot after an unexpected window close.`,
-        null
-    );
-}
-
 let pendingTabAssignments = new Set();
 let lastActiveWsId = null;
 // tabId → windowId / url kept in memory so the last-visible-tab race can react with ZERO
@@ -353,12 +201,12 @@ const initReadyPromise = new Promise((resolve) => {
 const pendingStoragePatches = [];
 const pendingInitActions = [];
 
-function applyStorageSnapshot(res) {
+function applyStorageSnapshot(res, options = {}) {
     if (!res || typeof res !== 'object') return;
 
     if ('currentWorkspaceId' in res) currentWorkspaceId = res.currentWorkspaceId;
-    if (res.tabWorkspaceMap) tabWorkspaceMap = res.tabWorkspaceMap;
-    if (res.workspaceActiveTabMap) workspaceActiveTabMap = res.workspaceActiveTabMap;
+    if (res.tabWorkspaceMap && !options.preserveTabMaps) tabWorkspaceMap = res.tabWorkspaceMap;
+    if (res.workspaceActiveTabMap && !options.preserveTabMaps) workspaceActiveTabMap = res.workspaceActiveTabMap;
     if ('isAllTabsMode' in res) isAllTabsMode = !!res.isAllTabsMode;
     if (res.actionLogs) actionLogs = res.actionLogs;
     if (res.lastActiveWsId) lastActiveWsId = res.lastActiveWsId;
@@ -470,6 +318,17 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
 
     tabWorkspaceMap = rebuiltMap;
 
+    // Clean up active tab map using valid open tab IDs to remove dead tab IDs from previous browser session
+    const rebuiltActiveMap = {};
+    for (const tab of tabs) {
+        const wsId = tabWorkspaceMap[tab.id];
+        if (!wsId) continue;
+        if (tab.active || !rebuiltActiveMap[wsId]) {
+            rebuiltActiveMap[wsId] = tab.id;
+        }
+    }
+    workspaceActiveTabMap = rebuiltActiveMap;
+
     // Safety net: never silently funnel every single restored tab into one workspace when we
     // have zero real evidence of where any of them belong — that is exactly what produced
     // reports like "I woke up and ALL my tabs were in workspace 4, which I never even opened".
@@ -507,25 +366,32 @@ browser.storage.local.get(STATE_KEYS).then(async (res) => {
         await rebuildTabWorkspaceMapFromOpenTabs();
         await enforceNoCloseOnLastTabSetting();
 
-        // If the previous session died because Firefox closed the window on last-visible-tab,
-        // recover tabs (sessions.restore or snapshot) before we hide anything.
-        await maybeRecoverAfterUnexpectedClose();
+        // Strictly rely on Firefox native session restore (as in stable commit 8479da3).
+        // Remove any remnant crash recovery snapshots so they never cause duplicates or orphan tabs.
+        browser.storage.local.remove('crashRecoverySnapshot').catch(() => {});
 
-        // Merge any storage writes that happened while we were loading (sidebar switch, etc.).
+        // Merge any storage writes that happened while we were loading (sidebar switch, etc.),
+        // but preserve the newly rebuilt tabWorkspaceMap and workspaceActiveTabMap.
         while (pendingStoragePatches.length > 0) {
-            applyStorageSnapshot(pendingStoragePatches.shift());
+            applyStorageSnapshot(pendingStoragePatches.shift(), { preserveTabMaps: true });
         }
         const fresh = await browser.storage.local.get(STATE_KEYS);
-        applyStorageSnapshot(fresh);
+        applyStorageSnapshot(fresh, { preserveTabMaps: true });
         normalizeLoadedWorkspaceSelection();
 
         await saveState({ force: true });
-        fireCrashRecoverySnapshot();
         updateContextMenus();
 
-        // Soft visibility repair — never force-activate on wake (focus steal).
+        // Soft visibility repair across all normal browser windows — never force-activate on wake (focus steal).
         if (!isAllTabsMode && currentWorkspaceId) {
-            await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: false });
+            try {
+                const windows = await browser.windows.getAll({ windowTypes: ['normal'] });
+                for (const win of windows) {
+                    await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: false, windowId: win.id });
+                }
+            } catch (e) {
+                await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: false });
+            }
         }
     } finally {
         isInitializingState = false;
@@ -707,14 +573,11 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
                 toHide.push(tab.id);
                 continue;
             }
-            // Adopt only visible orphans into the destination workspace.
-            // Hidden unmapped tabs stay hidden and unassigned (avoids mass-migration on wake).
-            if (tab.hidden) {
-                toHide.push(tab.id);
-                continue;
-            }
-            assignTabToWorkspace(tab.id, currentWorkspaceId);
-            ws = currentWorkspaceId;
+            // Unassigned tabs (orphans not in map) must be hidden regardless of visibility.
+            // Never adopt visible orphans into current workspace: they may belong to another workspace
+            // temporarily revealed via SHOW_ALL_TABS. onCreated and repairVisibility properly assign tabs.
+            toHide.push(tab.id);
+            continue;
         }
 
         if (ws === currentWorkspaceId) {
@@ -816,7 +679,6 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
         
         try { await browser.tabs.hide(toHide); } catch(e) {}
     }
-    fireCrashRecoverySnapshot();
     } finally {
         isSwitchingWorkspace = false;
         if (pendingWorkspaceSwitch) {
@@ -1034,7 +896,6 @@ browser.tabs.onCreated.addListener(async (tab) => {
         }
     } finally {
         pendingTabAssignments.delete(tab.id);
-        fireCrashRecoverySnapshot();
     }
 });
 
@@ -1082,9 +943,6 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
     const windowId = (removeInfo && typeof removeInfo.windowId === 'number')
         ? removeInfo.windowId
         : tabWindowMap[tabId];
-
-    // Snapshot while this tab's URL is still in the cache.
-    fireCrashRecoverySnapshot();
 
     // Collect siblings BEFORE unassign clears this tab's window mapping.
     const otherIds = getOtherTabIdsInWindow(windowId, tabId);
@@ -1138,7 +996,6 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
         pendingTabAssignments.delete(newTab.id);
         rememberTabMeta(newTab);
         workspaceActiveTabMap[targetWorkspaceId] = newTab.id;
-        fireCrashRecoverySnapshot();
         return saveState();
     }).catch(() => {});
 });
@@ -1165,7 +1022,6 @@ async function finishKeepWindowAlive(windowId, otherIds) {
     isAllTabsMode = false;
     lastActiveWsId = destination;
     await saveState();
-    fireCrashRecoverySnapshot();
 
     try {
         await switchWorkspace(destination, true, typeof windowId === 'number' ? { windowId } : {});
@@ -1189,8 +1045,6 @@ browser.storage.onChanged.addListener((changes, area) => {
         if (changes.currentWorkspaceId) patch.currentWorkspaceId = changes.currentWorkspaceId.newValue;
         if (changes.isAllTabsMode) patch.isAllTabsMode = changes.isAllTabsMode.newValue;
         if (changes.lastActiveWsId) patch.lastActiveWsId = changes.lastActiveWsId.newValue;
-        if (changes.tabWorkspaceMap) patch.tabWorkspaceMap = changes.tabWorkspaceMap.newValue;
-        if (changes.workspaceActiveTabMap) patch.workspaceActiveTabMap = changes.workspaceActiveTabMap.newValue;
         if (changes.workspaces) patch.workspaces = changes.workspaces.newValue;
         if (Object.keys(patch).length > 0) pendingStoragePatches.push(patch);
         return;
@@ -1820,7 +1674,6 @@ if (browser.action && browser.action.onClicked && browser.sidebarAction) {
 
 // Safety: Show all tabs when extension is suspended/disabled
 browser.runtime.onSuspend.addListener(() => {
-    fireCrashRecoverySnapshot();
     saveState();
     clearNoCloseOnLastTabSetting();
     browser.tabs.query({}).then(tabs => {

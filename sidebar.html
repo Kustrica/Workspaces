@@ -433,6 +433,31 @@
         .workspace-item:hover .ws-actions {
             opacity: 1;
         }
+        .ws-tab-count {
+            display: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-inline-start: 8px;
+            pointer-events: none;
+            transition: all 0.2s;
+            line-height: 1.2;
+        }
+        body.light-theme .ws-tab-count {
+            background: rgba(0, 0, 0, 0.06);
+        }
+        #workspace-list.show-counts .ws-tab-count {
+            display: inline-block;
+        }
+        .workspace-item.active .ws-tab-count {
+            background: var(--active-bg);
+            border-color: var(--active-border);
+            color: var(--active-border);
+        }
         .ws-action-btn {
             background: transparent;
             border: none;

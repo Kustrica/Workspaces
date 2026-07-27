@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Eylemleri Göster"
     },
+    "showTabCounts": {
+        "message": "Sekme Sayılarını Göster"
+    },
     "showAllTabs": {
         "message": "Hepsini Göster"
     },

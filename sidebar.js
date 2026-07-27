@@ -192,7 +192,13 @@ addBtn.onclick = () => {
 
 if (toggleActionsBtn) {
     toggleActionsBtn.onclick = () => {
-        areActionsVisible = !areActionsVisible;
+        if (areActionsVisible === true || areActionsVisible === 'actions') {
+            areActionsVisible = 'counts';
+        } else if (areActionsVisible === 'counts') {
+            areActionsVisible = 'hidden';
+        } else {
+            areActionsVisible = 'actions';
+        }
         updateActionsVisibility();
         browser.storage.local.set({ areActionsVisible });
     };
@@ -246,20 +252,63 @@ if (themeBtn) {
     };
 }
 
-// Update visibility of action buttons in workspace list
+// Update visibility of action buttons and tab counts in workspace list
 function updateActionsVisibility() {
-    if (areActionsVisible) {
+    listEl.classList.remove('show-actions', 'show-counts');
+    const imgEl = toggleActionsBtn.querySelector('img');
+    if (areActionsVisible === true || areActionsVisible === 'actions') {
         listEl.classList.add('show-actions');
-        const eyeOpenUrl = browser.runtime.getURL('icons/eye-open-64.png');
-        toggleActionsBtn.querySelector('img').src = eyeOpenUrl;
+        if (imgEl) imgEl.src = browser.runtime.getURL('icons/eye-open-64.png');
         toggleActionsBtn.style.opacity = '1';
-        toggleActionsBtn.title = getMessage("hideActions") || "Hide Actions";
+        toggleActionsBtn.title = getMessage("showTabCounts") || "Show Tab Counts";
+    } else if (areActionsVisible === 'counts') {
+        listEl.classList.add('show-counts');
+        if (imgEl) imgEl.src = browser.runtime.getURL('icons/tab-counts-64.svg');
+        toggleActionsBtn.style.opacity = '1';
+        toggleActionsBtn.title = getMessage("hideActions") || "Hide Controls";
+        updateTabCounts();
     } else {
-        listEl.classList.remove('show-actions');
-        const eyeClosedUrl = browser.runtime.getURL('icons/eye-closed-64.png');
-        toggleActionsBtn.querySelector('img').src = eyeClosedUrl;
+        if (imgEl) imgEl.src = browser.runtime.getURL('icons/eye-closed-64.png');
         toggleActionsBtn.style.opacity = '0.7'; 
-        toggleActionsBtn.title = getMessage("showActions") || "Show Actions";
+        toggleActionsBtn.title = getMessage("showActions") || "Show Controls";
+    }
+}
+
+// Compute and display open tab counts per workspace
+async function updateTabCounts() {
+    if (areActionsVisible !== 'counts') return;
+    try {
+        const storageData = await browser.storage.local.get('tabWorkspaceMap');
+        const tabWorkspaceMap = storageData.tabWorkspaceMap || {};
+        const tabs = await browser.tabs.query({});
+        const counts = {};
+        workspaces.forEach(ws => { counts[ws.id] = 0; });
+        
+        for (const tab of tabs) {
+            let wsId = tabWorkspaceMap[tab.id];
+            if (!wsId && browser.sessions && browser.sessions.getTabValue) {
+                try {
+                    wsId = await browser.sessions.getTabValue(tab.id, 'workspaceId');
+                } catch (e) {}
+            }
+            if (wsId && counts[wsId] !== undefined) {
+                counts[wsId]++;
+            } else if (tab.active && activeWsId && counts[activeWsId] !== undefined) {
+                counts[activeWsId] = (counts[activeWsId] || 0) + 1;
+            }
+        }
+        
+        document.querySelectorAll('.workspace-item').forEach(item => {
+            const wsId = item.dataset.id;
+            if (wsId && counts[wsId] !== undefined) {
+                const countBadge = item.querySelector('.ws-tab-count');
+                if (countBadge) {
+                    countBadge.textContent = counts[wsId];
+                }
+            }
+        });
+    } catch (err) {
+        console.error('Failed to update tab counts:', err);
     }
 }
 
@@ -393,7 +442,9 @@ async function init() {
         initTour();
     }
 
-    areActionsVisible = res.areActionsVisible !== undefined ? res.areActionsVisible : true;
+    areActionsVisible = res.areActionsVisible !== undefined ? res.areActionsVisible : 'actions';
+    if (areActionsVisible === true) areActionsVisible = 'actions';
+    if (areActionsVisible === false) areActionsVisible = 'hidden';
     
     // isAllTabsMode already restored above from storage
     
@@ -782,7 +833,12 @@ function render() {
             actions.appendChild(delBtn);
         }
         
+        const countBadge = document.createElement('span');
+        countBadge.className = 'ws-tab-count';
+        countBadge.textContent = '0';
+        
         item.appendChild(content);
+        item.appendChild(countBadge);
         item.appendChild(actions);
         
         item.onclick = (e) => {
@@ -791,6 +847,9 @@ function render() {
         
         listEl.appendChild(item);
     });
+    if (areActionsVisible === 'counts') {
+        updateTabCounts();
+    }
 }
 
 // Start inline workspace renaming mode
@@ -1480,6 +1539,9 @@ browser.storage.onChanged.addListener((changes, area) => {
             workspaces = changes.workspaces.newValue || [];
             render();
         }
+        if (changes.tabWorkspaceMap) {
+            updateTabCounts();
+        }
         if (changes.isAllTabsMode) {
             isAllTabsMode = !!changes.isAllTabsMode.newValue;
         }
@@ -1498,6 +1560,17 @@ browser.storage.onChanged.addListener((changes, area) => {
         }
     }
 });
+
+if (typeof browser !== 'undefined' && browser.tabs && browser.tabs.onRemoved && browser.tabs.onCreated) {
+    const triggerCountUpdate = () => {
+        if (areActionsVisible === 'counts') {
+            updateTabCounts();
+        }
+    };
+    browser.tabs.onCreated.addListener(triggerCountUpdate);
+    browser.tabs.onRemoved.addListener(triggerCountUpdate);
+    if (browser.tabs.onUpdated) browser.tabs.onUpdated.addListener(triggerCountUpdate);
+}
 
 browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'RESTORE_PROGRESS') {

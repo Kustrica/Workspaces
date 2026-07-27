@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Mostra azioni"
     },
+    "showTabCounts": {
+        "message": "Mostra conteggio schede"
+    },
     "showAllTabs": {
         "message": "Mostra tutto"
     },

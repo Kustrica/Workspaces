@@ -78,3 +78,20 @@
 - [x] STEP-33: Restore/import — pass `windowId` into `switchWorkspace` so tabs hide correctly
   immediately (not only after manual workspace click). Version 1.12.
 - [x] STEP-34: Last-tab keep-alive — parallel `tabs.query`+`show` when in-memory window map is empty.
+
+## Phase 9: Fix Session Restoration & Mass Migration on Startup
+- [x] STEP-35: Gate emergency crash recovery on `isAllTabsMode` in `background.js` initialization to avoid redundant duplicate creation on normal browser starts.
+- [x] STEP-36: Remove automatic adoption of unmapped visible tabs into destination workspace during `switchWorkspace`, preventing mass import of orphan tabs after recovery or All Tabs toggle.
+- [x] STEP-37: Improve tab detection in `maybeRecoverAfterUnexpectedClose` by using `tabUrlCache` to account for Firefox lazy-loaded tabs (`about:blank`).
+- [x] STEP-38: Clean up and remove unstable `maybeRecoverAfterUnexpectedClose()` and `fireCrashRecoverySnapshot()` triggers during startup and tab removal, fully restoring the reliable session architecture of commit `8479da3`.
+
+## Phase 10: Sidebar Three-State Controls & Tab Count View
+- [x] STEP-39: Present design proposals for icon and count badge styling to user (light/dark themes, clean typography per kill-ai-slop guidelines).
+- [x] STEP-40: Implement three-state mode switch in `sidebar.js` / `sidebar.html` (`hidden` -> `actions` -> `counts`).
+- [x] STEP-41: Create or integrate 64x64 transparent icon for tab counts mode supporting dark/light `--icon-filter`.
+- [x] STEP-42: Add localized tooltips for the new state across all 19 locales in `_locales/*/messages.json`.
+
+## Phase 11: Fix Session Restoration & Tab Visibility on Browser Startup
+- [x] STEP-43: Prevent post-rebuild storage merges (`applyStorageSnapshot`, `pendingStoragePatches`) during background initialization from clobbering the freshly restored `tabWorkspaceMap` and `workspaceActiveTabMap` with obsolete tab IDs from the previous session.
+- [x] STEP-44: Clean up `workspaceActiveTabMap` during `rebuildTabWorkspaceMapFromOpenTabs` to discard dead tab IDs and retain active valid browser tabs.
+- [x] STEP-45: Extend `repairWorkspaceVisibility` during startup wakeup to loop over all normal browser windows (`browser.windows.getAll`), preventing restored tabs in secondary windows from remaining hidden or unreachable until All Tabs mode is toggled.

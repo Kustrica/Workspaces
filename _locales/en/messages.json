@@ -291,6 +291,9 @@
     "showActions": {
         "message": "Show Actions"
     },
+    "showTabCounts": {
+        "message": "Show Tab Counts"
+    },
     "showAllTabs": {
         "message": "Show All Tabs"
     },

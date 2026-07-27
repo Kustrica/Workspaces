@@ -291,6 +291,9 @@
     "showActions": {
         "message": "操作を表示"
     },
+    "showTabCounts": {
+        "message": "タブ数を表示"
+    },
     "showAllTabs": {
         "message": "すべて表示"
     },
