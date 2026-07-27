@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "重置工作區"
     },
+    "searchEmoji": {
+        "message": "搜尋表情符號..."
+    },
+    "noEmojiFound": {
+        "message": "找不到相符的表情符號"
+    },
     "selectEmoji": {
         "message": "選擇表情"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "已停用"
+    },
+    "autoBackup5m": {
+        "message": "5 分鐘"
+    },
+    "autoBackup15m": {
+        "message": "15 分鐘"
+    },
+    "autoBackup30m": {
+        "message": "30 分鐘"
     },
     "autoBackup1h": {
         "message": "1小時"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "您確定要重置所有工作區並關閉所有選項卡嗎？",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "安全備援：所有分頁"
+    },
+    "crashRecovery": {
+        "message": "視窗關閉後已還原分頁"
     }
 }

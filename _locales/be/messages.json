@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Скінуць прасторы"
     },
+    "searchEmoji": {
+        "message": "Пошук эмодзі..."
+    },
+    "noEmojiFound": {
+        "message": "Нічога не знойдзена"
+    },
     "selectEmoji": {
         "message": "Абраць эмодзі"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Выключана"
+    },
+    "autoBackup5m": {
+        "message": "5 хвілін"
+    },
+    "autoBackup15m": {
+        "message": "15 хвілін"
+    },
+    "autoBackup30m": {
+        "message": "30 хвілін"
     },
     "autoBackup1h": {
         "message": "1 гадзіна"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Вы ўпэўнены, што хочаце скінуць усе працоўныя прасторы І закрыць усе ўкладкі?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Аварыйны рэжым: Усе ўкладкі"
+    },
+    "crashRecovery": {
+        "message": "Укладкі адноўлены пасля закрыцця акна"
     }
 }

@@ -1,11 +1,11 @@
 {
     "schema_version": 2,
-    "commit": "8479da3265fd7bde6ac22fe68259ada147e40eea",
-    "indexed_at": "2026-07-26T16:34:54Z",
+    "commit": "c61699623a293a6f6be12b83f224a8bfab528946",
+    "indexed_at": "2026-07-26T20:33:15Z",
     "project": "E-Projects-Trae-BrowserExtensions-Workspaces",
-    "nodes": 3355,
-    "edges": 3980,
-    "original_size": 6029312,
-    "compressed_size": 316499,
+    "nodes": 3373,
+    "edges": 4030,
+    "original_size": 6553600,
+    "compressed_size": 525318,
     "compression_level": 3
 }

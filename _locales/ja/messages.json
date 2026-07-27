@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "ワークスペースをリセット"
     },
+    "searchEmoji": {
+        "message": "絵文字を検索..."
+    },
+    "noEmojiFound": {
+        "message": "一致する絵文字がありません"
+    },
     "selectEmoji": {
         "message": "絵文字を選択"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "無効"
+    },
+    "autoBackup5m": {
+        "message": "5分"
+    },
+    "autoBackup15m": {
+        "message": "15分"
+    },
+    "autoBackup30m": {
+        "message": "30分"
     },
     "autoBackup1h": {
         "message": "1時間"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "すべてのワークスペースをリセットし、すべてのタブを閉じてもよろしいですか?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "安全モード: すべてのタブ"
+    },
+    "crashRecovery": {
+        "message": "ウィンドウ閉じた後にタブを復元しました"
     }
 }

@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Đặt lại không gian"
     },
+    "searchEmoji": {
+        "message": "Tìm emoji..."
+    },
+    "noEmojiFound": {
+        "message": "Không có emoji phù hợp"
+    },
     "selectEmoji": {
         "message": "Chọn Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Vô hiệu hóa"
+    },
+    "autoBackup5m": {
+        "message": "5 phút"
+    },
+    "autoBackup15m": {
+        "message": "15 phút"
+    },
+    "autoBackup30m": {
+        "message": "30 phút"
     },
     "autoBackup1h": {
         "message": "1 giờ"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Bạn có chắc chắn muốn đặt lại tất cả không gian làm việc VÀ đóng tất cả các tab không?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Chế độ an toàn: Tất cả các tab"
+    },
+    "crashRecovery": {
+        "message": "Đã khôi phục tab sau khi cửa sổ đóng"
     }
 }

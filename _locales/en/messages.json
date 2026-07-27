@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Reset Workspaces"
     },
+    "searchEmoji": {
+        "message": "Search emoji..."
+    },
+    "noEmojiFound": {
+        "message": "No matching emoji"
+    },
     "selectEmoji": {
         "message": "Select Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Disabled"
+    },
+    "autoBackup5m": {
+        "message": "5 minutes"
+    },
+    "autoBackup15m": {
+        "message": "15 minutes"
+    },
+    "autoBackup30m": {
+        "message": "30 minutes"
     },
     "autoBackup1h": {
         "message": "1 hour"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Are you sure you want to reset all workspaces AND close all tabs?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Safety fallback: All Tabs"
+    },
+    "crashRecovery": {
+        "message": "Tabs restored after window close"
     }
 }

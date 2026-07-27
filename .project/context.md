@@ -12,7 +12,8 @@
   - `options.html` / `options.js`: Extension settings page for managing shortcuts, backup configuration, data export/import, and theme.
   - `i18n.js` / `_locales/`: Multi-language internationalization system.
 - **New-tab assignment order**: opener tab workspace (`openerTabId`, re-fetched) → active tab in the same window → `currentWorkspaceId` / `lastActiveWsId` → first workspace fallback. Session values are used on rebuild/startup, not for user-opened tabs in `onCreated` (that path was pushing tabs into Main).
-- **Background wake**: `onCreated` waits for `initReadyPromise` so cold starts do not assign tabs while `currentWorkspaceId` is still the default Main.
+- **Background wake**: Listeners must not `saveState()` during init. After load, re-read storage (merge sidebar writes), then `repairWorkspaceVisibility({ allowActivate: false })`. Provisional `onCreated` during init is memory-only (no session). `SWITCH_WORKSPACE` / `SHOW_ALL_TABS` wait for init via `runWhenReady`.
+- **Empty workspaces list**: An explicit `workspaces: []` must not resurrect default Main/Study workspaces.
 - **Auto-backup alarms**: `autoBackupAlarm` is created/refreshed on script load, `onInstalled`, `onStartup`, and when backup settings change. Startup backups still use `onStartup` → `createAutoBackup('startup')` independently of the periodic alarm.
 
 ## Constraints & Rules
@@ -22,6 +23,13 @@
 - Permission `"alarms"` is required for scheduled auto-backups; without it `browser.alarms` is unavailable and only startup backups work.
 - `switchWorkspace` must not claim unmapped tabs into the previous workspace (causes tabs to migrate into Main during races with `onCreated`).
 - Hide order when switching: show target tabs → activate a tab that belongs to the target workspace → then hide others.
+- `currentWorkspaceId` must NEVER change as a side effect of closing a tab. If a window runs out of tabs for the current workspace, only open a fresh tab in that SAME workspace — never search for/jump to a different workspace that happens to have a leftover tab (this was the root cause of tabs silently ending up in an unopened workspace; see STEP-15/16 in PLAN.md).
+- On cold start, if 100% of restored tabs have no recoverable session/legacy workspace mapping (session data lost — private browsing, forced shutdown, fresh profile) while more than one workspace exists, do not funnel them all into `currentWorkspaceId`; fail safe into All Tabs mode and log a `SAFE_MODE_ALL_TABS` entry instead (see STEP-17).
+- `img:`-type workspace icons must have an `onerror` fallback (→ 📁) everywhere they're rendered (workspace list, move-menu, History log) so a missing/broken custom icon file never shows a broken-image glyph.
+- Default workspace lists (`getLocalizedDefaults()` in `background.js`, `getDefaultWorkspaces()` in `sidebar.js`) are duplicated by necessity (no shared module across background/sidebar contexts) and must be kept in sync by hand.
+- **Firefox `tabs.hide()` caveat:** closing the last *visible* tab in a window while every other tab in it is hidden (a different workspace) can make Firefox treat the window as tab-less and destroy it — or quit the whole browser if it was the last window. There is no cancelable "before tab removed" event. Defense (in order): (1) immediately `tabs.show()` other tabs already in the window (faster than `tabs.create`), then switch into a workspace that owns them; (2) write `crashRecoverySnapshot` before clearing maps; (3) on next startup, restore via `sessions.getRecentlyClosed()` / snapshot if the window came back empty. Advise users to enable `Settings → General → Startup → "Open previous windows and tabs"`.
+- Auto-backup frequency is stored in **minutes** (`autoBackupFreqIsMinutes: true`). Legacy values `1|3|6|8|12|24|72|168` meant hours and are migrated ×60 on load.
+- **i18n rule:** any new user-facing string must be added to **all** `_locales/*/messages.json` files (currently 19 locales), not only `en`/`ru`.
 
 ## Glossary
 - **Workspaces (Пространства)**: Логические группы вкладок, создаваемые пользователем для разделения задач (например, "Главное", "Учеба", "Работа").

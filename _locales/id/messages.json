@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Reset Ruang Kerja"
     },
+    "searchEmoji": {
+        "message": "Cari emoji..."
+    },
+    "noEmojiFound": {
+        "message": "Tidak ada emoji yang cocok"
+    },
     "selectEmoji": {
         "message": "Pilih Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Dinonaktifkan"
+    },
+    "autoBackup5m": {
+        "message": "5 menit"
+    },
+    "autoBackup15m": {
+        "message": "15 menit"
+    },
+    "autoBackup30m": {
+        "message": "30 menit"
     },
     "autoBackup1h": {
         "message": "1 jam"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Apakah Anda yakin ingin menyetel ulang semua ruang kerja DAN menutup semua tab?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Mode aman: Semua tab"
+    },
+    "crashRecovery": {
+        "message": "Tab dipulihkan setelah jendela ditutup"
     }
 }

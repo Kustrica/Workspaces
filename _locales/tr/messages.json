@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Alanları Sıfırla"
     },
+    "searchEmoji": {
+        "message": "Emoji ara..."
+    },
+    "noEmojiFound": {
+        "message": "Eşleşen emoji yok"
+    },
     "selectEmoji": {
         "message": "Emoji Seç"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Devre dışı"
+    },
+    "autoBackup5m": {
+        "message": "5 dakika"
+    },
+    "autoBackup15m": {
+        "message": "15 dakika"
+    },
+    "autoBackup30m": {
+        "message": "30 dakika"
     },
     "autoBackup1h": {
         "message": "1 saat"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Tüm çalışma alanlarını sıfırlamak VE tüm sekmeleri kapatmak istediğinizden emin misiniz?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Güvenlik modu: Tüm sekmeler"
+    },
+    "crashRecovery": {
+        "message": "Pencere kapandıktan sonra sekmeler geri yüklendi"
     }
 }

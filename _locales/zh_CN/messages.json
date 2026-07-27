@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "重置工作区"
     },
+    "searchEmoji": {
+        "message": "搜索表情..."
+    },
+    "noEmojiFound": {
+        "message": "未找到匹配的表情"
+    },
     "selectEmoji": {
         "message": "选择表情"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "已禁用"
+    },
+    "autoBackup5m": {
+        "message": "5 分钟"
+    },
+    "autoBackup15m": {
+        "message": "15 分钟"
+    },
+    "autoBackup30m": {
+        "message": "30 分钟"
     },
     "autoBackup1h": {
         "message": "1小时"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "您确定要重置所有工作区并关闭所有选项卡吗？",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "安全回退：全部标签页"
+    },
+    "crashRecovery": {
+        "message": "窗口关闭后已恢复标签页"
     }
 }

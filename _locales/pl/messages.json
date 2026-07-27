@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Resetuj obszary"
     },
+    "searchEmoji": {
+        "message": "Szukaj emoji..."
+    },
+    "noEmojiFound": {
+        "message": "Brak pasujących emoji"
+    },
     "selectEmoji": {
         "message": "Wybierz Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Wyłączone"
+    },
+    "autoBackup5m": {
+        "message": "5 minut"
+    },
+    "autoBackup15m": {
+        "message": "15 minut"
+    },
+    "autoBackup30m": {
+        "message": "30 minut"
     },
     "autoBackup1h": {
         "message": "1 godzina"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Czy na pewno chcesz zresetować wszystkie obszary robocze ORAZ zamknąć wszystkie karty?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Tryb awaryjny: Wszystkie karty"
+    },
+    "crashRecovery": {
+        "message": "Karty przywrócone po zamknięciu okna"
     }
 }

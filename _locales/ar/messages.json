@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "إعادة تعيين المساحات"
     },
+    "searchEmoji": {
+        "message": "البحث عن إيموجي..."
+    },
+    "noEmojiFound": {
+        "message": "لا يوجد إيموجي مطابق"
+    },
     "selectEmoji": {
         "message": "اختر رمزًا"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "معطل"
+    },
+    "autoBackup5m": {
+        "message": "5 دقائق"
+    },
+    "autoBackup15m": {
+        "message": "15 دقيقة"
+    },
+    "autoBackup30m": {
+        "message": "30 دقيقة"
     },
     "autoBackup1h": {
         "message": "ساعة واحدة"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "هل أنت متأكد أنك تريد إعادة تعيين كافة مساحات العمل وإغلاق كافة علامات التبويب؟",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "وضع الأمان: كل التبويبات"
+    },
+    "crashRecovery": {
+        "message": "تمت استعادة التبويبات بعد إغلاق النافذة"
     }
 }

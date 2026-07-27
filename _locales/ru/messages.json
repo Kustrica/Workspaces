@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Сбросить пространства"
     },
+    "searchEmoji": {
+        "message": "Поиск эмодзи..."
+    },
+    "noEmojiFound": {
+        "message": "Ничего не найдено"
+    },
     "selectEmoji": {
         "message": "Выбрать эмодзи"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Выключено"
+    },
+    "autoBackup5m": {
+        "message": "5 минут"
+    },
+    "autoBackup15m": {
+        "message": "15 минут"
+    },
+    "autoBackup30m": {
+        "message": "30 минут"
     },
     "autoBackup1h": {
         "message": "1 час"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Вы уверены, что хотите сбросить все рабочие области И закрыть все вкладки?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Аварийный режим: Все вкладки"
+    },
+    "crashRecovery": {
+        "message": "Вкладки восстановлены после закрытия окна"
     }
 }

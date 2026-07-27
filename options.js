@@ -535,18 +535,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadShortcuts();
     
     // Init Auto Backup Settings and Language
-    browser.storage.local.get(['ui_language', 'autoBackupEnabled', 'autoBackupFrequency', 'backupOnStartup', 'autoBackups', 'autoBackupMax', 'autoBackupStorageMax']).then(res => {
+    browser.storage.local.get(['ui_language', 'autoBackupEnabled', 'autoBackupFrequency', 'autoBackupFreqIsMinutes', 'backupOnStartup', 'autoBackups', 'autoBackupMax', 'autoBackupStorageMax']).then(res => {
         const freqSelect = document.getElementById('auto-backup-frequency');
         const startupCheck = document.getElementById('backup-on-startup');
         const maxInput = document.getElementById('auto-backup-max');
         const storageMaxInput = document.getElementById('auto-backup-storage-max');
         const clearBtn = document.getElementById('clear-all-backups-btn');
         let backups = res.autoBackups || [];
+
+        const LEGACY_HOURS = new Set([1, 3, 6, 8, 12, 24, 72, 168]);
+        function toMinutes(raw, isMinutes) {
+            const n = parseInt(raw, 10);
+            if (!n || n <= 0) return 0;
+            if (isMinutes) return n;
+            if (LEGACY_HOURS.has(n)) return n * 60;
+            return n;
+        }
         
         if (res.autoBackupEnabled === false) {
             freqSelect.value = "0";
         } else {
-            freqSelect.value = (res.autoBackupFrequency || 3).toString();
+            const minutes = toMinutes(res.autoBackupFrequency ?? 180, !!res.autoBackupFreqIsMinutes);
+            // Prefer exact option match; fall back to 180 (3h) if unknown.
+            const opt = Array.from(freqSelect.options).find(o => o.value === String(minutes));
+            freqSelect.value = opt ? String(minutes) : "180";
+            if (!res.autoBackupFreqIsMinutes && LEGACY_HOURS.has(parseInt(res.autoBackupFrequency, 10))) {
+                browser.storage.local.set({
+                    autoBackupFrequency: minutes,
+                    autoBackupFreqIsMinutes: true
+                });
+            }
         }
         
         startupCheck.checked = res.backupOnStartup !== undefined ? !!res.backupOnStartup : true;
@@ -554,8 +572,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         storageMaxInput.value = (res.autoBackupStorageMax || 200).toString();
         
         freqSelect.addEventListener('change', () => {
-            const val = parseInt(freqSelect.value);
-            browser.storage.local.set({ autoBackupEnabled: val !== 0, autoBackupFrequency: val });
+            const val = parseInt(freqSelect.value, 10);
+            browser.storage.local.set({
+                autoBackupEnabled: val !== 0,
+                autoBackupFrequency: val,
+                autoBackupFreqIsMinutes: true
+            });
             
             // Re-render to update the Next Backup stats
             renderBackups(backups);
@@ -687,7 +709,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         } catch (e) {}
                         if (currentBackups.length > 0) {
                             const newestTime = currentBackups[currentBackups.length - 1].timestamp;
-                            const nextTimeMs = newestTime + (freqVal * 60 * 60 * 1000);
+                            // freqVal is minutes
+                            const nextTimeMs = newestTime + (freqVal * 60 * 1000);
                             statsNextEl.textContent = formatBackupDate(nextTimeMs);
                         } else {
                             statsNextEl.textContent = getMessage('na') || 'N/A';

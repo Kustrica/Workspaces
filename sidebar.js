@@ -26,6 +26,8 @@ const newIconInput = document.getElementById('new-ws-icon');
 const saveNewBtn = document.getElementById('save-new-ws');
 const toggleEmojiBtn = document.getElementById('toggle-emoji');
 const emojiGrid = document.getElementById('emoji-grid');
+const emojiPickerWrap = document.getElementById('emoji-picker-wrap');
+const emojiSearchInput = document.getElementById('emoji-search');
 const customIconSection = document.getElementById('custom-icon-section');
 const customIconsList = document.getElementById('custom-icons-list');
 const toggleActionsBtn = document.getElementById('toggle-actions-btn');
@@ -34,17 +36,30 @@ const themeBtn = document.getElementById('theme-btn');
 
 const CUSTOM_ICONS = [];
 
-const EMOJIS = [
-    "📁", "🏠", "💼", "📅", "📊", "📈", "📉", "📝", "📌", "📎", "🗂️", "🗳️", "🏢", "🏭", "🏦",
-    "💻", "🖥️", "⌨️", "🖱️", "💾", "💿", "📱", "⚙️", "🔧", "🔨", "🔋", "🔌", "📡", "🚀", "🤖",
-    "🎮", "🎬", "🎵", "🎧", "📷", "📹", "📺", "📻", "🎨", "🎭", "🎪", "🎫", "🎲", "🎯", "🎳",
-    "💬", "💭", "📧", "📫", "📞", "📱", "📢", "🔔", "❤️", "👍", "🤝", "👥", "🗣️", "🌐", "🌍",
-    "🛒", "🛍️", "💳", "💵", "💰", "🏷️", "📦", "🎁", "💎", "💍", "⌚", "👓", "👞", "👗", "🎩",
-    "✈️", "🚗", "🚲", "🚂", "⚓", "🗺️", "🏖️", "🏔️", "🏕️", "🏨", "🗽", "🗼", "🏰", "🏟️", "🏞️",
-    "🍔", "🍕", "🍟", "🌭", "🍿", "🍩", "🍪", "🍫", "🍬", "☕", "🍵", "🍺", "🍷", "🍹", "🥂",
-    "📚", "📖", "🎓", "🏫", "✏️", "✒️", "🔬", "🔭", "🧠", "💡", "🖍️", "🎒", "🧐", "🤔", "📜",
-    "🔥", "⭐", "⚡", "✨", "🌈", "☀️", "🌙", "☁️", "❄️", "🍀", "⚠️", "⛔", "✅", "❌", "❓"
-];
+// Full emoji set is loaded from emoji-catalog.json (generated from Unicode/gemoji — not hand-listed).
+let emojiCatalog = null; // [[emoji, searchText], ...]
+let emojiCatalogPromise = null;
+
+function ensureEmojiCatalog() {
+    if (emojiCatalog) return Promise.resolve(emojiCatalog);
+    if (!emojiCatalogPromise) {
+        emojiCatalogPromise = fetch(browser.runtime.getURL('emoji-catalog.json'))
+            .then((r) => {
+                if (!r.ok) throw new Error('Failed to load emoji catalog');
+                return r.json();
+            })
+            .then((data) => {
+                emojiCatalog = Array.isArray(data) ? data : [];
+                return emojiCatalog;
+            })
+            .catch((e) => {
+                console.error(e);
+                emojiCatalog = [];
+                return emojiCatalog;
+            });
+    }
+    return emojiCatalogPromise;
+}
 
 function clearElement(el) {
     while (el.firstChild) {
@@ -52,20 +67,73 @@ function clearElement(el) {
     }
 }
 
-// Initialize emoji and icon picker grid
-function initEmojiPicker() {
+// Render the emoji grid, optionally filtered by a search query (matched against catalog keywords).
+async function renderEmojiGrid(query) {
     clearElement(emojiGrid);
-    EMOJIS.forEach(emoji => {
+
+    const loading = document.createElement('div');
+    loading.className = 'emoji-grid-empty';
+    loading.textContent = '…';
+    emojiGrid.appendChild(loading);
+
+    const catalog = await ensureEmojiCatalog();
+    if (!emojiGrid.isConnected) return;
+
+    clearElement(emojiGrid);
+    const q = (query || '').trim().toLowerCase();
+    const rawQuery = (query || '').trim();
+
+    const frag = document.createDocumentFragment();
+    let shown = 0;
+
+    for (let i = 0; i < catalog.length; i++) {
+        const emoji = catalog[i][0];
+        const keywords = catalog[i][1] || '';
+        if (q) {
+            const matchesKeyword = keywords.includes(q);
+            const matchesEmojiItself = emoji.includes(rawQuery);
+            if (!matchesKeyword && !matchesEmojiItself) continue;
+        }
+        shown++;
+
         const div = document.createElement('div');
         div.className = 'emoji-option';
         div.textContent = emoji;
+        div.title = keywords;
         div.onclick = () => {
             newIconInput.value = emoji;
-            emojiGrid.classList.remove('visible');
-            customIconSection.style.display = 'none'; 
+            closeEmojiPicker();
         };
-        emojiGrid.appendChild(div);
-    });
+        frag.appendChild(div);
+    }
+
+    if (shown === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'emoji-grid-empty';
+        empty.textContent = getMessage("noEmojiFound") || "No matching emoji";
+        emojiGrid.appendChild(empty);
+    } else {
+        emojiGrid.appendChild(frag);
+    }
+}
+
+function closeEmojiPicker() {
+    emojiPickerWrap.classList.remove('visible');
+    customIconSection.style.display = 'none';
+}
+
+// Initialize emoji and icon picker grid
+function initEmojiPicker() {
+    // Prefetch catalog in the background; render happens when the picker opens.
+    ensureEmojiCatalog();
+
+    if (emojiSearchInput) {
+        let searchTimer = null;
+        emojiSearchInput.oninput = () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => renderEmojiGrid(emojiSearchInput.value), 80);
+        };
+    }
 
     if (CUSTOM_ICONS.length > 0) {
         clearElement(customIconsList);
@@ -77,8 +145,7 @@ function initEmojiPicker() {
             img.onerror = () => { img.style.display = 'none'; };
             img.onclick = () => {
                 newIconInput.value = `img:icons/${iconFile}`;
-                emojiGrid.classList.remove('visible');
-                customIconSection.style.display = 'none';
+                closeEmojiPicker();
             };
             customIconsList.appendChild(img);
         });
@@ -98,11 +165,15 @@ function generateWorkspaceName() {
 }
 
 toggleEmojiBtn.onclick = () => {
-    emojiGrid.classList.toggle('visible');
-    if (emojiGrid.classList.contains('visible')) {
-        customIconSection.style.display = 'block';
-    } else {
-        customIconSection.style.display = 'none';
+    const opening = !emojiPickerWrap.classList.contains('visible');
+    emojiPickerWrap.classList.toggle('visible', opening);
+    customIconSection.style.display = opening ? 'block' : 'none';
+    if (opening) {
+        if (emojiSearchInput) {
+            emojiSearchInput.value = '';
+            emojiSearchInput.focus();
+        }
+        renderEmojiGrid('');
     }
 };
 
@@ -115,6 +186,7 @@ addBtn.onclick = () => {
         newNameInput.select();
     } else {
         addBtn.style.display = 'block';
+        closeEmojiPicker();
     }
 };
 
@@ -224,6 +296,7 @@ window.onclick = (e) => {
         if (addForm.classList.contains('visible')) {
             addForm.classList.remove('visible');
             addBtn.style.display = 'block';
+            closeEmojiPicker();
         }
     }
 };
@@ -609,6 +682,9 @@ function render() {
             img.style.width = '20px';
             img.style.height = '20px';
             img.style.objectFit = 'contain';
+            // Missing/broken custom icon file (e.g. imported from another install) must not
+            // render as a broken-image placeholder — fall back to a generic folder icon.
+            img.onerror = () => { img.remove(); iconWrapper.textContent = '📁'; };
             iconWrapper.appendChild(img);
         } else if (ws.icon) {
             iconWrapper.textContent = ws.icon;
@@ -882,6 +958,7 @@ function showMoveMenu(fromWsId) {
             const img = document.createElement('img');
             img.src = t.icon.substring(4);
             img.className = 'move-menu-icon';
+            img.onerror = () => { img.replaceWith(document.createTextNode('📁')); };
             row.appendChild(img);
         } else if (t.icon) {
             const iconText = document.createElement('span');
@@ -1163,6 +1240,7 @@ saveNewBtn.onclick = async () => {
     newNameInput.value = '';
     addForm.classList.remove('visible');
     addBtn.style.display = 'block'; 
+    closeEmojiPicker();
     
     if (workspaces.length === 1) {
         await activateWorkspace(newWs.id);
@@ -1256,6 +1334,8 @@ async function renderLogs() {
             if (log.action === 'RENAME_WORKSPACE') actionTitle = getMessage("logRenamed");
             if (log.action === 'MOVE_TABS') actionTitle = getMessage("logMoved");
             if (log.action === 'RESET_WORKSPACES') actionTitle = getMessage("resetWorkspaces") || "Reset";
+            if (log.action === 'SAFE_MODE_ALL_TABS') actionTitle = getMessage("safeModeAllTabs") || "Safety fallback: All Tabs";
+            if (log.action === 'CRASH_RECOVERY') actionTitle = getMessage("crashRecovery") || "Tabs restored after window close";
             
             if (!actionTitle) actionTitle = log.action;
 
@@ -1307,6 +1387,7 @@ async function renderLogs() {
                     img.style.width = '20px';
                     img.style.height = '20px';
                     img.style.objectFit = 'contain';
+                    img.onerror = () => { img.remove(); logIcon.textContent = '📁'; };
                     logIcon.appendChild(img);
                 } else {
                     logIcon.textContent = wsObj.icon;

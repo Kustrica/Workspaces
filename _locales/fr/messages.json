@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Réinitialiser les espaces"
     },
+    "searchEmoji": {
+        "message": "Rechercher un emoji..."
+    },
+    "noEmojiFound": {
+        "message": "Aucun emoji correspondant"
+    },
     "selectEmoji": {
         "message": "Choisir Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Désactivé"
+    },
+    "autoBackup5m": {
+        "message": "5 minutes"
+    },
+    "autoBackup15m": {
+        "message": "15 minutes"
+    },
+    "autoBackup30m": {
+        "message": "30 minutes"
     },
     "autoBackup1h": {
         "message": "1 heure"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Êtes-vous sûr de vouloir réinitialiser tous les espaces de travail ET fermer tous les onglets ?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Mode de secours : Tous les onglets"
+    },
+    "crashRecovery": {
+        "message": "Onglets restaurés après la fermeture de la fenêtre"
     }
 }

@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Resetar Áreas"
     },
+    "searchEmoji": {
+        "message": "Pesquisar emoji..."
+    },
+    "noEmojiFound": {
+        "message": "Nenhum emoji correspondente"
+    },
     "selectEmoji": {
         "message": "Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Desativado"
+    },
+    "autoBackup5m": {
+        "message": "5 minutos"
+    },
+    "autoBackup15m": {
+        "message": "15 minutos"
+    },
+    "autoBackup30m": {
+        "message": "30 minutos"
     },
     "autoBackup1h": {
         "message": "1 hora"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Tem certeza de que deseja redefinir todos os espaços de trabalho E fechar todas as guias?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Modo de segurança: Todas as abas"
+    },
+    "crashRecovery": {
+        "message": "Abas restauradas após o fechamento da janela"
     }
 }

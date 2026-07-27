@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "Reset werkruimtes"
     },
+    "searchEmoji": {
+        "message": "Emoji zoeken..."
+    },
+    "noEmojiFound": {
+        "message": "Geen passende emoji"
+    },
     "selectEmoji": {
         "message": "Kies Emoji"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "Uitgeschakeld"
+    },
+    "autoBackup5m": {
+        "message": "5 minuten"
+    },
+    "autoBackup15m": {
+        "message": "15 minuten"
+    },
+    "autoBackup30m": {
+        "message": "30 minuten"
     },
     "autoBackup1h": {
         "message": "1 uur"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "Weet u zeker dat u alle werkruimten wilt resetten EN alle tabbladen wilt sluiten?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "Veiligheidsmodus: Alle tabbladen"
+    },
+    "crashRecovery": {
+        "message": "Tabbladen hersteld na sluiten van venster"
     }
 }

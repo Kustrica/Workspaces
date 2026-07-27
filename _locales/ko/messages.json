@@ -264,6 +264,12 @@
     "resetWorkspaces": {
         "message": "공간 초기화"
     },
+    "searchEmoji": {
+        "message": "이모지 검색..."
+    },
+    "noEmojiFound": {
+        "message": "일치하는 이모지 없음"
+    },
     "selectEmoji": {
         "message": "이모지 선택"
     },
@@ -374,6 +380,15 @@
     },
     "autoBackupDisabled": {
         "message": "비활성화됨"
+    },
+    "autoBackup5m": {
+        "message": "5분"
+    },
+    "autoBackup15m": {
+        "message": "15분"
+    },
+    "autoBackup30m": {
+        "message": "30분"
     },
     "autoBackup1h": {
         "message": "1시간"
@@ -510,5 +525,11 @@
     "areYouSureResetClose": {
         "message": "모든 작업공간을 재설정하고 모든 탭을 닫으시겠습니까?",
         "description": "Confirmation message before resetting and closing tabs"
+    },
+    "safeModeAllTabs": {
+        "message": "안전 모드: 모든 탭"
+    },
+    "crashRecovery": {
+        "message": "창이 닫힌 후 탭이 복원됨"
     }
 }
