@@ -655,16 +655,22 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
 }
 
 // Switch active workspace
-async function switchWorkspace(workspaceId, preserveActiveTab = false) {
+async function switchWorkspace(workspaceId, preserveActiveTab = false, options = {}) {
     if (isSwitchingWorkspace) {
-        pendingWorkspaceSwitch = { workspaceId, preserveActiveTab };
+        pendingWorkspaceSwitch = { workspaceId, preserveActiveTab, options };
         return;
     }
     isSwitchingWorkspace = true;
 
+    const windowId = (options && typeof options.windowId === 'number') ? options.windowId : undefined;
+    const tabQuery = typeof windowId === 'number' ? { windowId } : { currentWindow: true };
+    const activeQuery = typeof windowId === 'number'
+        ? { active: true, windowId }
+        : { active: true, currentWindow: true };
+
     try {
     if (currentWorkspaceId) {
-        const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        const [currentTab] = await browser.tabs.query(activeQuery);
         if (currentTab) {
             workspaceActiveTabMap[currentWorkspaceId] = currentTab.id;
             // Do not claim unmapped active tabs into the workspace we are leaving —
@@ -679,7 +685,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     if (workspaceId) lastActiveWsId = workspaceId;
     await saveState();
     
-    const tabs = await browser.tabs.query({ currentWindow: true });
+    const tabs = await browser.tabs.query(tabQuery);
     
     const toShow = [];
     const toHide = [];
@@ -728,11 +734,15 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     }
     
     if (!hasWorkspaceTabs) {
-        const newTab = await browser.tabs.create({ active: true });
+        const createOpts = typeof windowId === 'number'
+            ? { windowId, active: true }
+            : { active: true };
+        const newTab = await browser.tabs.create(createOpts);
         toShow.push(newTab.id);
         pendingTabAssignments.add(newTab.id);
         assignTabToWorkspace(newTab.id, currentWorkspaceId);
         pendingTabAssignments.delete(newTab.id);
+        rememberTabMeta(newTab);
         workspaceActiveTabMap[currentWorkspaceId] = newTab.id;
     }
     
@@ -742,7 +752,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
         try { await browser.tabs.show(toShow); } catch(e) {}
 
         let tabToActivate = null;
-        const [activeNow] = await browser.tabs.query({ active: true, currentWindow: true });
+        const [activeNow] = await browser.tabs.query(activeQuery);
         const activeBelongsHere = activeNow && tabWorkspaceMap[activeNow.id] === workspaceId && toShow.includes(activeNow.id);
 
         if (!preserveActiveTab || !activeBelongsHere) {
@@ -783,7 +793,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
     }
 
     if (toHide.length > 0) {
-        const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        const [activeTab] = await browser.tabs.query(activeQuery);
         if (activeTab && toHide.includes(activeTab.id)) {
             let fallback = null;
             for (let i = toShow.length - 1; i >= 0; i--) {
@@ -798,7 +808,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
             }
         }
 
-        const [stillActive] = await browser.tabs.query({ active: true, currentWindow: true });
+        const [stillActive] = await browser.tabs.query(activeQuery);
         if (stillActive && toHide.includes(stillActive.id)) {
             const idx = toHide.indexOf(stillActive.id);
             if (idx > -1) toHide.splice(idx, 1);
@@ -812,7 +822,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false) {
         if (pendingWorkspaceSwitch) {
             const next = pendingWorkspaceSwitch;
             pendingWorkspaceSwitch = null;
-            switchWorkspace(next.workspaceId, next.preserveActiveTab);
+            switchWorkspace(next.workspaceId, next.preserveActiveTab, next.options || {});
         }
     }
 }
@@ -1108,6 +1118,17 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
         return;
     }
 
+    // tabWindowMap may be incomplete (temp addon reload, missed events). Also ask the browser
+    // which tabs still exist in this window and show them — do not await before create().
+    if (typeof windowId === 'number') {
+        browser.tabs.query({ windowId }).then((tabs) => {
+            const ids = tabs.map(t => t.id).filter(id => id !== tabId);
+            if (ids.length === 0) return;
+            browser.tabs.show(ids).catch(() => {});
+            finishKeepWindowAlive(windowId, ids).catch(() => {});
+        }).catch(() => {});
+    }
+
     const targetWorkspaceId = normalizeWorkspaceId(currentWorkspaceId) || (workspaces[0] ? workspaces[0].id : 'ws_default');
     currentWorkspaceId = targetWorkspaceId;
     const createOpts = typeof windowId === 'number' ? { windowId, active: true } : { active: true };
@@ -1147,7 +1168,7 @@ async function finishKeepWindowAlive(windowId, otherIds) {
     fireCrashRecoverySnapshot();
 
     try {
-        await switchWorkspace(destination, true);
+        await switchWorkspace(destination, true, typeof windowId === 'number' ? { windowId } : {});
     } catch (e) {
         try {
             await repairWorkspaceVisibility(destination, { allowActivate: true, windowId });
@@ -1266,6 +1287,7 @@ browser.runtime.onMessage.addListener(async (message) => {
                                 active: false
                             });
                             assignTabToWorkspace(newTab.id, ws.id);
+                            rememberTabMeta(newTab);
                             lastTabId = newTab.id;
 
                             if (oldGroupId !== -1 && oldGroupId !== undefined && browser.tabs.group) {
@@ -1324,19 +1346,26 @@ browser.runtime.onMessage.addListener(async (message) => {
             workspaces = getLocalizedDefaults();
             currentWorkspaceId = 'ws_default';
         }
+        lastActiveWsId = currentWorkspaceId;
+        isAllTabsMode = false;
         
         await saveState();
-        await browser.storage.local.set({ workspaces }); 
+        await browser.storage.local.set({ workspaces, currentWorkspaceId, isAllTabsMode: false, lastActiveWsId }); 
         updateContextMenus();
-        await switchWorkspace(currentWorkspaceId);
+
+        // Finish restore flag BEFORE visibility pass so tab listeners behave normally,
+        // then hide non-current workspace tabs in the SAME window we restored into.
+        // (background scripts have no reliable "currentWindow" — that was why all restored
+        // tabs stayed visible in Main until the user manually switched workspaces.)
+        isRestoringData = false;
+        await switchWorkspace(currentWorkspaceId, true, { windowId: targetWindowId });
+        await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: true, windowId: targetWindowId });
         
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 300));
 
         try {
             await browser.tabs.remove(safetyTab.id);
         } catch (e) { }
-        
-        isRestoringData = false;
         
         if (mode !== 'NO_TABS') {
             browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: 100, restored: totalTabs, total: totalTabs }).catch(() => {});
@@ -1806,6 +1835,8 @@ browser.runtime.onSuspend.addListener(() => {
 
 // Frequency is stored as minutes. Older builds stored hours (1,3,6,8,12,24,72,168).
 const LEGACY_BACKUP_HOUR_VALUES = new Set([1, 3, 6, 8, 12, 24, 72, 168]);
+const DEFAULT_BACKUP_PERIOD_MINUTES = 60; // 1 hour
+const VALID_BACKUP_PERIOD_MINUTES = new Set([5, 15, 30, 60, 180, 360, 480, 720, 1440, 4320, 10080]);
 
 function resolveBackupPeriodMinutes(freqRaw, freqIsMinutes) {
     const n = parseInt(freqRaw, 10);
@@ -1814,6 +1845,16 @@ function resolveBackupPeriodMinutes(freqRaw, freqIsMinutes) {
     if (LEGACY_BACKUP_HOUR_VALUES.has(n)) return n * 60;
     // New minute options (5/15/30/60/…) saved before the flag existed.
     return n;
+}
+
+function normalizeBackupPeriodMinutes(freqRaw, freqIsMinutes) {
+    const resolved = resolveBackupPeriodMinutes(freqRaw, freqIsMinutes);
+    if (resolved > 0 && VALID_BACKUP_PERIOD_MINUTES.has(resolved)) return resolved;
+    // Legacy hour value that wasn't flagged, or unknown — fall back to default 1 hour.
+    if (!freqIsMinutes && LEGACY_BACKUP_HOUR_VALUES.has(parseInt(freqRaw, 10))) {
+        return resolveBackupPeriodMinutes(freqRaw, false);
+    }
+    return DEFAULT_BACKUP_PERIOD_MINUTES;
 }
 
 async function createAutoBackup(reason = 'scheduled') {
@@ -1871,25 +1912,37 @@ async function checkAutoBackupAlarms() {
 
     const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'autoBackupFreqIsMinutes']);
     const isEnabled = res.autoBackupEnabled !== false;
+
     let periodInMinutes;
-    if (res.autoBackupFrequency === undefined || res.autoBackupFrequency === null || res.autoBackupFrequency === '') {
-        periodInMinutes = 180; // default 3 hours
+    if (res.autoBackupEnabled === false || parseInt(res.autoBackupFrequency, 10) === 0) {
+        periodInMinutes = 0;
+    } else if (res.autoBackupFrequency === undefined || res.autoBackupFrequency === null || res.autoBackupFrequency === '') {
+        periodInMinutes = DEFAULT_BACKUP_PERIOD_MINUTES;
     } else {
-        periodInMinutes = resolveBackupPeriodMinutes(res.autoBackupFrequency, !!res.autoBackupFreqIsMinutes);
+        periodInMinutes = normalizeBackupPeriodMinutes(res.autoBackupFrequency, !!res.autoBackupFreqIsMinutes);
     }
+
+    // Persist a valid default so the options page always has a matching <option>.
+    if (isEnabled && periodInMinutes > 0) {
+        const needsWrite = !res.autoBackupFreqIsMinutes
+            || res.autoBackupFrequency === undefined
+            || res.autoBackupFrequency === null
+            || res.autoBackupFrequency === ''
+            || parseInt(res.autoBackupFrequency, 10) !== periodInMinutes;
+        if (needsWrite) {
+            await browser.storage.local.set({
+                autoBackupEnabled: true,
+                autoBackupFrequency: periodInMinutes,
+                autoBackupFreqIsMinutes: true
+            });
+        }
+    }
+
     const existingAlarm = await browser.alarms.get('autoBackupAlarm');
 
     if (!isEnabled || periodInMinutes <= 0) {
         await browser.alarms.clear('autoBackupAlarm');
         return;
-    }
-
-    // Migrate legacy hour values to minutes once, so options UI and alarms stay consistent.
-    if (!res.autoBackupFreqIsMinutes && LEGACY_BACKUP_HOUR_VALUES.has(parseInt(res.autoBackupFrequency, 10))) {
-        await browser.storage.local.set({
-            autoBackupFrequency: periodInMinutes,
-            autoBackupFreqIsMinutes: true
-        });
     }
 
     if (!existingAlarm || existingAlarm.periodInMinutes !== periodInMinutes) {

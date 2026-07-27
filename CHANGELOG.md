@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12] — 2026-07-27
+
+### Fixed
+- **Auto-backup frequency blank / "Next backup: Disabled"** — after the hours→minutes migration, an unmatched stored value left the `<select>` with nothing selected (shown as disabled). Defaults are now **1 hour (60 minutes)**; on load the options page and alarm logic normalize storage to a valid minute value and select the matching option explicitly.
+- **Import/restore from auto-backup showed every tab in Main until a manual workspace switch** — `switchWorkspace` used `currentWindow: true`, which is unreliable in the background script (restored tabs live in a specific `targetWindowId`). Restore now passes that window id into `switchWorkspace` / `repairWorkspaceVisibility` so foreign-workspace tabs are hidden as soon as progress completes.
+- **Last-visible-tab window close** — if the in-memory window→tab map was incomplete, keep-alive fell through to a slow `tabs.create()`. Now also fires a parallel `tabs.query({ windowId })` + `tabs.show()` so hidden tabs from other workspaces can still save the window.
+
 ## [1.11] — 2026-07-27
 
 ### Changed
@@ -107,3 +114,4 @@
 
 ### Changed
 - Removed the unused rogue alarm name `autoBackupCheck` from the options page (settings now only update storage; the background script owns alarms).
+

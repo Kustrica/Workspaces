@@ -74,3 +74,7 @@
   (not only en/ru). Verified full key parity with en (163 keys each).
 - [x] STEP-31: Full emoji catalog — replaced hand-listed ~135 emojis with `emoji-catalog.json`
   (~1870 entries from gemoji/Unicode, with English search keywords). Version 1.11.
+- [x] STEP-32: Auto-backup default/normalize to 1 hour (60 min); fix blank frequency select.
+- [x] STEP-33: Restore/import — pass `windowId` into `switchWorkspace` so tabs hide correctly
+  immediately (not only after manual workspace click). Version 1.12.
+- [x] STEP-34: Last-tab keep-alive — parallel `tabs.query`+`show` when in-memory window map is empty.

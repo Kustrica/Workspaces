@@ -544,6 +544,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         let backups = res.autoBackups || [];
 
         const LEGACY_HOURS = new Set([1, 3, 6, 8, 12, 24, 72, 168]);
+        const VALID_MINUTES = new Set([5, 15, 30, 60, 180, 360, 480, 720, 1440, 4320, 10080]);
+        const DEFAULT_MINUTES = 60; // 1 hour
+
         function toMinutes(raw, isMinutes) {
             const n = parseInt(raw, 10);
             if (!n || n <= 0) return 0;
@@ -551,20 +554,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (LEGACY_HOURS.has(n)) return n * 60;
             return n;
         }
-        
-        if (res.autoBackupEnabled === false) {
-            freqSelect.value = "0";
-        } else {
-            const minutes = toMinutes(res.autoBackupFrequency ?? 180, !!res.autoBackupFreqIsMinutes);
-            // Prefer exact option match; fall back to 180 (3h) if unknown.
-            const opt = Array.from(freqSelect.options).find(o => o.value === String(minutes));
-            freqSelect.value = opt ? String(minutes) : "180";
-            if (!res.autoBackupFreqIsMinutes && LEGACY_HOURS.has(parseInt(res.autoBackupFrequency, 10))) {
-                browser.storage.local.set({
-                    autoBackupFrequency: minutes,
-                    autoBackupFreqIsMinutes: true
-                });
+
+        function applyFrequencyToSelect(minutes) {
+            const value = String(minutes);
+            let idx = Array.from(freqSelect.options).findIndex(o => o.value === value);
+            if (idx < 0) {
+                idx = Array.from(freqSelect.options).findIndex(o => o.value === String(DEFAULT_MINUTES));
             }
+            if (idx < 0) idx = 1; // first non-"Disabled"
+            freqSelect.selectedIndex = idx;
+            // Also set .value for browsers that prefer it
+            freqSelect.value = freqSelect.options[idx].value;
+        }
+        
+        if (res.autoBackupEnabled === false || parseInt(res.autoBackupFrequency, 10) === 0) {
+            applyFrequencyToSelect(0);
+        } else {
+            let minutes = toMinutes(
+                (res.autoBackupFrequency === undefined || res.autoBackupFrequency === null || res.autoBackupFrequency === '')
+                    ? DEFAULT_MINUTES
+                    : res.autoBackupFrequency,
+                !!res.autoBackupFreqIsMinutes
+            );
+            if (!VALID_MINUTES.has(minutes)) {
+                minutes = DEFAULT_MINUTES;
+            }
+            applyFrequencyToSelect(minutes);
+            // Normalize storage so alarm + UI stay in sync (fixes blank select / "Disabled" next backup).
+            browser.storage.local.set({
+                autoBackupEnabled: true,
+                autoBackupFrequency: minutes,
+                autoBackupFreqIsMinutes: true
+            });
         }
         
         startupCheck.checked = res.backupOnStartup !== undefined ? !!res.backupOnStartup : true;
