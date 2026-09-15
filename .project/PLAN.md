@@ -95,3 +95,8 @@
 - [x] STEP-43: Prevent post-rebuild storage merges (`applyStorageSnapshot`, `pendingStoragePatches`) during background initialization from clobbering the freshly restored `tabWorkspaceMap` and `workspaceActiveTabMap` with obsolete tab IDs from the previous session.
 - [x] STEP-44: Clean up `workspaceActiveTabMap` during `rebuildTabWorkspaceMapFromOpenTabs` to discard dead tab IDs and retain active valid browser tabs.
 - [x] STEP-45: Extend `repairWorkspaceVisibility` during startup wakeup to loop over all normal browser windows (`browser.windows.getAll`), preventing restored tabs in secondary windows from remaining hidden or unreachable until All Tabs mode is toggled.
+
+## Phase 12: Restore last-active tab on workspace switch + manifest recovery
+- [x] STEP-46: Root-caused "switch back → first tab" — rebuild wiped `workspaceActiveTabMap` to first-tab-per-workspace; fixed preserve/active/`lastAccessed` rebuild + safer leave/activate in `switchWorkspace`.
+- [x] STEP-47: Restored emptied `manifest.json` from last good commit; version **1.13**.
+- [ ] STEP-48 (design only — awaiting user choice): cross-device sync options (Firefox `storage.sync` for settings; URL/workspace export or optional sync blob for tab lists — no custom server).

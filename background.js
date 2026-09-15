@@ -318,15 +318,42 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
 
     tabWorkspaceMap = rebuiltMap;
 
-    // Clean up active tab map using valid open tab IDs to remove dead tab IDs from previous browser session
+    // Rebuild active-tab memory carefully:
+    // NEVER reset every workspace to "first tab in query order" — that made switching back
+    // to a workspace jump to its leftmost tab ~every time the background woke and rebuilt.
+    // Preserve remembered IDs that still point at open tabs in the same workspace; let the
+    // currently active tab win for its workspace; only fill gaps for workspaces with no memory.
+    const openTabIds = new Set(tabs.map(t => t.id));
     const rebuiltActiveMap = {};
+
+    for (const [wsId, rawId] of Object.entries(workspaceActiveTabMap || {})) {
+        const tabId = typeof rawId === 'number' ? rawId : parseInt(rawId, 10);
+        if (!Number.isFinite(tabId)) continue;
+        if (!openTabIds.has(tabId)) continue;
+        if (tabWorkspaceMap[tabId] !== wsId) continue;
+        rebuiltActiveMap[wsId] = tabId;
+    }
+
+    for (const tab of tabs) {
+        if (!tab.active) continue;
+        const wsId = tabWorkspaceMap[tab.id];
+        if (wsId) rebuiltActiveMap[wsId] = tab.id;
+    }
+
+    // Gap-fill: prefer most recently accessed tab in that workspace (not leftmost).
+    const bestByWs = {};
     for (const tab of tabs) {
         const wsId = tabWorkspaceMap[tab.id];
-        if (!wsId) continue;
-        if (tab.active || !rebuiltActiveMap[wsId]) {
-            rebuiltActiveMap[wsId] = tab.id;
+        if (!wsId || rebuiltActiveMap[wsId]) continue;
+        const prev = bestByWs[wsId];
+        if (!prev || (tab.lastAccessed || 0) > (prev.lastAccessed || 0)) {
+            bestByWs[wsId] = tab;
         }
     }
+    for (const [wsId, tab] of Object.entries(bestByWs)) {
+        rebuiltActiveMap[wsId] = tab.id;
+    }
+
     workspaceActiveTabMap = rebuiltActiveMap;
 
     // Safety net: never silently funnel every single restored tab into one workspace when we
@@ -486,19 +513,16 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
         const activeBelongsHere = active && tabWorkspaceMap[active.id] === workspaceId;
 
         if (!activeBelongsHere) {
-            let tabToActivate = workspaceActiveTabMap[workspaceId];
-            if (!tabToActivate || !toShow.includes(tabToActivate) || tabWorkspaceMap[tabToActivate] !== workspaceId) {
-                tabToActivate = null;
-                for (let i = toShow.length - 1; i >= 0; i--) {
-                    const id = toShow[i];
-                    if (tabWorkspaceMap[id] === workspaceId) {
-                        tabToActivate = id;
-                        break;
-                    }
-                }
-            }
+            let tabToActivate = pickBestWorkspaceTabId(
+                tabs.filter(t => toShow.includes(t.id)),
+                workspaceId,
+                [workspaceActiveTabMap[workspaceId]]
+            );
             if (tabToActivate) {
-                try { await browser.tabs.update(tabToActivate, { active: true }); } catch (e) {}
+                try {
+                    await browser.tabs.update(tabToActivate, { active: true });
+                    workspaceActiveTabMap[workspaceId] = tabToActivate;
+                } catch (e) {}
             }
         }
     }
@@ -520,6 +544,34 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
     saveState({ force: !isInitializingState });
 }
 
+function normalizeTabId(rawId) {
+    if (typeof rawId === 'number' && Number.isFinite(rawId)) return rawId;
+    const n = parseInt(rawId, 10);
+    return Number.isFinite(n) ? n : null;
+}
+
+function pickBestWorkspaceTabId(tabs, workspaceId, preferredIds) {
+    const preferred = Array.isArray(preferredIds) ? preferredIds : [preferredIds];
+    for (const raw of preferred) {
+        const id = normalizeTabId(raw);
+        if (id == null) continue;
+        const tab = tabs.find(t => t.id === id);
+        if (tab && tabWorkspaceMap[id] === workspaceId) return id;
+    }
+
+    let bestId = null;
+    let bestAccessed = -1;
+    for (const tab of tabs) {
+        if (tabWorkspaceMap[tab.id] !== workspaceId) continue;
+        const accessed = tab.lastAccessed || 0;
+        if (accessed >= bestAccessed) {
+            bestAccessed = accessed;
+            bestId = tab.id;
+        }
+    }
+    return bestId;
+}
+
 // Switch active workspace
 async function switchWorkspace(workspaceId, preserveActiveTab = false, options = {}) {
     if (isSwitchingWorkspace) {
@@ -538,9 +590,14 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     if (currentWorkspaceId) {
         const [currentTab] = await browser.tabs.query(activeQuery);
         if (currentTab) {
-            workspaceActiveTabMap[currentWorkspaceId] = currentTab.id;
-            // Do not claim unmapped active tabs into the workspace we are leaving —
-            // that race with onCreated was pushing tabs into Main.
+            const mapped = resolveExistingWorkspaceId(tabWorkspaceMap[currentTab.id]);
+            // Only remember this tab for the workspace we are leaving if it actually belongs there.
+            // (A keepVisible group tab / race must not overwrite the real last-active memory.)
+            if (mapped === currentWorkspaceId) {
+                workspaceActiveTabMap[currentWorkspaceId] = currentTab.id;
+            } else if (mapped) {
+                workspaceActiveTabMap[mapped] = currentTab.id;
+            }
         }
     }
     
@@ -619,53 +676,32 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
         const activeBelongsHere = activeNow && tabWorkspaceMap[activeNow.id] === workspaceId && toShow.includes(activeNow.id);
 
         if (!preserveActiveTab || !activeBelongsHere) {
-            tabToActivate = workspaceActiveTabMap[workspaceId];
-            
-            let isValidActiveTab = false;
-            if (tabToActivate && toShow.includes(tabToActivate)) {
-                 try {
-                     await browser.tabs.get(tabToActivate);
-                     isValidActiveTab = true;
-                 } catch (e) {
-                     isValidActiveTab = false;
-                 }
-            }
-
-            if (!isValidActiveTab) {
-                let workspaceTab = null;
-                for (let i = toShow.length - 1; i >= 0; i--) {
-                    const id = toShow[i];
-                    if (tabWorkspaceMap[id] === workspaceId) {
-                        workspaceTab = id;
-                        break;
-                    }
-                }
-                
-                if (workspaceTab) {
-                    tabToActivate = workspaceTab;
-                } else {
-                    // Never fall back to a keepVisible foreign tab (e.g. Main group tab).
-                    tabToActivate = null;
-                }
-            }
+            const remembered = normalizeTabId(workspaceActiveTabMap[workspaceId]);
+            tabToActivate = pickBestWorkspaceTabId(
+                tabs.filter(t => toShow.includes(t.id)),
+                workspaceId,
+                [remembered]
+            );
 
             if (tabToActivate && toShow.includes(tabToActivate) && tabWorkspaceMap[tabToActivate] === workspaceId) {
-                try { await browser.tabs.update(tabToActivate, { active: true }); } catch(e) {}
+                try {
+                    await browser.tabs.update(tabToActivate, { active: true });
+                    workspaceActiveTabMap[workspaceId] = tabToActivate;
+                } catch(e) {}
             }
+        } else if (activeNow) {
+            workspaceActiveTabMap[workspaceId] = activeNow.id;
         }
     }
 
     if (toHide.length > 0) {
         const [activeTab] = await browser.tabs.query(activeQuery);
         if (activeTab && toHide.includes(activeTab.id)) {
-            let fallback = null;
-            for (let i = toShow.length - 1; i >= 0; i--) {
-                const id = toShow[i];
-                if (tabWorkspaceMap[id] === workspaceId) {
-                    fallback = id;
-                    break;
-                }
-            }
+            const fallback = pickBestWorkspaceTabId(
+                tabs.filter(t => toShow.includes(t.id)),
+                workspaceId,
+                [workspaceActiveTabMap[workspaceId]]
+            );
             if (fallback) {
                 try { await browser.tabs.update(fallback, { active: true }); } catch(e) {}
             }
