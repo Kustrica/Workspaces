@@ -1,0 +1,22 @@
+Workspaces – AMO screenshot captions (upload in this order)
+
+01_welcome.png
+Quick onboarding on first launch: separate your tabs by task and keep your browser organized.
+
+02_sync_devices.png
+Sync workspaces and tabs between your computers with Firefox Sync – choose what to sync, check the quota, and see every device in sync.
+
+03_workspace_in_action.png
+Only the active workspace's tabs are shown in the tab bar; every workspace in the sidebar shows how many tabs it holds.
+
+04_sidebar_themes_history.png
+Clean sidebar in dark and light themes, with emoji or custom icons, tab counters, and a history log of every change.
+
+05_settings_shortcuts_backups.png
+Keyboard shortcuts for the sidebar and workspaces 1–9, interface language, JSON export/import, and automatic backups with one-click restore.
+
+06_move_tabs.png
+Move one tab or several selected tabs to any workspace from the tab context menu.
+
+07_import_options.png
+Import a backup your way: workspaces only, merge with the current setup, or replace everything.
