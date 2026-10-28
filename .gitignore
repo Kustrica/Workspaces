@@ -1,0 +1,12 @@
+# Release archives (built by tools/build-release.py)
+*.zip
+.project/artifacts/
+web-ext-artifacts/
+
+# Local code-index tool cache
+.codebase-memory/
+
+# One-off locale migration helpers (already applied to _locales/*/messages.json)
+_locales/*.json
+tools/*
+!tools/build-release.py
