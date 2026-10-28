@@ -301,7 +301,7 @@
         "message": "Гісторыя"
     },
     "sidebarToggle": {
-        "message": "Бакавая панэль:"
+        "message": "Адкрыць бакавую панэль:"
     },
     "supportBoosty": {
         "message": "Падтрымаць на Boosty"
@@ -364,7 +364,40 @@
         "message": "Прастора"
     },
     "workspaceSwitching": {
-        "message": "Пераключэнне:"
+        "message": "Прасторы:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Адкрыць прастору $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Адкрыць бакавую панэль"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Адкрыць прастору 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Адкрыць прастору 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Адкрыць прастору 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Адкрыць прастору 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Адкрыць прастору 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Адкрыць прастору 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Адкрыць прастору 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Адкрыць прастору 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Адкрыць прастору 9"
     },
     "yes": {
         "message": "Так"

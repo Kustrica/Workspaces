@@ -301,7 +301,7 @@
         "message": "Toon geschiedenis"
     },
     "sidebarToggle": {
-        "message": "Zijbalk:"
+        "message": "Zijbalk openen:"
     },
     "supportBoosty": {
         "message": "Steun op Boosty"
@@ -364,7 +364,40 @@
         "message": "Werkruimte"
     },
     "workspaceSwitching": {
-        "message": "Wisselen:"
+        "message": "Werkruimtes:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Werkruimte $1 openen:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Zijbalk openen"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Werkruimte 1 openen"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Werkruimte 2 openen"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Werkruimte 3 openen"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Werkruimte 4 openen"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Werkruimte 5 openen"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Werkruimte 6 openen"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Werkruimte 7 openen"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Werkruimte 8 openen"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Werkruimte 9 openen"
     },
     "yes": {
         "message": "Ja"

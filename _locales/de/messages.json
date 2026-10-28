@@ -301,7 +301,7 @@
         "message": "Verlauf zeigen"
     },
     "sidebarToggle": {
-        "message": "Seitenleiste umschalten:"
+        "message": "Seitenleiste öffnen:"
     },
     "supportBoosty": {
         "message": "Unterstützen auf Boosty"
@@ -364,7 +364,40 @@
         "message": "Bereich"
     },
     "workspaceSwitching": {
-        "message": "Bereich wechseln:"
+        "message": "Bereiche:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Bereich $1 öffnen:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Seitenleiste öffnen"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Bereich 1 öffnen"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Bereich 2 öffnen"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Bereich 3 öffnen"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Bereich 4 öffnen"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Bereich 5 öffnen"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Bereich 6 öffnen"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Bereich 7 öffnen"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Bereich 8 öffnen"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Bereich 9 öffnen"
     },
     "yes": {
         "message": "Ja"

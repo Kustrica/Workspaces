@@ -38,6 +38,9 @@
     const SYNCED_SETTING_KEYS = [
         'theme',
         'ui_language',
+        // Time of the user's explicit language choice. Without it ui_language never syncs:
+        // "Auto" or an old value nobody picked must not overwrite another device.
+        'ui_language_set_at',
         'areActionsVisible',
         'autoBackupEnabled',
         'autoBackupFrequency',
@@ -174,9 +177,25 @@
             for (const key of SYNCED_SETTING_KEYS) {
                 if (settings[key] !== undefined) doc.s[key] = settings[key];
             }
+            resolveLanguageSetting(doc.s, settings);
         }
 
         return doc;
+    }
+
+    // The interface language travels only as an explicit, timestamped choice; the newest
+    // choice wins. Values without a choice time (defaults, older versions) are dropped.
+    function resolveLanguageSetting(target, ...sources) {
+        delete target.ui_language;
+        delete target.ui_language_set_at;
+        const choice = sources
+            .filter(s => s && typeof s.ui_language === 'string' && Number(s.ui_language_set_at) > 0)
+            .sort((a, b) => Number(b.ui_language_set_at) - Number(a.ui_language_set_at))[0];
+        if (choice) {
+            target.ui_language = choice.ui_language;
+            target.ui_language_set_at = Number(choice.ui_language_set_at);
+        }
+        return target;
     }
 
     // about:* / moz-extension: pages cannot be recreated meaningfully on another device.
@@ -551,6 +570,7 @@
                 if (JSON.stringify(value) !== JSON.stringify((baseDoc.s || {})[key])) merged.s[key] = value;
             }
         }
+        resolveLanguageSetting(merged.s, localDoc && localDoc.s, remoteDoc && remoteDoc.s);
 
         const byId = new Map();
         const byName = new Map();
@@ -1053,6 +1073,7 @@
         QUOTA_TOTAL_BYTES,
         QUOTA_ITEM_BYTES,
         SYNCED_SETTING_KEYS,
+        resolveLanguageSetting,
         isAvailable,
         hasCompression,
         buildSyncDoc,

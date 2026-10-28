@@ -301,7 +301,7 @@
         "message": "Voir l'historique"
     },
     "sidebarToggle": {
-        "message": "Barre latérale :"
+        "message": "Ouvrir la barre latérale :"
     },
     "supportBoosty": {
         "message": "Soutenir sur Boosty"
@@ -364,7 +364,40 @@
         "message": "Espace"
     },
     "workspaceSwitching": {
-        "message": "Changer d'espace :"
+        "message": "Espaces :"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Ouvrir l’espace $1 :"
+    },
+    "cmdOpenSidebar": {
+        "message": "Ouvrir la barre latérale"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Ouvrir l’espace 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Ouvrir l’espace 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Ouvrir l’espace 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Ouvrir l’espace 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Ouvrir l’espace 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Ouvrir l’espace 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Ouvrir l’espace 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Ouvrir l’espace 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Ouvrir l’espace 9"
     },
     "yes": {
         "message": "Oui"

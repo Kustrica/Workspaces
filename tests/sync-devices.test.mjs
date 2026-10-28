@@ -110,4 +110,16 @@ await run('setSyncEnabled(true)');
 assert.equal(remote.sync_leave_devA, undefined);
 assert.ok(remote.sync_dev_devA && remote.sync_dev_devA.enabled);
 console.log('ok a removed device can rejoin by turning sync on');
-console.log('9 device roster tests passed');
+
+// Interface language from another device: only a newer explicit choice is applied.
+delete local.ui_language; delete local.ui_language_set_at;
+await run("applySyncedSettings({ ui_language: 'en' })");
+assert.equal(local.ui_language, undefined, 'a value nobody chose must not replace Auto');
+local.ui_language = 'auto'; local.ui_language_set_at = 500;
+await run("applySyncedSettings({ ui_language: 'en', ui_language_set_at: 100 })");
+assert.equal(local.ui_language, 'auto', 'an older choice must not replace a newer one');
+await run("applySyncedSettings({ ui_language: 'de', ui_language_set_at: 900 })");
+assert.equal(local.ui_language, 'de');
+assert.equal(local.ui_language_set_at, 900);
+console.log('ok synced language respects Auto and the newest explicit choice');
+console.log('10 device roster and settings tests passed');

@@ -1,5 +1,12 @@
 # Changelog
 
+1.19.16
+- Fixed menu items and dialogs showing raw placeholders such as "Move $COUNT$ Tabs to Workspace" or "$NAME$" when an interface language is chosen manually: the manual-language path now resolves named placeholders exactly like Firefox.
+- The interface language no longer changes by itself through sync. Only an explicit choice made in Options (with its time) is synced, the newest choice wins, and "Auto" or values nobody picked are never pushed or applied.
+- Switching the language back to Auto takes effect in the background (context menus) without restarting.
+- Clearer shortcut names in Options and in Firefox's shortcut manager: "Open sidebar" and "Open workspace 1–9", in all 19 languages.
+- Added i18n and language-sync regression tests.
+
 1.19.15
 - Clarified the "Devices in sync" list: each device now has one labelled action instead of an unexplained ✕ plus "Force remove". Disconnect (this or another device), Remove now (only while a device is still waiting to disconnect) and Remove from list (devices that no longer sync).
 - Rewrote the device statuses, hint and confirmation texts in all 19 languages: nothing is deleted, sync only turns off on that device, and how to sync it again ("Sync workspaces and tabs" on that device).

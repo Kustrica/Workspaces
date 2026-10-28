@@ -301,7 +301,7 @@
         "message": "Show Logs"
     },
     "sidebarToggle": {
-        "message": "Toggle Sidebar:"
+        "message": "Open sidebar:"
     },
     "supportBoosty": {
         "message": "Support on Boosty"
@@ -364,7 +364,40 @@
         "message": "Workspace"
     },
     "workspaceSwitching": {
-        "message": "Workspace Switching:"
+        "message": "Workspaces:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Open workspace $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Open sidebar"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Open workspace 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Open workspace 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Open workspace 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Open workspace 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Open workspace 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Open workspace 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Open workspace 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Open workspace 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Open workspace 9"
     },
     "yes": {
         "message": "Yes"

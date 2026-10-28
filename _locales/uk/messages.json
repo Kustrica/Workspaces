@@ -301,7 +301,7 @@
         "message": "Історія"
     },
     "sidebarToggle": {
-        "message": "Сайдбар:"
+        "message": "Відкрити бічну панель:"
     },
     "supportBoosty": {
         "message": "Підтримати на Boosty"
@@ -364,7 +364,40 @@
         "message": "Простір"
     },
     "workspaceSwitching": {
-        "message": "Перемикання:"
+        "message": "Простори:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Відкрити простір $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Відкрити бічну панель"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Відкрити простір 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Відкрити простір 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Відкрити простір 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Відкрити простір 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Відкрити простір 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Відкрити простір 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Відкрити простір 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Відкрити простір 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Відкрити простір 9"
     },
     "yes": {
         "message": "Так"

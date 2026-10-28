@@ -301,7 +301,7 @@
         "message": "顯示日誌"
     },
     "sidebarToggle": {
-        "message": "切換側邊欄："
+        "message": "開啟側邊欄："
     },
     "supportBoosty": {
         "message": "支持 Boosty"
@@ -364,7 +364,40 @@
         "message": "工作區"
     },
     "workspaceSwitching": {
-        "message": "切換工作區："
+        "message": "工作區："
+    },
+    "shortcutOpenWorkspace": {
+        "message": "開啟工作區 $1："
+    },
+    "cmdOpenSidebar": {
+        "message": "開啟側邊欄"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "開啟工作區 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "開啟工作區 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "開啟工作區 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "開啟工作區 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "開啟工作區 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "開啟工作區 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "開啟工作區 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "開啟工作區 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "開啟工作區 9"
     },
     "yes": {
         "message": "是"

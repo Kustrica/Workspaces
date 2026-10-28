@@ -301,7 +301,7 @@
         "message": "履歴を表示"
     },
     "sidebarToggle": {
-        "message": "サイドバー切替:"
+        "message": "サイドバーを開く:"
     },
     "supportBoosty": {
         "message": "Boostyで支援"
@@ -364,7 +364,40 @@
         "message": "ワークスペース"
     },
     "workspaceSwitching": {
-        "message": "切替:"
+        "message": "ワークスペース:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "ワークスペース $1 を開く:"
+    },
+    "cmdOpenSidebar": {
+        "message": "サイドバーを開く"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "ワークスペース 1 を開く"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "ワークスペース 2 を開く"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "ワークスペース 3 を開く"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "ワークスペース 4 を開く"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "ワークスペース 5 を開く"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "ワークスペース 6 を開く"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "ワークスペース 7 を開く"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "ワークスペース 8 を開く"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "ワークスペース 9 を開く"
     },
     "yes": {
         "message": "はい"

@@ -301,7 +301,7 @@
         "message": "إظهار السجل"
     },
     "sidebarToggle": {
-        "message": "الشريط الجانبي:"
+        "message": "فتح الشريط الجانبي:"
     },
     "supportBoosty": {
         "message": "دعم على Boosty"
@@ -364,7 +364,40 @@
         "message": "مساحة عمل"
     },
     "workspaceSwitching": {
-        "message": "تبديل المساحة:"
+        "message": "مساحات العمل:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "فتح مساحة العمل $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "فتح الشريط الجانبي"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "فتح مساحة العمل 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "فتح مساحة العمل 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "فتح مساحة العمل 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "فتح مساحة العمل 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "فتح مساحة العمل 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "فتح مساحة العمل 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "فتح مساحة العمل 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "فتح مساحة العمل 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "فتح مساحة العمل 9"
     },
     "yes": {
         "message": "نعم"

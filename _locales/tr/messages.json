@@ -301,7 +301,7 @@
         "message": "Geçmişi Göster"
     },
     "sidebarToggle": {
-        "message": "Kenar Çubuğu:"
+        "message": "Kenar çubuğunu aç:"
     },
     "supportBoosty": {
         "message": "Boosty ile Destekle"
@@ -364,7 +364,40 @@
         "message": "Çalışma Alanı"
     },
     "workspaceSwitching": {
-        "message": "Alan Değiştirme:"
+        "message": "Çalışma alanları:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "$1. çalışma alanını aç:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Kenar çubuğunu aç"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "1. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "2. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "3. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "4. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "5. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "6. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "7. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "8. çalışma alanını aç"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "9. çalışma alanını aç"
     },
     "yes": {
         "message": "Evet"

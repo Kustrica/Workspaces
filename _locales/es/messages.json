@@ -301,7 +301,7 @@
         "message": "Ver historial"
     },
     "sidebarToggle": {
-        "message": "Alternar barra lateral:"
+        "message": "Abrir la barra lateral:"
     },
     "supportBoosty": {
         "message": "Apoyar en Boosty"
@@ -364,7 +364,40 @@
         "message": "Espacio"
     },
     "workspaceSwitching": {
-        "message": "Cambiar espacio:"
+        "message": "Espacios:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Abrir el espacio $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Abrir la barra lateral"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Abrir el espacio 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Abrir el espacio 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Abrir el espacio 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Abrir el espacio 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Abrir el espacio 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Abrir el espacio 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Abrir el espacio 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Abrir el espacio 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Abrir el espacio 9"
     },
     "yes": {
         "message": "Sí"

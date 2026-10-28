@@ -84,9 +84,10 @@ async function loadShortcuts() {
         row.style.gap = '10px';
 
         const label = document.createElement('span');
-        label.style.width = '120px';
-        label.style.fontSize = '14px'; 
-        label.textContent = `${getMessage("workspaceDefaultName")} ${i}:`;
+        label.style.minWidth = '200px';
+        label.style.flexShrink = '0';
+        label.style.fontSize = '14px';
+        label.textContent = getMessage("shortcutOpenWorkspace", [String(i)]) || `Open workspace ${i}:`;
 
         const input = document.createElement('input');
         input.type = 'text';
@@ -684,7 +685,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         langSelect.addEventListener('change', () => {
             const newLang = langSelect.value;
-            browser.storage.local.set({ ui_language: newLang }).then(() => {
+            browser.storage.local.set({ ui_language: newLang, ui_language_set_at: Date.now() }).then(() => {
                 showStatus(getMessage('statusSaved') || "Language updated. Reloading...", 'success');
                 setTimeout(() => location.reload(), 800);
             });

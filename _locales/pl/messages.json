@@ -301,7 +301,7 @@
         "message": "Pokaż historię"
     },
     "sidebarToggle": {
-        "message": "Pasek boczny:"
+        "message": "Otwórz panel boczny:"
     },
     "supportBoosty": {
         "message": "Wesprzyj na Boosty"
@@ -364,7 +364,40 @@
         "message": "Obszar"
     },
     "workspaceSwitching": {
-        "message": "Przełączanie:"
+        "message": "Obszary:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Otwórz obszar $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Otwórz panel boczny"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Otwórz obszar 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Otwórz obszar 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Otwórz obszar 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Otwórz obszar 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Otwórz obszar 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Otwórz obszar 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Otwórz obszar 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Otwórz obszar 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Otwórz obszar 9"
     },
     "yes": {
         "message": "Tak"

@@ -301,7 +301,7 @@
         "message": "Xem lịch sử"
     },
     "sidebarToggle": {
-        "message": "Thanh bên:"
+        "message": "Mở thanh bên:"
     },
     "supportBoosty": {
         "message": "Ủng hộ trên Boosty"
@@ -364,7 +364,40 @@
         "message": "Không gian"
     },
     "workspaceSwitching": {
-        "message": "Chuyển đổi:"
+        "message": "Không gian:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Mở không gian $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Mở thanh bên"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Mở không gian 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Mở không gian 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Mở không gian 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Mở không gian 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Mở không gian 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Mở không gian 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Mở không gian 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Mở không gian 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Mở không gian 9"
     },
     "yes": {
         "message": "Có"

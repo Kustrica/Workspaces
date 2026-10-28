@@ -2587,12 +2587,20 @@ async function applySyncedSettings(settings) {
     for (const key of api.SYNCED_SETTING_KEYS) {
         if (settings[key] === undefined) continue;
         if (key === 'theme' && !syncPrefs.theme) continue;
-        if (key === 'ui_language' && !syncPrefs.language) continue;
+        // Language is handled below: only a newer explicit choice may replace this device's.
+        if (key === 'ui_language' || key === 'ui_language_set_at') continue;
         if (key === 'areActionsVisible' && !syncPrefs.sidebar) continue;
         if (key.startsWith('autoBackup') || key === 'backupOnStartup') {
             if (!syncPrefs.uiSettings) continue;
         }
         if (JSON.stringify(current[key]) !== JSON.stringify(settings[key])) patch[key] = settings[key];
+    }
+    const remoteChoiceAt = Number(settings.ui_language_set_at) || 0;
+    const validLanguage = typeof settings.ui_language === 'string' &&
+        /^(auto|[a-z]{2}(_[A-Z]{2})?)$/.test(settings.ui_language);
+    if (syncPrefs.language && validLanguage && remoteChoiceAt > (Number(current.ui_language_set_at) || 0)) {
+        if (current.ui_language !== settings.ui_language) patch.ui_language = settings.ui_language;
+        patch.ui_language_set_at = remoteChoiceAt;
     }
     if (Object.keys(patch).length > 0) {
         await browser.storage.local.set(patch);

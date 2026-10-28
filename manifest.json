@@ -4,7 +4,7 @@
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
   "homepage_url": "https://t.me/Kustric",
-  "version": "1.19.15",
+  "version": "1.19.16",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -41,70 +41,70 @@
         "default": "Ctrl+Q",
         "mac": "Command+Q"
       },
-      "description": "Toggle Sidebar"
+      "description": "__MSG_cmdOpenSidebar__"
     },
     "switch_workspace_1": {
       "suggested_key": {
         "default": "Ctrl+Shift+1",
         "mac": "Command+Shift+1"
       },
-      "description": "Switch to Workspace 1"
+      "description": "__MSG_cmdOpenWorkspace1__"
     },
     "switch_workspace_2": {
       "suggested_key": {
         "default": "Ctrl+Shift+2",
         "mac": "Command+Shift+2"
       },
-      "description": "Switch to Workspace 2"
+      "description": "__MSG_cmdOpenWorkspace2__"
     },
     "switch_workspace_3": {
       "suggested_key": {
         "default": "Ctrl+Shift+3",
         "mac": "Command+Shift+3"
       },
-      "description": "Switch to Workspace 3"
+      "description": "__MSG_cmdOpenWorkspace3__"
     },
     "switch_workspace_4": {
       "suggested_key": {
         "default": "Ctrl+Shift+4",
         "mac": "Command+Shift+4"
       },
-      "description": "Switch to Workspace 4"
+      "description": "__MSG_cmdOpenWorkspace4__"
     },
     "switch_workspace_5": {
       "suggested_key": {
         "default": "Ctrl+Shift+5",
         "mac": "Command+Shift+5"
       },
-      "description": "Switch to Workspace 5"
+      "description": "__MSG_cmdOpenWorkspace5__"
     },
     "switch_workspace_6": {
       "suggested_key": {
         "default": "Ctrl+Shift+6",
         "mac": "Command+Shift+6"
       },
-      "description": "Switch to Workspace 6"
+      "description": "__MSG_cmdOpenWorkspace6__"
     },
     "switch_workspace_7": {
       "suggested_key": {
         "default": "Ctrl+Shift+7",
         "mac": "Command+Shift+7"
       },
-      "description": "Switch to Workspace 7"
+      "description": "__MSG_cmdOpenWorkspace7__"
     },
     "switch_workspace_8": {
       "suggested_key": {
         "default": "Ctrl+Shift+8",
         "mac": "Command+Shift+8"
       },
-      "description": "Switch to Workspace 8"
+      "description": "__MSG_cmdOpenWorkspace8__"
     },
     "switch_workspace_9": {
       "suggested_key": {
         "default": "Ctrl+Shift+9",
         "mac": "Command+Shift+9"
       },
-      "description": "Switch to Workspace 9"
+      "description": "__MSG_cmdOpenWorkspace9__"
     }
   },
   "options_ui": {

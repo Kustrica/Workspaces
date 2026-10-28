@@ -301,7 +301,7 @@
         "message": "Lihat Riwayat"
     },
     "sidebarToggle": {
-        "message": "Bilah Sisi:"
+        "message": "Buka bilah sisi:"
     },
     "supportBoosty": {
         "message": "Dukung di Boosty"
@@ -364,7 +364,40 @@
         "message": "Ruang Kerja"
     },
     "workspaceSwitching": {
-        "message": "Ganti Ruang:"
+        "message": "Ruang kerja:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Buka ruang kerja $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Buka bilah sisi"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Buka ruang kerja 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Buka ruang kerja 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Buka ruang kerja 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Buka ruang kerja 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Buka ruang kerja 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Buka ruang kerja 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Buka ruang kerja 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Buka ruang kerja 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Buka ruang kerja 9"
     },
     "yes": {
         "message": "Ya"

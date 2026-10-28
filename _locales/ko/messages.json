@@ -301,7 +301,7 @@
         "message": "기록 보기"
     },
     "sidebarToggle": {
-        "message": "사이드바 토글:"
+        "message": "사이드바 열기:"
     },
     "supportBoosty": {
         "message": "Boosty 후원"
@@ -364,7 +364,40 @@
         "message": "워크스페이스"
     },
     "workspaceSwitching": {
-        "message": "공간 전환:"
+        "message": "워크스페이스:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "워크스페이스 $1 열기:"
+    },
+    "cmdOpenSidebar": {
+        "message": "사이드바 열기"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "워크스페이스 1 열기"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "워크스페이스 2 열기"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "워크스페이스 3 열기"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "워크스페이스 4 열기"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "워크스페이스 5 열기"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "워크스페이스 6 열기"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "워크스페이스 7 열기"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "워크스페이스 8 열기"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "워크스페이스 9 열기"
     },
     "yes": {
         "message": "예"

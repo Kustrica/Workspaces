@@ -301,7 +301,7 @@
         "message": "История"
     },
     "sidebarToggle": {
-        "message": "Переключить сайдбар:"
+        "message": "Открыть сайдбар:"
     },
     "supportBoosty": {
         "message": "Поддержать на Boosty"
@@ -364,7 +364,40 @@
         "message": "Пространство"
     },
     "workspaceSwitching": {
-        "message": "Переключение:"
+        "message": "Пространства:"
+    },
+    "shortcutOpenWorkspace": {
+        "message": "Открыть пространство $1:"
+    },
+    "cmdOpenSidebar": {
+        "message": "Открыть сайдбар"
+    },
+    "cmdOpenWorkspace1": {
+        "message": "Открыть пространство 1"
+    },
+    "cmdOpenWorkspace2": {
+        "message": "Открыть пространство 2"
+    },
+    "cmdOpenWorkspace3": {
+        "message": "Открыть пространство 3"
+    },
+    "cmdOpenWorkspace4": {
+        "message": "Открыть пространство 4"
+    },
+    "cmdOpenWorkspace5": {
+        "message": "Открыть пространство 5"
+    },
+    "cmdOpenWorkspace6": {
+        "message": "Открыть пространство 6"
+    },
+    "cmdOpenWorkspace7": {
+        "message": "Открыть пространство 7"
+    },
+    "cmdOpenWorkspace8": {
+        "message": "Открыть пространство 8"
+    },
+    "cmdOpenWorkspace9": {
+        "message": "Открыть пространство 9"
     },
     "yes": {
         "message": "Да"
