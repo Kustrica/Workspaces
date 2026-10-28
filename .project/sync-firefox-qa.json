@@ -1,0 +1,37 @@
+[
+  {
+    "surface": "background",
+    "browser": {
+      "name": "Firefox",
+      "vendor": "Mozilla",
+      "version": "156.0.1",
+      "buildID": "20260921121718"
+    },
+    "version": "1.19.8",
+    "added": 4,
+    "tabs": 4,
+    "duplicateClosed": 1,
+    "duplicateReopened": 1,
+    "largeSnapshotBytes": 71596,
+    "nativeQuotaReplacements": 3,
+    "encoding": "gzip"
+  },
+  {
+    "surface": "sidebar",
+    "checkbox": false,
+    "counts": [
+      "6"
+    ],
+    "stableLayout": true,
+    "deltaOnly": true,
+    "toggleDisabled": true
+  },
+  {
+    "surface": "options",
+    "checkbox": true,
+    "counts": [],
+    "stableLayout": true,
+    "deltaOnly": true,
+    "toggleDisabled": true
+  }
+]
