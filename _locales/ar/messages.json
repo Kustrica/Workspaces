@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "تمت استعادة التبويبات بعد إغلاق النافذة"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "تتم مزامنة مساحات العمل والألسنة بين أجهزتك تلقائيًا. لا يلزم إجراء يدوي."
+    },
+    "syncToggleLabel": {
+        "message": "مزامنة مساحات العمل والتبويبات"
+    },
+    "syncHelperText": {
+        "message": "سجّل الدخول إلى حساب Mozilla نفسه على كل جهاز وتأكد من تفعيل مزامنة الإضافات. للمزامنة الآن، افتح قائمة حساب Firefox في أعلى اليمين ← المزامنة ← زامن الآن."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "مزامنة الإضافات متاحة في Firefox لأجهزة الكمبيوتر."
+    },
+    "syncStatusOn": {
+        "message": "المزامنة مفعّلة"
+    },
+    "syncStatusOff": {
+        "message": "المزامنة معطّلة"
+    },
+    "syncStatusSyncing": {
+        "message": "جارٍ المزامنة..."
+    },
+    "syncNever": {
+        "message": "أبدًا"
+    },
+    "syncQuotaLabel": {
+        "message": "الحصة:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 ك.ب من $2 ك.ب"
+    },
+    "syncEnabledToast": {
+        "message": "تم تفعيل المزامنة"
+    },
+    "syncDisabledToast": {
+        "message": "تم تعطيل المزامنة"
+    },
+    "syncDisableConfirm": {
+        "message": "هل تريد إيقاف المزامنة؟ ستبقى مساحات العمل على هذا الجهاز."
+    },
+    "syncSuccess": {
+        "message": "تمت المزامنة"
+    },
+    "syncFailed": {
+        "message": "فشلت المزامنة"
+    },
+    "syncErrorQuota": {
+        "message": "تتجاوز البيانات المضغوطة حد Firefox Sync البالغ 100 كيلوبايت. قلّل علامات التبويب أو صدّر إلى JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "سجّل الدخول إلى حساب Firefox وفعّل «الإضافات» في إعدادات مزامنة Firefox."
+    },
+    "syncErrorGeneric": {
+        "message": "تعذّرت المزامنة. حاول مرة أخرى لاحقًا."
+    },
+    "syncConflictTitle": {
+        "message": "تعارض في المزامنة"
+    },
+    "syncConflictDesc": {
+        "message": "تختلف بيانات هذا الجهاز عن النسخة المتزامنة. اختر ما تريد الاحتفاظ به:"
+    },
+    "syncLocalSummary": {
+        "message": "هذا الجهاز: $1 مساحة عمل، $2 تبويب"
+    },
+    "syncRemoteSummary": {
+        "message": "النسخة المتزامنة: $1 مساحة عمل، $2 تبويب"
+    },
+    "syncUseRemote": {
+        "message": "استخدام النسخة المتزامنة"
+    },
+    "syncUseRemoteDesc": {
+        "message": "استبدال مساحات العمل والتبويبات على هذا الجهاز"
+    },
+    "syncUseLocal": {
+        "message": "استخدم هذا الجهاز كمصدر"
+    },
+    "syncUseLocalDesc": {
+        "message": "ارفع هذا الجهاز واستبدل النسخة المتزامنة"
+    },
+    "syncMerge": {
+        "message": "دمج الاثنين"
+    },
+    "syncMergeDesc": {
+        "message": "أبقِ علامات التبويب المفتوحة هنا وأضف مساحات العمل وعلامات التبويب من النسخة. الأسماء المتطابقة تُدمج في مساحة واحدة."
+    },
+    "syncApplying": {
+        "message": "جارٍ تطبيق البيانات المتزامنة..."
+    },
+    "syncApplyWarning": {
+        "message": "يُرجى عدم تنفيذ أي إجراءات في المتصفح أثناء استعادة التبويبات."
+    },
+    "logSyncApplied": {
+        "message": "تم تطبيق المزامنة"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 مساحة عمل، $2 تبويب من المزامنة"
+    },
+    "syncJoinHint": {
+        "message": "على جهاز جديد، فعّل Sync في الإضافة."
+    },
+    "syncJoinTitle": {
+        "message": "الانضمام إلى Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "توجد بالفعل نسخة متزامنة. اختر مرة واحدة على هذا الجهاز. بعد ذلك تعمل المزامنة تلقائيًا دون مطالبات."
+    },
+    "syncPrefTheme": {
+        "message": "مزامنة السمة"
+    },
+    "syncPrefLanguage": {
+        "message": "مزامنة لغة الواجهة"
+    },
+    "syncPrefSidebar": {
+        "message": "مزامنة الشريط الجانبي"
+    },
+    "syncPrefLogs": {
+        "message": "مزامنة سجل الإجراءات"
+    },
+    "syncInfoStatus": {
+        "message": "الحالة"
+    },
+    "syncWaitingFirefox": {
+        "message": "حُفظ لـ Sync. ينقل Firefox إلى الأجهزة الأخرى (غالبًا دقائق قليلة، أو «مزامنة الآن» في Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "هذا الجهاز ليس في دائرة Sync بعد. اضغط «مزامنة الآن» للانضمام أو إنشاء أول نسخة."
+    },
+    "syncDevicesTitle": {
+        "message": "الأجهزة في المزامنة"
+    },
+    "syncDevicesEmpty": {
+        "message": "لم يتم تسجيل أي أجهزة بعد."
+    },
+    "syncThisDevice": {
+        "message": "هذا الجهاز"
+    },
+    "syncDeviceSynced": {
+        "message": "متزامن"
+    },
+    "syncDevicePendingLeave": {
+        "message": "جارٍ الفصل: بانتظار اتصال الجهاز بالإنترنت"
+    },
+    "syncDevicePendingJoin": {
+        "message": "جارٍ الانضمام"
+    },
+    "syncDeviceLeft": {
+        "message": "غير متزامن"
+    },
+    "syncLeaveDevice": {
+        "message": "فصل"
+    },
+    "syncLeaveConfirm": {
+        "message": "طلب مغادرة هذا الجهاز؟ تُطفأ المزامنة عند عودته للاتصال."
+    },
+    "syncForceRemove": {
+        "message": "إزالة الآن"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "هل تريد إزالة «$1» من القائمة دون انتظاره؟ استخدم هذا إذا فُقد الجهاز أو أُعيد ضبطه أو لم يعد مستخدمًا. لن يُحذف أي شيء. إذا اتصل بالإنترنت مجددًا، ستتوقف المزامنة عليه تلقائيًا. لإعادة توصيله، فعّل «مزامنة مساحات العمل والتبويبات» في إعدادات Workspaces على ذلك الجهاز."
+    },
+    "syncForgetDevice": {
+        "message": "إزالة من القائمة"
+    },
+    "syncForgetConfirm": {
+        "message": "هل تريد إزالة «$1» من هذه القائمة؟ المزامنة متوقفة بالفعل على ذلك الجهاز، ولن يُحذف أي شيء. إذا شُغّلت المزامنة عليه مجددًا، سيظهر هنا من جديد."
+    },
+    "syncBannerJoin": {
+        "message": "يحتاج هذا الجهاز إلى الانضمام إلى Sync. افتح الخيارات واختر استبدال أو دمج."
+    },
+    "syncOpenOptions": {
+        "message": "فتح الخيارات"
+    },
+    "syncPrefUi": {
+        "message": "مزامنة إعدادات الواجهة"
+    },
+    "syncLiveReceived": {
+        "message": "جارٍ استلام التغييرات…"
+    },
+    "syncToastQueued": {
+        "message": "تم الإرسال — في انتظار Firefox"
+    },
+    "syncToastPulled": {
+        "message": "تم استلام التغييرات"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "هل تريد إيقاف المزامنة على هذا الجهاز؟ تبقى مساحات العمل والتبويبات هنا، وتستمر أجهزتك الأخرى في المزامنة. للمزامنة مجددًا، فعّل «مزامنة مساحات العمل والتبويبات» في هذه الصفحة."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "هل تريد فصل «$1» عن المزامنة؟ لن يُحذف أي شيء. ستتوقف المزامنة على ذلك الجهاز في المرة القادمة التي يعمل فيها Firefox عليه مع اتصال بالإنترنت، وتبقى مساحات عمله وتبويباته عليه. لإعادة توصيله، فعّل «مزامنة مساحات العمل والتبويبات» في إعدادات Workspaces على ذلك الجهاز."
+    },
+    "syncDevicesHint": {
+        "message": "فصل جهاز يوقف المزامنة عليه فقط: لا يُحذف أي شيء، وتستمر الأجهزة الأخرى في المزامنة. لإعادة توصيل جهاز، فعّل «مزامنة مساحات العمل والتبويبات» في إعدادات Workspaces على ذلك الجهاز."
+    },
+    "syncApplyingTitle": {
+        "message": "المزامنة: جارٍ فتح التبويبات…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "المزامنة الأولى"
+    },
+    "syncApplyPromptDesc": {
+        "message": "حساب Firefox هذا يحتوي بالفعل على مساحات عمل وعلامات تبويب. مزامنتها إلى هذا الجهاز الآن؟ مع الكثير من علامات التبويب قد يستغرق ذلك بضع دقائق. بعد التأكيد مرة واحدة، تعمل المزامنات التالية تلقائيًا دون سؤال."
+    },
+    "syncApplyCounts": {
+        "message": "تبويبات ستُفتح: $1 · وستُغلق: $2"
+    },
+    "syncApplyYes": {
+        "message": "زامن الآن"
+    },
+    "syncApplyLater": {
+        "message": "لاحقًا"
+    },
+    "syncApplyDisable": {
+        "message": "إيقاف المزامنة"
+    },
+    "syncApplySnoozed": {
+        "message": "تم التأجيل. سنسأل مجددًا خلال 10 دقائق عن المزامنة الأولى."
+    },
+    "syncBannerApply": {
+        "message": "المزامنة الأولى بانتظارك: افتح الخيارات للقبول أو التأجيل أو إيقاف Sync."
+    },
+    "syncRunawayError": {
+        "message": "تم إيقاف المزامنة: كانت التبويبات نفسها تُفتح بشكل متكرر. تحقّق من بياناتك ثم أعد تشغيل المزامنة من الإعدادات."
+    },
+    "syncBreathColorLabel": {
+        "message": "لون تنفّس المزامنة"
+    },
+    "syncBreathColorHint": {
+        "message": "يضيء فقط عندما تفتح المزامنة علامات تبويب أو تغلقها."
+    },
+    "syncBreathOrange": {
+        "message": "برتقالي"
+    },
+    "syncBreathAmber": {
+        "message": "كهرماني"
+    },
+    "syncBreathMint": {
+        "message": "نعناعي"
+    },
+    "syncBreathSky": {
+        "message": "سماوي"
+    },
+    "syncBreathRose": {
+        "message": "وردي"
+    },
+    "syncToastTitle": {
+        "message": "تمت المزامنة"
+    },
+    "syncToastQuietTitle": {
+        "message": "المزامنة"
+    },
+    "syncToastQuiet": {
+        "message": "محدّث بالفعل"
+    },
+    "syncToastChanged": {
+        "message": "تم تحديث المساحات"
+    },
+    "syncToastCounts": {
+        "message": "فُتح +$1 · أُغلق −$2"
+    },
+    "syncToastWorking": {
+        "message": "جارٍ المزامنة…"
+    },
+    "syncToastWorkingHint": {
+        "message": "جارٍ تحديث علامات التبويب — يرجى الانتظار"
+    },
+    "syncToastDismissHint": {
+        "message": "انقر للإغلاق"
+    },
+    "syncBreathEnabled": {
+        "message": "ضوء المزامنة"
+    },
+    "syncRawSize": {
+        "message": "قبل الضغط"
+    },
+    "syncPackedSize": {
+        "message": "البيانات المخزنة"
+    },
+    "syncCompression": {
+        "message": "تقليل الحجم"
+    },
+    "syncStorageRecords": {
+        "message": "$1 علامات تبويب · $2 مساحات عمل · $3 سجلات حذف"
+    },
+    "syncStorageWaiting": {
+        "message": "تعذّر عرض أعداد علامات التبويب والحذف أثناء نقل Firefox للبيانات"
+    },
+    "syncLastPrepared": {
+        "message": "آخر إعداد للنسخة محليًا"
+    },
+    "syncProgressOpening": {
+        "message": "فتح علامات التبويب"
+    },
+    "syncProgressClosing": {
+        "message": "إغلاق علامات التبويب"
+    },
+    "syncProgressFinishing": {
+        "message": "إنهاء تغييرات علامات التبويب"
+    },
+    "syncProgressComplete": {
+        "message": "اكتملت تغييرات علامات التبويب"
+    },
+    "syncProgressFailed": {
+        "message": "تعذّر تطبيق بعض تغييرات علامات التبويب"
+    },
+    "syncProgressCounts": {
+        "message": "$1 من $2 مكتمل · المتبقي $3"
+    },
+    "syncDeviceAdded": {
+        "message": "أضيف إلى المزامنة"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "آخر تحديث مستلم من هذا الجهاز"
     }
 }

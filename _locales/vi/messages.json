@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Đã khôi phục tab sau khi cửa sổ đóng"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Không gian làm việc và các thẻ được tự động đồng bộ giữa các thiết bị của bạn. Bạn không cần thao tác gì."
+    },
+    "syncToggleLabel": {
+        "message": "Đồng bộ không gian làm việc và thẻ"
+    },
+    "syncHelperText": {
+        "message": "Đăng nhập cùng một tài khoản Mozilla trên mỗi thiết bị và kiểm tra rằng tính năng đồng bộ tiện ích đã bật. Để đồng bộ ngay, mở trình đơn tài khoản Firefox ở góc trên bên phải → Đồng bộ → Đồng bộ ngay."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Đồng bộ tiện ích khả dụng trên Firefox cho máy tính."
+    },
+    "syncStatusOn": {
+        "message": "Đồng bộ đang bật"
+    },
+    "syncStatusOff": {
+        "message": "Đồng bộ đang tắt"
+    },
+    "syncStatusSyncing": {
+        "message": "Đang đồng bộ..."
+    },
+    "syncNever": {
+        "message": "Chưa bao giờ"
+    },
+    "syncQuotaLabel": {
+        "message": "Hạn mức:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB trên $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Đã bật đồng bộ"
+    },
+    "syncDisabledToast": {
+        "message": "Đã tắt đồng bộ"
+    },
+    "syncDisableConfirm": {
+        "message": "Tắt đồng bộ? Các không gian làm việc của bạn vẫn ở trên thiết bị này."
+    },
+    "syncSuccess": {
+        "message": "Đồng bộ hoàn tất"
+    },
+    "syncFailed": {
+        "message": "Đồng bộ thất bại"
+    },
+    "syncErrorQuota": {
+        "message": "Dữ liệu nén vượt giới hạn 100 KB của Firefox Sync. Giảm số thẻ hoặc xuất JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Hãy đăng nhập tài khoản Firefox và bật «Tiện ích» trong cài đặt Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "Không thể đồng bộ. Vui lòng thử lại sau."
+    },
+    "syncConflictTitle": {
+        "message": "Xung đột đồng bộ"
+    },
+    "syncConflictDesc": {
+        "message": "Dữ liệu trên thiết bị này khác với bản đã đồng bộ. Hãy chọn nội dung muốn giữ:"
+    },
+    "syncLocalSummary": {
+        "message": "Thiết bị này: $1 không gian, $2 thẻ"
+    },
+    "syncRemoteSummary": {
+        "message": "Bản đã đồng bộ: $1 không gian, $2 thẻ"
+    },
+    "syncUseRemote": {
+        "message": "Dùng bản đã đồng bộ"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Thay thế không gian làm việc và thẻ trên thiết bị này"
+    },
+    "syncUseLocal": {
+        "message": "Dùng thiết bị này làm nguồn"
+    },
+    "syncUseLocalDesc": {
+        "message": "Tải lên thiết bị này và ghi đè bản sao đã đồng bộ"
+    },
+    "syncMerge": {
+        "message": "Hợp nhất cả hai"
+    },
+    "syncMergeDesc": {
+        "message": "Giữ các thẻ đang mở ở đây và thêm không gian cùng thẻ từ bản sao. Cùng tên gộp thành một không gian."
+    },
+    "syncApplying": {
+        "message": "Đang áp dụng dữ liệu đã đồng bộ..."
+    },
+    "syncApplyWarning": {
+        "message": "Vui lòng không thực hiện thao tác nào trong trình duyệt khi các thẻ đang được phục hồi."
+    },
+    "logSyncApplied": {
+        "message": "Đã áp dụng đồng bộ"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 không gian, $2 thẻ từ đồng bộ"
+    },
+    "syncJoinHint": {
+        "message": "Trên thiết bị mới, bật Sync trong tiện ích."
+    },
+    "syncJoinTitle": {
+        "message": "Tham gia Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Đã có bản sao đồng bộ. Chọn một lần trên thiết bị này. Sau đó Sync chạy tự động không còn hộp thoại."
+    },
+    "syncPrefTheme": {
+        "message": "Đồng bộ giao diện"
+    },
+    "syncPrefLanguage": {
+        "message": "Đồng bộ ngôn ngữ giao diện"
+    },
+    "syncPrefSidebar": {
+        "message": "Đồng bộ thanh bên"
+    },
+    "syncPrefLogs": {
+        "message": "Đồng bộ lịch sử thao tác"
+    },
+    "syncInfoStatus": {
+        "message": "Trạng thái"
+    },
+    "syncWaitingFirefox": {
+        "message": "Đã lưu cho Sync. Firefox chuyển sang thiết bị khác (thường vài phút, hoặc «Đồng bộ ngay» trong Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Thiết bị này chưa trong vòng Sync. Nhấn «Đồng bộ ngay» để tham gia hoặc tạo bản sao đầu tiên."
+    },
+    "syncDevicesTitle": {
+        "message": "Thiết bị đang đồng bộ"
+    },
+    "syncDevicesEmpty": {
+        "message": "Chưa có thiết bị nào được đăng ký."
+    },
+    "syncThisDevice": {
+        "message": "thiết bị này"
+    },
+    "syncDeviceSynced": {
+        "message": "Đã đồng bộ"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Đang ngắt kết nối: chờ thiết bị trực tuyến"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Đang tham gia"
+    },
+    "syncDeviceLeft": {
+        "message": "Không đồng bộ"
+    },
+    "syncLeaveDevice": {
+        "message": "Ngắt kết nối"
+    },
+    "syncLeaveConfirm": {
+        "message": "Yêu cầu rời thiết bị này? Sync sẽ tắt khi thiết bị online lại."
+    },
+    "syncForceRemove": {
+        "message": "Xóa ngay"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Xóa “$1” khỏi danh sách mà không chờ? Dùng khi thiết bị bị mất, đã cài lại hoặc không còn dùng nữa. Không có gì bị xóa trên thiết bị. Nếu nó trực tuyến trở lại, đồng bộ ở đó sẽ tự tắt. Để kết nối lại, hãy bật “Đồng bộ không gian làm việc và thẻ” trong cài đặt Workspaces trên thiết bị đó."
+    },
+    "syncForgetDevice": {
+        "message": "Xóa khỏi danh sách"
+    },
+    "syncForgetConfirm": {
+        "message": "Xóa “$1” khỏi danh sách này? Đồng bộ trên thiết bị đó đã tắt và không có gì bị xóa. Nếu bật lại đồng bộ ở đó, thiết bị sẽ xuất hiện lại ở đây."
+    },
+    "syncBannerJoin": {
+        "message": "Thiết bị này cần tham gia Sync. Mở Tùy chọn và chọn Thay thế hoặc Gộp."
+    },
+    "syncOpenOptions": {
+        "message": "Mở Tùy chọn"
+    },
+    "syncPrefUi": {
+        "message": "Đồng bộ cài đặt giao diện"
+    },
+    "syncLiveReceived": {
+        "message": "Đang nhận thay đổi…"
+    },
+    "syncToastQueued": {
+        "message": "Đã gửi — đang chờ Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Đã nhận thay đổi"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Tắt đồng bộ trên thiết bị này? Không gian làm việc và thẻ vẫn ở đây, các thiết bị khác vẫn tiếp tục đồng bộ. Để đồng bộ lại, hãy bật “Đồng bộ không gian làm việc và thẻ” trên trang này."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Ngắt “$1” khỏi đồng bộ? Không có gì bị xóa. Đồng bộ trên thiết bị đó sẽ tắt vào lần tới Firefox chạy ở đó khi có internet; không gian làm việc và thẻ của nó vẫn ở lại. Để kết nối lại, hãy bật “Đồng bộ không gian làm việc và thẻ” trong cài đặt Workspaces trên thiết bị đó."
+    },
+    "syncDevicesHint": {
+        "message": "Ngắt kết nối một thiết bị chỉ tắt đồng bộ trên thiết bị đó: không có gì bị xóa và các thiết bị khác vẫn tiếp tục đồng bộ. Để kết nối lại một thiết bị, hãy bật “Đồng bộ không gian làm việc và thẻ” trong cài đặt Workspaces trên thiết bị đó."
+    },
+    "syncApplyingTitle": {
+        "message": "Đồng bộ: đang mở thẻ…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Đồng bộ lần đầu"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Tài khoản Firefox này đã có không gian và thẻ. Đồng bộ sang thiết bị này ngay? Nhiều thẻ có thể mất vài phút. Sau khi xác nhận một lần, các lần đồng bộ sau chạy tự động không hỏi lại."
+    },
+    "syncApplyCounts": {
+        "message": "Thẻ sẽ mở: $1 · Sẽ đóng: $2"
+    },
+    "syncApplyYes": {
+        "message": "Đồng bộ ngay"
+    },
+    "syncApplyLater": {
+        "message": "Để sau"
+    },
+    "syncApplyDisable": {
+        "message": "Tắt đồng bộ"
+    },
+    "syncApplySnoozed": {
+        "message": "Đã trì hoãn. Sẽ hỏi lại sau 10 phút về đồng bộ lần đầu."
+    },
+    "syncBannerApply": {
+        "message": "Đồng bộ lần đầu đang chờ: mở Tùy chọn để chấp nhận, trì hoãn hoặc tắt Sync."
+    },
+    "syncRunawayError": {
+        "message": "Đã dừng đồng bộ: cùng những thẻ đó bị mở lặp lại. Hãy kiểm tra dữ liệu rồi bật lại đồng bộ trong phần cài đặt."
+    },
+    "syncBreathColorLabel": {
+        "message": "Màu hơi thở Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "Chỉ phát sáng khi đồng bộ mở hoặc đóng thẻ."
+    },
+    "syncBreathOrange": {
+        "message": "Cam"
+    },
+    "syncBreathAmber": {
+        "message": "Hổ phách"
+    },
+    "syncBreathMint": {
+        "message": "Bạc hà"
+    },
+    "syncBreathSky": {
+        "message": "Trời"
+    },
+    "syncBreathRose": {
+        "message": "Hồng"
+    },
+    "syncToastTitle": {
+        "message": "Đã đồng bộ"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Đã cập nhật rồi"
+    },
+    "syncToastChanged": {
+        "message": "Không gian đã cập nhật"
+    },
+    "syncToastCounts": {
+        "message": "Mở +$1 · Đóng −$2"
+    },
+    "syncToastWorking": {
+        "message": "Đang đồng bộ…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Đang cập nhật thẻ — vui lòng chờ"
+    },
+    "syncToastDismissHint": {
+        "message": "Nhấn để đóng"
+    },
+    "syncBreathEnabled": {
+        "message": "Ánh sáng đồng bộ"
+    },
+    "syncRawSize": {
+        "message": "Trước khi nén"
+    },
+    "syncPackedSize": {
+        "message": "Dữ liệu đã lưu"
+    },
+    "syncCompression": {
+        "message": "Mức giảm kích thước"
+    },
+    "syncStorageRecords": {
+        "message": "$1 thẻ · $2 không gian · $3 bản ghi xóa"
+    },
+    "syncStorageWaiting": {
+        "message": "Không thể đếm thẻ và bản ghi xóa khi Firefox đang truyền dữ liệu"
+    },
+    "syncLastPrepared": {
+        "message": "Lần chuẩn bị bản sao gần nhất"
+    },
+    "syncProgressOpening": {
+        "message": "Đang mở thẻ"
+    },
+    "syncProgressClosing": {
+        "message": "Đang đóng thẻ"
+    },
+    "syncProgressFinishing": {
+        "message": "Đang hoàn tất thay đổi thẻ"
+    },
+    "syncProgressComplete": {
+        "message": "Đã hoàn tất thay đổi thẻ"
+    },
+    "syncProgressFailed": {
+        "message": "Không thể áp dụng một số thay đổi thẻ"
+    },
+    "syncProgressCounts": {
+        "message": "$1 trên $2 đã xong · còn $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Đã thêm vào đồng bộ hóa"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Lần cập nhật gần nhất nhận từ thiết bị này"
     }
 }

@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Tabbladen hersteld na sluiten van venster"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Werkruimten en tabbladen worden automatisch tussen uw apparaten gesynchroniseerd. U hoeft niets te doen."
+    },
+    "syncToggleLabel": {
+        "message": "Werkruimtes en tabbladen synchroniseren"
+    },
+    "syncHelperText": {
+        "message": "Meld u op elk apparaat aan bij hetzelfde Mozilla-account en controleer of synchronisatie van add-ons is ingeschakeld. Open voor directe synchronisatie rechtsboven het Firefox-accountmenu → Synchronisatie → Nu synchroniseren."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Add-on-synchronisatie is beschikbaar in Firefox voor desktop."
+    },
+    "syncStatusOn": {
+        "message": "Sync aan"
+    },
+    "syncStatusOff": {
+        "message": "Sync uit"
+    },
+    "syncStatusSyncing": {
+        "message": "Synchroniseren..."
+    },
+    "syncNever": {
+        "message": "Nooit"
+    },
+    "syncQuotaLabel": {
+        "message": "Quota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB van $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sync ingeschakeld"
+    },
+    "syncDisabledToast": {
+        "message": "Sync uitgeschakeld"
+    },
+    "syncDisableConfirm": {
+        "message": "Sync uitschakelen? Je werkruimtes blijven op dit apparaat."
+    },
+    "syncSuccess": {
+        "message": "Synchronisatie voltooid"
+    },
+    "syncFailed": {
+        "message": "Synchronisatie mislukt"
+    },
+    "syncErrorQuota": {
+        "message": "De gecomprimeerde gegevens overschrijden de Firefox Sync-limiet van 100 KB. Verminder de tabbladen of exporteer naar JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Meld je aan bij je Firefox-account en schakel „Add-ons” in bij de Firefox Sync-instellingen."
+    },
+    "syncErrorGeneric": {
+        "message": "Synchroniseren mislukt. Probeer het later opnieuw."
+    },
+    "syncConflictTitle": {
+        "message": "Sync-conflict"
+    },
+    "syncConflictDesc": {
+        "message": "De gegevens op dit apparaat wijken af van de gesynchroniseerde kopie. Kies wat je wilt behouden:"
+    },
+    "syncLocalSummary": {
+        "message": "Dit apparaat: $1 werkruimtes, $2 tabbladen"
+    },
+    "syncRemoteSummary": {
+        "message": "Gesynchroniseerde kopie: $1 werkruimtes, $2 tabbladen"
+    },
+    "syncUseRemote": {
+        "message": "Gesynchroniseerde kopie gebruiken"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Werkruimtes en tabbladen op dit apparaat vervangen"
+    },
+    "syncUseLocal": {
+        "message": "Dit apparaat als bron gebruiken"
+    },
+    "syncUseLocalDesc": {
+        "message": "Dit apparaat uploaden en de gesynchroniseerde kopie overschrijven"
+    },
+    "syncMerge": {
+        "message": "Beide samenvoegen"
+    },
+    "syncMergeDesc": {
+        "message": "Open tabbladen hier behouden en werkruimten en tabbladen uit de kopie toevoegen. Dezelfde namen worden tot één werkruimte samengevoegd."
+    },
+    "syncApplying": {
+        "message": "Gesynchroniseerde gegevens toepassen..."
+    },
+    "syncApplyWarning": {
+        "message": "Voer geen acties uit in de browser terwijl tabbladen worden hersteld."
+    },
+    "logSyncApplied": {
+        "message": "Sync toegepast"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 werkruimtes, $2 tabbladen uit sync"
+    },
+    "syncJoinHint": {
+        "message": "Zet Sync aan in de extensie op een nieuw apparaat."
+    },
+    "syncJoinTitle": {
+        "message": "Deelnemen aan Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Er bestaat al een gesynchroniseerde kopie. Kies één keer op dit apparaat. Daarna loopt Sync automatisch zonder extra prompts."
+    },
+    "syncPrefTheme": {
+        "message": "Thema synchroniseren"
+    },
+    "syncPrefLanguage": {
+        "message": "Interfacetaal synchroniseren"
+    },
+    "syncPrefSidebar": {
+        "message": "Zijbalk synchroniseren"
+    },
+    "syncPrefLogs": {
+        "message": "Actiegeschiedenis synchroniseren"
+    },
+    "syncInfoStatus": {
+        "message": "Status"
+    },
+    "syncWaitingFirefox": {
+        "message": "Opgeslagen voor Sync. Firefox stuurt het naar andere apparaten (vaak enkele minuten, of «Nu synchroniseren» in Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Dit apparaat zit nog niet in de Sync-kring. Tik op «Nu synchroniseren» om toe te treden of de eerste kopie te maken."
+    },
+    "syncDevicesTitle": {
+        "message": "Apparaten in sync"
+    },
+    "syncDevicesEmpty": {
+        "message": "Er zijn nog geen apparaten geregistreerd."
+    },
+    "syncThisDevice": {
+        "message": "dit apparaat"
+    },
+    "syncDeviceSynced": {
+        "message": "Gesynchroniseerd"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Wordt ontkoppeld: wacht tot het apparaat online is"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Bezig met toetreden"
+    },
+    "syncDeviceLeft": {
+        "message": "Niet gesynchroniseerd"
+    },
+    "syncLeaveDevice": {
+        "message": "Ontkoppelen"
+    },
+    "syncLeaveConfirm": {
+        "message": "Vertrek voor dit apparaat aanvragen? Sync gaat uit zodra het apparaat weer online is."
+    },
+    "syncForceRemove": {
+        "message": "Nu verwijderen"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "„$1” uit de lijst verwijderen zonder erop te wachten? Gebruik dit als het apparaat kwijt is, opnieuw is ingesteld of niet meer wordt gebruikt. Er wordt niets verwijderd. Als het ooit weer online komt, wordt synchronisatie daar automatisch uitgeschakeld. Om het opnieuw te koppelen, schakel je „Werkruimtes en tabbladen synchroniseren” in bij de Workspaces-instellingen op dat apparaat."
+    },
+    "syncForgetDevice": {
+        "message": "Uit lijst verwijderen"
+    },
+    "syncForgetConfirm": {
+        "message": "„$1” uit deze lijst verwijderen? Synchronisatie staat op dat apparaat al uit en er wordt niets verwijderd. Als je het daar weer inschakelt, verschijnt het apparaat hier opnieuw."
+    },
+    "syncBannerJoin": {
+        "message": "Dit apparaat moet Sync joinen. Open Opties en kies Vervangen of Samenvoegen."
+    },
+    "syncOpenOptions": {
+        "message": "Opties openen"
+    },
+    "syncPrefUi": {
+        "message": "Interface-instellingen synchroniseren"
+    },
+    "syncLiveReceived": {
+        "message": "Wijzigingen ontvangen…"
+    },
+    "syncToastQueued": {
+        "message": "Verzonden — wachten op Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Wijzigingen ontvangen"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Synchronisatie op dit apparaat uitschakelen? Je werkruimtes en tabbladen blijven hier, en je andere apparaten blijven synchroniseren. Om weer te synchroniseren, schakel je „Werkruimtes en tabbladen synchroniseren” op deze pagina in."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "„$1” loskoppelen van synchronisatie? Er wordt niets verwijderd. Synchronisatie wordt op dat apparaat uitgeschakeld zodra Firefox daar weer met internet draait; de werkruimtes en tabbladen blijven erop staan. Om het opnieuw te koppelen, schakel je „Werkruimtes en tabbladen synchroniseren” in bij de Workspaces-instellingen op dat apparaat."
+    },
+    "syncDevicesHint": {
+        "message": "Een apparaat ontkoppelen schakelt alleen de synchronisatie op dat apparaat uit: er wordt niets verwijderd en de andere apparaten blijven synchroniseren. Om een apparaat opnieuw te koppelen, schakel je „Werkruimtes en tabbladen synchroniseren” in bij de Workspaces-instellingen op dat apparaat."
+    },
+    "syncApplyingTitle": {
+        "message": "Sync: tabbladen worden geopend…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Eerste synchronisatie"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Dit Firefox-account heeft al werkruimten en tabbladen. Nu naar dit apparaat synchroniseren? Met veel tabbladen kan dit enkele minuten duren. Na één bevestiging loopt sync daarna automatisch zonder vragen."
+    },
+    "syncApplyCounts": {
+        "message": "Te openen tabbladen: $1 · Te sluiten: $2"
+    },
+    "syncApplyYes": {
+        "message": "Nu synchroniseren"
+    },
+    "syncApplyLater": {
+        "message": "Later"
+    },
+    "syncApplyDisable": {
+        "message": "Synchronisatie uitschakelen"
+    },
+    "syncApplySnoozed": {
+        "message": "Uitgesteld. We vragen over 10 minuten opnieuw naar de eerste sync."
+    },
+    "syncBannerApply": {
+        "message": "Eerste sync wacht: open Opties om te accepteren, uit te stellen of sync uit te zetten."
+    },
+    "syncRunawayError": {
+        "message": "Synchronisatie gestopt: dezelfde tabbladen werden telkens opnieuw geopend. Controleer je gegevens en schakel synchronisatie weer in bij de instellingen."
+    },
+    "syncBreathColorLabel": {
+        "message": "Sync-ademkleur"
+    },
+    "syncBreathColorHint": {
+        "message": "Gloed alleen wanneer synchronisatie tabbladen opent of sluit."
+    },
+    "syncBreathOrange": {
+        "message": "Oranje"
+    },
+    "syncBreathAmber": {
+        "message": "Amber"
+    },
+    "syncBreathMint": {
+        "message": "Mint"
+    },
+    "syncBreathSky": {
+        "message": "Hemel"
+    },
+    "syncBreathRose": {
+        "message": "Roze"
+    },
+    "syncToastTitle": {
+        "message": "Gesynchroniseerd"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Al up-to-date"
+    },
+    "syncToastChanged": {
+        "message": "Werkruimten bijgewerkt"
+    },
+    "syncToastCounts": {
+        "message": "Geopend +$1 · Gesloten −$2"
+    },
+    "syncToastWorking": {
+        "message": "Synchroniseren…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Tabbladen worden bijgewerkt — even wachten"
+    },
+    "syncToastDismissHint": {
+        "message": "Klik om te sluiten"
+    },
+    "syncBreathEnabled": {
+        "message": "Synchronisatiegloed"
+    },
+    "syncRawSize": {
+        "message": "Vóór compressie"
+    },
+    "syncPackedSize": {
+        "message": "Opgeslagen gegevens"
+    },
+    "syncCompression": {
+        "message": "Groottereductie"
+    },
+    "syncStorageRecords": {
+        "message": "$1 tabbladen · $2 werkruimten · $3 verwijderingen"
+    },
+    "syncStorageWaiting": {
+        "message": "Tab- en verwijderingsaantallen zijn niet beschikbaar tijdens de Firefox-overdracht"
+    },
+    "syncLastPrepared": {
+        "message": "Laatste lokaal voorbereide kopie"
+    },
+    "syncProgressOpening": {
+        "message": "Tabbladen openen"
+    },
+    "syncProgressClosing": {
+        "message": "Tabbladen sluiten"
+    },
+    "syncProgressFinishing": {
+        "message": "Tabwijzigingen afronden"
+    },
+    "syncProgressComplete": {
+        "message": "Tabwijzigingen voltooid"
+    },
+    "syncProgressFailed": {
+        "message": "Sommige tabwijzigingen konden niet worden toegepast"
+    },
+    "syncProgressCounts": {
+        "message": "$1 van $2 voltooid · nog $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Toegevoegd aan synchronisatie"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Laatste update ontvangen van dit apparaat"
     }
 }

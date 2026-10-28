@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "視窗關閉後已還原分頁"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "工作區和分頁會在您的裝置之間自動同步，無須手動操作。"
+    },
+    "syncToggleLabel": {
+        "message": "同步工作區與分頁"
+    },
+    "syncHelperText": {
+        "message": "請在每台裝置上登入同一個 Mozilla 帳號，並確認已啟用附加元件同步。若要立即同步，請開啟右上角的 Firefox 帳號選單 → 同步 → 立即同步。"
+    },
+    "syncDesktopOnlyNote": {
+        "message": "附加元件同步可在桌面版 Firefox 使用。"
+    },
+    "syncStatusOn": {
+        "message": "同步已開啟"
+    },
+    "syncStatusOff": {
+        "message": "同步已關閉"
+    },
+    "syncStatusSyncing": {
+        "message": "正在同步..."
+    },
+    "syncNever": {
+        "message": "從未"
+    },
+    "syncQuotaLabel": {
+        "message": "配額："
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB / 共 $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "已開啟同步"
+    },
+    "syncDisabledToast": {
+        "message": "已關閉同步"
+    },
+    "syncDisableConfirm": {
+        "message": "要關閉同步嗎？你的工作區仍會保留在本裝置上。"
+    },
+    "syncSuccess": {
+        "message": "同步完成"
+    },
+    "syncFailed": {
+        "message": "同步失敗"
+    },
+    "syncErrorQuota": {
+        "message": "壓縮後的資料超過 Firefox Sync 的 100 KB 限制。請減少分頁或匯出為 JSON。"
+    },
+    "syncErrorNotSignedIn": {
+        "message": "請登入 Firefox 帳號，並在 Firefox Sync 設定中啟用「附加元件」。"
+    },
+    "syncErrorGeneric": {
+        "message": "無法同步，請稍後再試。"
+    },
+    "syncConflictTitle": {
+        "message": "同步衝突"
+    },
+    "syncConflictDesc": {
+        "message": "本裝置的資料與已同步的副本不同。請選擇要保留的內容："
+    },
+    "syncLocalSummary": {
+        "message": "本裝置：$1 個工作區、$2 個分頁"
+    },
+    "syncRemoteSummary": {
+        "message": "已同步副本：$1 個工作區、$2 個分頁"
+    },
+    "syncUseRemote": {
+        "message": "使用已同步副本"
+    },
+    "syncUseRemoteDesc": {
+        "message": "取代本裝置上的工作區與分頁"
+    },
+    "syncUseLocal": {
+        "message": "以此裝置為來源"
+    },
+    "syncUseLocalDesc": {
+        "message": "上傳此裝置並覆寫已同步的副本"
+    },
+    "syncMerge": {
+        "message": "合併兩者"
+    },
+    "syncMergeDesc": {
+        "message": "保留此處已開啟的分頁，並從副本加入工作區與分頁。同名會合併為一個工作區。"
+    },
+    "syncApplying": {
+        "message": "正在套用已同步的資料..."
+    },
+    "syncApplyWarning": {
+        "message": "分頁還原期間，請不要在瀏覽器中進行任何操作。"
+    },
+    "logSyncApplied": {
+        "message": "已套用同步"
+    },
+    "logDetailsSyncApplied": {
+        "message": "來自同步：$1 個工作區、$2 個分頁"
+    },
+    "syncJoinHint": {
+        "message": "在新裝置上，請在擴充功能中開啟 Sync。"
+    },
+    "syncJoinTitle": {
+        "message": "加入 Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "已有同步副本。請在此裝置上選擇一次。之後會自動同步，不再跳出提示。"
+    },
+    "syncPrefTheme": {
+        "message": "同步主題"
+    },
+    "syncPrefLanguage": {
+        "message": "同步介面語言"
+    },
+    "syncPrefSidebar": {
+        "message": "同步側邊欄"
+    },
+    "syncPrefLogs": {
+        "message": "同步操作歷程"
+    },
+    "syncInfoStatus": {
+        "message": "狀態"
+    },
+    "syncWaitingFirefox": {
+        "message": "已儲存至 Sync。Firefox 會傳到其他裝置（通常幾分鐘，或在 Firefox 使用「立即同步」）。"
+    },
+    "syncNotJoinedHint": {
+        "message": "此裝置尚未加入同步圈。按「立即同步」以加入或建立首份副本。"
+    },
+    "syncDevicesTitle": {
+        "message": "同步中的裝置"
+    },
+    "syncDevicesEmpty": {
+        "message": "尚未註冊裝置。"
+    },
+    "syncThisDevice": {
+        "message": "此裝置"
+    },
+    "syncDeviceSynced": {
+        "message": "已同步"
+    },
+    "syncDevicePendingLeave": {
+        "message": "正在中斷：等待裝置連線"
+    },
+    "syncDevicePendingJoin": {
+        "message": "正在加入"
+    },
+    "syncDeviceLeft": {
+        "message": "未同步"
+    },
+    "syncLeaveDevice": {
+        "message": "中斷連線"
+    },
+    "syncLeaveConfirm": {
+        "message": "要求此裝置離開？裝置再次上線後將關閉 Sync。"
+    },
+    "syncForceRemove": {
+        "message": "立即移除"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "不等待該裝置，直接將「$1」從清單中移除嗎？適用於裝置遺失、已重設或不再使用的情況。不會刪除任何內容。如果它之後再次連線，該裝置上的同步會自動關閉。若要重新連線，請在該裝置的 Workspaces 設定中開啟「同步工作區與分頁」。"
+    },
+    "syncForgetDevice": {
+        "message": "從清單中移除"
+    },
+    "syncForgetConfirm": {
+        "message": "要將「$1」從此清單中移除嗎？該裝置上的同步已關閉，不會刪除任何內容。如果在該裝置上重新開啟同步，它會再次出現在這裡。"
+    },
+    "syncBannerJoin": {
+        "message": "此裝置需要加入 Sync。開啟選項並選擇取代或合併。"
+    },
+    "syncOpenOptions": {
+        "message": "開啟選項"
+    },
+    "syncPrefUi": {
+        "message": "同步介面設定"
+    },
+    "syncLiveReceived": {
+        "message": "正在接收變更…"
+    },
+    "syncToastQueued": {
+        "message": "已傳送 — 等待 Firefox 傳輸"
+    },
+    "syncToastPulled": {
+        "message": "已接收變更"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "要在此裝置上關閉同步嗎？工作區與分頁會保留在這裡，其他裝置會繼續同步。若要重新同步，請在此頁面開啟「同步工作區與分頁」。"
+    },
+    "syncLeaveConfirmOther": {
+        "message": "要將「$1」中斷同步嗎？不會刪除任何內容。該裝置下次連上網路執行 Firefox 時會關閉同步，它的工作區與分頁仍保留在該裝置上。若要重新連線，請在該裝置的 Workspaces 設定中開啟「同步工作區與分頁」。"
+    },
+    "syncDevicesHint": {
+        "message": "中斷裝置連線只會關閉該裝置上的同步：不會刪除任何內容，其他裝置會繼續同步。若要重新連線裝置，請在該裝置的 Workspaces 設定中開啟「同步工作區與分頁」。"
+    },
+    "syncApplyingTitle": {
+        "message": "同步：正在開啟分頁…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "首次同步"
+    },
+    "syncApplyPromptDesc": {
+        "message": "此 Firefox 帳戶已有工作區與分頁。現在同步到此裝置？分頁很多時可能需要幾分鐘。確認一次後，之後會自動同步，不再詢問。"
+    },
+    "syncApplyCounts": {
+        "message": "將開啟分頁：$1 · 將關閉：$2"
+    },
+    "syncApplyYes": {
+        "message": "立即同步"
+    },
+    "syncApplyLater": {
+        "message": "稍後"
+    },
+    "syncApplyDisable": {
+        "message": "關閉同步"
+    },
+    "syncApplySnoozed": {
+        "message": "已延後。我們將在 10 分鐘後再次詢問首次同步。"
+    },
+    "syncBannerApply": {
+        "message": "首次同步待確認：開啟選項以接受、稍後或關閉 Sync。"
+    },
+    "syncRunawayError": {
+        "message": "同步已停止：相同的分頁被反覆開啟。請檢查資料，然後在設定中重新開啟同步。"
+    },
+    "syncBreathColorLabel": {
+        "message": "同步呼吸顏色"
+    },
+    "syncBreathColorHint": {
+        "message": "僅在同步開啟或關閉分頁時亮起。"
+    },
+    "syncBreathOrange": {
+        "message": "橘色"
+    },
+    "syncBreathAmber": {
+        "message": "琥珀"
+    },
+    "syncBreathMint": {
+        "message": "薄荷"
+    },
+    "syncBreathSky": {
+        "message": "天藍"
+    },
+    "syncBreathRose": {
+        "message": "玫瑰"
+    },
+    "syncToastTitle": {
+        "message": "已同步"
+    },
+    "syncToastQuietTitle": {
+        "message": "同步"
+    },
+    "syncToastQuiet": {
+        "message": "已是最新"
+    },
+    "syncToastChanged": {
+        "message": "工作區已更新"
+    },
+    "syncToastCounts": {
+        "message": "開啟 +$1 · 關閉 −$2"
+    },
+    "syncToastWorking": {
+        "message": "正在同步…"
+    },
+    "syncToastWorkingHint": {
+        "message": "正在更新分頁 — 請稍候"
+    },
+    "syncToastDismissHint": {
+        "message": "點擊關閉"
+    },
+    "syncBreathEnabled": {
+        "message": "同步呼吸燈"
+    },
+    "syncRawSize": {
+        "message": "壓縮前"
+    },
+    "syncPackedSize": {
+        "message": "儲存資料"
+    },
+    "syncCompression": {
+        "message": "體積縮減"
+    },
+    "syncStorageRecords": {
+        "message": "$1 個分頁 · $2 個工作區 · $3 筆刪除記錄"
+    },
+    "syncStorageWaiting": {
+        "message": "Firefox 傳輸資料時無法統計分頁與刪除記錄"
+    },
+    "syncLastPrepared": {
+        "message": "上次在本機準備副本"
+    },
+    "syncProgressOpening": {
+        "message": "正在開啟分頁"
+    },
+    "syncProgressClosing": {
+        "message": "正在關閉分頁"
+    },
+    "syncProgressFinishing": {
+        "message": "正在完成分頁變更"
+    },
+    "syncProgressComplete": {
+        "message": "分頁變更已完成"
+    },
+    "syncProgressFailed": {
+        "message": "部分分頁變更無法套用"
+    },
+    "syncProgressCounts": {
+        "message": "已完成 $1/$2 · 剩餘 $3"
+    },
+    "syncDeviceAdded": {
+        "message": "已加入同步"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "從此裝置收到的最近更新"
     }
 }

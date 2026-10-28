@@ -49,7 +49,10 @@
             --toast-text: #333;
             --toast-shadow: rgba(0,0,0,0.15);
         }
-
+    </style>
+    <link rel="stylesheet" href="sync-breath.css">
+    <link rel="stylesheet" href="sync-progress.css">
+    <style>
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -686,10 +689,15 @@
         </div>
     </div>
     
+    <div id="sync-join-banner" style="display:none; padding:10px 12px; background:#3a2f1a; border-bottom:1px solid #664; color:#ffd59a; font-size:13px; line-height:1.4;">
+        <div id="sync-banner-text" data-i18n="syncBannerJoin">This device needs to join Sync. Open Options to choose Replace or Merge.</div>
+        <button id="sync-banner-options-btn" class="btn" style="margin-top:8px; padding:4px 10px; font-size:12px;" data-i18n="syncOpenOptions">Open Options</button>
+    </div>
+
     <div class="sidebar-header">
          <div style="display: flex; width: 100%; justify-content: space-between; padding: 0 4px;">
              <button id="toggle-actions-btn" title="__MSG_showActions__" data-i18n-title="showActions" style="background:none; border:none; cursor:pointer; font-size: 18px; padding: 4px; border-radius: 4px; transition: background 0.2s; display: flex; align-items: center;">
-                 <img src="icons/eye-64.png" style="width: 20px; height: 20px;">
+                 <img src="icons/eye-open-64.png" style="width: 20px; height: 20px;">
              </button>
              <button id="reset-btn" title="__MSG_resetWorkspaces__" data-i18n-title="resetWorkspaces" style="background:none; border:none; cursor:pointer; font-size: 18px; padding: 4px; border-radius: 4px; transition: background 0.2s; display: flex; align-items: center;">
                  <img src="icons/trash-64.png" style="width: 20px; height: 20px; filter: var(--icon-filter);">
@@ -893,7 +901,20 @@
             </div>
         </div>
     </div>
+    <div id="sync-breath" aria-hidden="true"></div>
+    <div id="sync-activity-toast" role="status"></div>
+    <div id="sync-apply-progress" role="status" aria-live="polite" aria-atomic="true" aria-label="">
+        <div class="sync-progress-heading">
+            <span id="sync-apply-progress-label"></span>
+            <span id="sync-apply-progress-count"></span>
+        </div>
+        <div id="sync-apply-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="sync-apply-progress-fill"></div>
+        </div>
+    </div>
     <script src="i18n.js"></script>
+    <script src="sync-breath.js"></script>
+    <script src="sync-progress.js"></script>
     <script src="sidebar.js"></script>
 </body>
 </html>

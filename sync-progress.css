@@ -1,0 +1,76 @@
+#sync-apply-progress {
+    position: fixed;
+    z-index: 1200;
+    inset-inline: 8px;
+    bottom: 76px;
+    padding: 9px 10px 8px;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.18));
+    border-radius: 6px;
+    background: var(--header-bg, rgba(43, 42, 51, 0.97));
+    color: var(--text-color, #fbfbfe);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font: 12px/1.35 system-ui, sans-serif;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 160ms ease, transform 160ms ease;
+    pointer-events: none;
+}
+
+.options-page #sync-apply-progress {
+    inset-inline: auto 20px;
+    bottom: 76px;
+    width: min(280px, calc(100vw - 40px));
+    box-sizing: border-box;
+}
+
+#sync-apply-progress.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#sync-apply-progress .sync-progress-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+#sync-apply-progress-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#sync-apply-progress-count {
+    flex: none;
+    color: var(--text-muted, #ccc);
+    font-variant-numeric: tabular-nums;
+}
+
+#sync-apply-progress-track {
+    height: 3px;
+    margin-top: 7px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(127, 127, 127, 0.28);
+}
+
+#sync-apply-progress-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--active-border, #ff9400);
+    /* deslop-ignore-next-line 26 — the bar follows real tab work without snapping. */
+    transition: width 180ms ease;
+}
+
+#sync-apply-progress[data-phase="error"] #sync-apply-progress-fill {
+    background: #d85b55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #sync-apply-progress,
+    #sync-apply-progress-fill {
+        transition: none;
+    }
+}

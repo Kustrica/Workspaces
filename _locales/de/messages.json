@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Tabs nach Fensterschließung wiederhergestellt"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Arbeitsbereiche und Tabs werden automatisch zwischen Ihren Geräten synchronisiert. Sie müssen nichts tun."
+    },
+    "syncToggleLabel": {
+        "message": "Arbeitsbereiche und Tabs synchronisieren"
+    },
+    "syncHelperText": {
+        "message": "Melden Sie sich auf jedem Gerät mit demselben Mozilla-Konto an und prüfen Sie, ob Add-ons synchronisiert werden. Für die sofortige Synchronisation öffnen Sie oben rechts das Firefox-Kontomenü → Synchronisation → Jetzt synchronisieren."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Die Add-on-Synchronisierung ist in Firefox für den Desktop verfügbar."
+    },
+    "syncStatusOn": {
+        "message": "Sync aktiv"
+    },
+    "syncStatusOff": {
+        "message": "Sync inaktiv"
+    },
+    "syncStatusSyncing": {
+        "message": "Synchronisieren..."
+    },
+    "syncNever": {
+        "message": "Nie"
+    },
+    "syncQuotaLabel": {
+        "message": "Kontingent:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB von $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sync aktiviert"
+    },
+    "syncDisabledToast": {
+        "message": "Sync deaktiviert"
+    },
+    "syncDisableConfirm": {
+        "message": "Sync deaktivieren? Ihre Arbeitsbereiche bleiben auf diesem Gerät."
+    },
+    "syncSuccess": {
+        "message": "Synchronisierung abgeschlossen"
+    },
+    "syncFailed": {
+        "message": "Synchronisierung fehlgeschlagen"
+    },
+    "syncErrorQuota": {
+        "message": "Die komprimierten Daten überschreiten das Firefox-Sync-Limit von 100 KB. Reduzieren Sie die Tabs oder verwenden Sie den JSON-Export."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Melden Sie sich bei Ihrem Firefox-Konto an und aktivieren Sie „Add-ons“ in den Firefox-Sync-Einstellungen."
+    },
+    "syncErrorGeneric": {
+        "message": "Synchronisierung nicht möglich. Bitte später erneut versuchen."
+    },
+    "syncConflictTitle": {
+        "message": "Sync-Konflikt"
+    },
+    "syncConflictDesc": {
+        "message": "Die Daten auf diesem Gerät weichen von der synchronisierten Kopie ab. Wählen Sie, was behalten wird:"
+    },
+    "syncLocalSummary": {
+        "message": "Dieses Gerät: $1 Arbeitsbereiche, $2 Tabs"
+    },
+    "syncRemoteSummary": {
+        "message": "Synchronisierte Kopie: $1 Arbeitsbereiche, $2 Tabs"
+    },
+    "syncUseRemote": {
+        "message": "Synchronisierte Kopie verwenden"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Arbeitsbereiche und Tabs auf diesem Gerät ersetzen"
+    },
+    "syncUseLocal": {
+        "message": "Dieses Gerät als Quelle verwenden"
+    },
+    "syncUseLocalDesc": {
+        "message": "Dieses Gerät hochladen und die Sync-Kopie überschreiben"
+    },
+    "syncMerge": {
+        "message": "Beide zusammenführen"
+    },
+    "syncMergeDesc": {
+        "message": "Offene Tabs hier behalten und Arbeitsbereiche sowie Tabs aus der Sync-Kopie hinzufügen. Gleiche Namen werden zu einem Arbeitsbereich zusammengeführt."
+    },
+    "syncApplying": {
+        "message": "Synchronisierte Daten werden angewendet..."
+    },
+    "syncApplyWarning": {
+        "message": "Bitte führen Sie während der Wiederherstellung der Tabs keine Aktionen im Browser aus."
+    },
+    "logSyncApplied": {
+        "message": "Sync angewendet"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 Arbeitsbereiche, $2 Tabs aus Sync"
+    },
+    "syncJoinHint": {
+        "message": "Auf einem neuen Gerät Sync in der Erweiterung einschalten."
+    },
+    "syncJoinTitle": {
+        "message": "Firefox Sync beitreten"
+    },
+    "syncJoinDesc": {
+        "message": "Es gibt bereits eine Sync-Kopie. Wählen Sie einmal auf diesem Gerät. Danach läuft Sync automatisch ohne weitere Abfragen."
+    },
+    "syncPrefTheme": {
+        "message": "Design synchronisieren"
+    },
+    "syncPrefLanguage": {
+        "message": "Oberflächensprache synchronisieren"
+    },
+    "syncPrefSidebar": {
+        "message": "Seitenleiste synchronisieren"
+    },
+    "syncPrefLogs": {
+        "message": "Aktionsverlauf synchronisieren"
+    },
+    "syncInfoStatus": {
+        "message": "Status"
+    },
+    "syncWaitingFirefox": {
+        "message": "Für Sync gespeichert. Firefox überträgt auf andere Geräte (oft wenige Minuten, oder „Jetzt synchronisieren“ in Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Dieses Gerät ist noch nicht im Sync-Kreis. Tippen Sie auf „Jetzt synchronisieren“, um beizutreten oder die erste Kopie zu erstellen."
+    },
+    "syncDevicesTitle": {
+        "message": "Geräte in Sync"
+    },
+    "syncDevicesEmpty": {
+        "message": "Es sind noch keine Geräte registriert."
+    },
+    "syncThisDevice": {
+        "message": "dieses Gerät"
+    },
+    "syncDeviceSynced": {
+        "message": "Synchronisiert"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Wird getrennt: wartet, bis das Gerät online ist"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Beitritt"
+    },
+    "syncDeviceLeft": {
+        "message": "Nicht synchronisiert"
+    },
+    "syncLeaveDevice": {
+        "message": "Trennen"
+    },
+    "syncLeaveConfirm": {
+        "message": "Austritt für dieses Gerät anfordern? Sync wird ausgeschaltet, sobald das Gerät wieder online ist."
+    },
+    "syncForceRemove": {
+        "message": "Jetzt entfernen"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "„$1“ aus der Liste entfernen, ohne darauf zu warten? Verwenden Sie dies, wenn das Gerät verloren, zurückgesetzt oder nicht mehr genutzt wird. Es wird nichts gelöscht. Falls es wieder online geht, wird die Synchronisierung dort automatisch ausgeschaltet. Um es wieder zu verbinden, schalten Sie auf diesem Gerät in den Workspaces-Einstellungen „Arbeitsbereiche und Tabs synchronisieren“ ein."
+    },
+    "syncForgetDevice": {
+        "message": "Aus Liste entfernen"
+    },
+    "syncForgetConfirm": {
+        "message": "„$1“ aus dieser Liste entfernen? Die Synchronisierung ist auf diesem Gerät bereits aus, und es wird nichts gelöscht. Wird sie dort wieder eingeschaltet, erscheint das Gerät erneut hier."
+    },
+    "syncBannerJoin": {
+        "message": "Dieses Gerät muss Sync beitreten. Öffnen Sie die Optionen und wählen Sie Ersetzen oder Zusammenführen."
+    },
+    "syncOpenOptions": {
+        "message": "Optionen öffnen"
+    },
+    "syncPrefUi": {
+        "message": "Oberflächeneinstellungen synchronisieren"
+    },
+    "syncLiveReceived": {
+        "message": "Änderungen werden empfangen…"
+    },
+    "syncToastQueued": {
+        "message": "Gesendet — warten auf Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Änderungen empfangen"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Synchronisierung auf diesem Gerät ausschalten? Ihre Arbeitsbereiche und Tabs bleiben hier, und Ihre anderen Geräte synchronisieren weiter. Um wieder zu synchronisieren, schalten Sie „Arbeitsbereiche und Tabs synchronisieren“ auf dieser Seite ein."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "„$1“ von der Synchronisierung trennen? Es wird nichts gelöscht. Die Synchronisierung wird auf diesem Gerät ausgeschaltet, sobald Firefox dort das nächste Mal mit Internetverbindung läuft; seine Arbeitsbereiche und Tabs bleiben dort. Um es wieder zu verbinden, schalten Sie auf diesem Gerät in den Workspaces-Einstellungen „Arbeitsbereiche und Tabs synchronisieren“ ein."
+    },
+    "syncDevicesHint": {
+        "message": "Das Trennen eines Geräts schaltet nur auf diesem Gerät die Synchronisierung aus: Es wird nichts gelöscht, und die anderen Geräte synchronisieren weiter. Um ein Gerät wieder zu verbinden, schalten Sie dort in den Workspaces-Einstellungen „Arbeitsbereiche und Tabs synchronisieren“ ein."
+    },
+    "syncApplyingTitle": {
+        "message": "Sync: Tabs werden geöffnet…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Erste Synchronisierung"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Dieses Firefox-Konto hat bereits Arbeitsbereiche und Tabs. Jetzt auf dieses Gerät synchronisieren? Bei vielen Tabs kann das einige Minuten dauern. Nach einmaliger Bestätigung läuft Sync danach automatisch ohne Nachfrage."
+    },
+    "syncApplyCounts": {
+        "message": "Zu öffnende Tabs: $1 · Zu schließende: $2"
+    },
+    "syncApplyYes": {
+        "message": "Jetzt synchronisieren"
+    },
+    "syncApplyLater": {
+        "message": "Später"
+    },
+    "syncApplyDisable": {
+        "message": "Synchronisierung ausschalten"
+    },
+    "syncApplySnoozed": {
+        "message": "Verschoben. Wir fragen in 10 Minuten erneut nach der ersten Sync."
+    },
+    "syncBannerApply": {
+        "message": "Erste Sync wartet: Optionen öffnen, um zu übernehmen, zu verschieben oder Sync auszuschalten."
+    },
+    "syncRunawayError": {
+        "message": "Synchronisierung gestoppt: dieselben Tabs wurden immer wieder geöffnet. Prüfen Sie Ihre Daten und schalten Sie die Synchronisierung in den Einstellungen wieder ein."
+    },
+    "syncBreathColorLabel": {
+        "message": "Sync-Atemfarbe"
+    },
+    "syncBreathColorHint": {
+        "message": "Leuchten nur, wenn die Synchronisation Tabs öffnet oder schließt."
+    },
+    "syncBreathOrange": {
+        "message": "Orange"
+    },
+    "syncBreathAmber": {
+        "message": "Bernstein"
+    },
+    "syncBreathMint": {
+        "message": "Minze"
+    },
+    "syncBreathSky": {
+        "message": "Himmel"
+    },
+    "syncBreathRose": {
+        "message": "Rosa"
+    },
+    "syncToastTitle": {
+        "message": "Synchronisiert"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Bereits aktuell"
+    },
+    "syncToastChanged": {
+        "message": "Arbeitsbereiche aktualisiert"
+    },
+    "syncToastCounts": {
+        "message": "Geöffnet +$1 · Geschlossen −$2"
+    },
+    "syncToastWorking": {
+        "message": "Synchronisiere…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Tabs werden aktualisiert — bitte warten"
+    },
+    "syncToastDismissHint": {
+        "message": "Klicken zum Schließen"
+    },
+    "syncBreathEnabled": {
+        "message": "Synchronisationsleuchten"
+    },
+    "syncRawSize": {
+        "message": "Vor der Komprimierung"
+    },
+    "syncPackedSize": {
+        "message": "Gespeicherte Daten"
+    },
+    "syncCompression": {
+        "message": "Größenreduzierung"
+    },
+    "syncStorageRecords": {
+        "message": "$1 Tabs · $2 Arbeitsbereiche · $3 Löschvermerke"
+    },
+    "syncStorageWaiting": {
+        "message": "Tab- und Löschzahlen sind nicht verfügbar, während Firefox die Daten überträgt"
+    },
+    "syncLastPrepared": {
+        "message": "Zuletzt erstellte lokale Kopie"
+    },
+    "syncProgressOpening": {
+        "message": "Tabs werden geöffnet"
+    },
+    "syncProgressClosing": {
+        "message": "Tabs werden geschlossen"
+    },
+    "syncProgressFinishing": {
+        "message": "Tabänderungen werden abgeschlossen"
+    },
+    "syncProgressComplete": {
+        "message": "Tabänderungen abgeschlossen"
+    },
+    "syncProgressFailed": {
+        "message": "Einige Tabänderungen konnten nicht angewendet werden"
+    },
+    "syncProgressCounts": {
+        "message": "$1 von $2 erledigt · $3 übrig"
+    },
+    "syncDeviceAdded": {
+        "message": "Zur Synchronisierung hinzugefügt"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Letzte Aktualisierung von diesem Gerät"
     }
 }

@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Pestañas restauradas tras el cierre de la ventana"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Los espacios y las pestañas se sincronizan automáticamente entre tus dispositivos. No necesitas hacer nada."
+    },
+    "syncToggleLabel": {
+        "message": "Sincronizar espacios de trabajo y pestañas"
+    },
+    "syncHelperText": {
+        "message": "Inicia sesión con la misma cuenta de Mozilla en cada dispositivo y comprueba que la sincronización de complementos esté activada. Para sincronizar ahora, abre el menú de la cuenta de Firefox arriba a la derecha → Sincronización → Sincronizar ahora."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "La sincronización de complementos está disponible en Firefox para escritorio."
+    },
+    "syncStatusOn": {
+        "message": "Sincronización activada"
+    },
+    "syncStatusOff": {
+        "message": "Sincronización desactivada"
+    },
+    "syncStatusSyncing": {
+        "message": "Sincronizando..."
+    },
+    "syncNever": {
+        "message": "Nunca"
+    },
+    "syncQuotaLabel": {
+        "message": "Cuota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB de $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sincronización activada"
+    },
+    "syncDisabledToast": {
+        "message": "Sincronización desactivada"
+    },
+    "syncDisableConfirm": {
+        "message": "¿Desactivar la sincronización? Tus espacios de trabajo permanecerán en este dispositivo."
+    },
+    "syncSuccess": {
+        "message": "Sincronización completada"
+    },
+    "syncFailed": {
+        "message": "Error de sincronización"
+    },
+    "syncErrorQuota": {
+        "message": "Los datos comprimidos superan el límite de 100 KB de Firefox Sync. Reduce las pestañas o exporta a JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Inicia sesión en tu cuenta de Firefox y activa «Complementos» en los ajustes de Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "No se pudo sincronizar. Inténtalo más tarde."
+    },
+    "syncConflictTitle": {
+        "message": "Conflicto de sincronización"
+    },
+    "syncConflictDesc": {
+        "message": "Los datos de este dispositivo difieren de la copia sincronizada. Elige qué conservar:"
+    },
+    "syncLocalSummary": {
+        "message": "Este dispositivo: $1 espacios, $2 pestañas"
+    },
+    "syncRemoteSummary": {
+        "message": "Copia sincronizada: $1 espacios, $2 pestañas"
+    },
+    "syncUseRemote": {
+        "message": "Usar la copia sincronizada"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Reemplazar los espacios de trabajo y pestañas de este dispositivo"
+    },
+    "syncUseLocal": {
+        "message": "Usar este dispositivo como origen"
+    },
+    "syncUseLocalDesc": {
+        "message": "Subir este dispositivo y sobrescribir la copia sincronizada"
+    },
+    "syncMerge": {
+        "message": "Combinar ambos"
+    },
+    "syncMergeDesc": {
+        "message": "Mantener las pestañas abiertas aquí y añadir espacios de trabajo y pestañas de la copia. Los mismos nombres se fusionan en un espacio."
+    },
+    "syncApplying": {
+        "message": "Aplicando los datos sincronizados..."
+    },
+    "syncApplyWarning": {
+        "message": "Por favor, no realices ninguna acción en el navegador mientras se restauran las pestañas."
+    },
+    "logSyncApplied": {
+        "message": "Sincronización aplicada"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 espacios, $2 pestañas desde la sincronización"
+    },
+    "syncJoinHint": {
+        "message": "En un dispositivo nuevo, active Sync en la extensión."
+    },
+    "syncJoinTitle": {
+        "message": "Unirse a Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Ya existe una copia sincronizada. Elige una vez en este dispositivo. Después Sync funciona automáticamente sin más avisos."
+    },
+    "syncPrefTheme": {
+        "message": "Sincronizar tema"
+    },
+    "syncPrefLanguage": {
+        "message": "Sincronizar idioma de la interfaz"
+    },
+    "syncPrefSidebar": {
+        "message": "Sincronizar barra lateral"
+    },
+    "syncPrefLogs": {
+        "message": "Sincronizar el historial de acciones"
+    },
+    "syncInfoStatus": {
+        "message": "Estado"
+    },
+    "syncWaitingFirefox": {
+        "message": "Guardado para Sync. Firefox lo transfiere a otros dispositivos (a menudo unos minutos, o usa «Sincronizar ahora» en Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Este dispositivo aún no está en el círculo de Sync. Pulsa «Sincronizar ahora» para unirte o crear la primera copia."
+    },
+    "syncDevicesTitle": {
+        "message": "Dispositivos en sincronización"
+    },
+    "syncDevicesEmpty": {
+        "message": "Aún no hay dispositivos registrados."
+    },
+    "syncThisDevice": {
+        "message": "este dispositivo"
+    },
+    "syncDeviceSynced": {
+        "message": "Sincronizado"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Desconectando: esperando a que el dispositivo esté en línea"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Uniéndose"
+    },
+    "syncDeviceLeft": {
+        "message": "Sin sincronizar"
+    },
+    "syncLeaveDevice": {
+        "message": "Desconectar"
+    },
+    "syncLeaveConfirm": {
+        "message": "¿Solicitar salida de este dispositivo? Sync se desactivará cuando vuelva a estar en línea."
+    },
+    "syncForceRemove": {
+        "message": "Quitar ahora"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "¿Quitar «$1» de la lista sin esperarlo? Úsalo si el dispositivo se perdió, se restableció o ya no se usa. No se borra nada. Si algún día vuelve a estar en línea, la sincronización se desactivará allí automáticamente. Para volver a conectarlo, activa «Sincronizar espacios de trabajo y pestañas» en los ajustes de Workspaces de ese dispositivo."
+    },
+    "syncForgetDevice": {
+        "message": "Quitar de la lista"
+    },
+    "syncForgetConfirm": {
+        "message": "¿Quitar «$1» de esta lista? La sincronización ya está desactivada en ese dispositivo y no se borra nada. Si se vuelve a activar allí, el dispositivo aparecerá aquí de nuevo."
+    },
+    "syncBannerJoin": {
+        "message": "Este dispositivo debe unirse a Sync. Abre Opciones y elige Reemplazar o Fusionar."
+    },
+    "syncOpenOptions": {
+        "message": "Abrir Opciones"
+    },
+    "syncPrefUi": {
+        "message": "Sincronizar ajustes de la interfaz"
+    },
+    "syncLiveReceived": {
+        "message": "Recibiendo cambios…"
+    },
+    "syncToastQueued": {
+        "message": "Enviado: esperando a Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Cambios recibidos"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "¿Desactivar la sincronización en este dispositivo? Tus espacios de trabajo y pestañas se quedan aquí, y tus otros dispositivos siguen sincronizándose. Para volver a sincronizar, activa «Sincronizar espacios de trabajo y pestañas» en esta página."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "¿Desconectar «$1» de la sincronización? No se borra nada. La sincronización se desactivará en ese dispositivo la próxima vez que Firefox se abra allí con internet; sus espacios de trabajo y pestañas se quedan en él. Para volver a conectarlo, activa «Sincronizar espacios de trabajo y pestañas» en los ajustes de Workspaces de ese dispositivo."
+    },
+    "syncDevicesHint": {
+        "message": "Desconectar un dispositivo solo desactiva la sincronización en él: no se borra nada y los demás dispositivos siguen sincronizándose. Para volver a conectar un dispositivo, activa «Sincronizar espacios de trabajo y pestañas» en los ajustes de Workspaces de ese dispositivo."
+    },
+    "syncApplyingTitle": {
+        "message": "Sincronización: abriendo pestañas…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Primera sincronización"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Esta cuenta de Firefox ya tiene espacios de trabajo y pestañas. ¿Sincronizarlos en este dispositivo ahora? Con muchas pestañas puede tardar unos minutos. Tras confirmar una vez, las sincronizaciones siguientes son automáticas sin preguntar."
+    },
+    "syncApplyCounts": {
+        "message": "Pestañas por abrir: $1 · Por cerrar: $2"
+    },
+    "syncApplyYes": {
+        "message": "Sincronizar ahora"
+    },
+    "syncApplyLater": {
+        "message": "Más tarde"
+    },
+    "syncApplyDisable": {
+        "message": "Desactivar la sincronización"
+    },
+    "syncApplySnoozed": {
+        "message": "Aplazado. Preguntaremos de nuevo en 10 minutos por la primera sincronización."
+    },
+    "syncBannerApply": {
+        "message": "La primera sincronización espera: abre Opciones para aceptar, posponer o desactivar Sync."
+    },
+    "syncRunawayError": {
+        "message": "Sincronización detenida: las mismas pestañas se abrían una y otra vez. Revisa tus datos y vuelve a activar la sincronización en los ajustes."
+    },
+    "syncBreathColorLabel": {
+        "message": "Color del respiro de Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "La luz aparece solo cuando la sincronización abre o cierra pestañas."
+    },
+    "syncBreathOrange": {
+        "message": "Naranja"
+    },
+    "syncBreathAmber": {
+        "message": "Ámbar"
+    },
+    "syncBreathMint": {
+        "message": "Menta"
+    },
+    "syncBreathSky": {
+        "message": "Cielo"
+    },
+    "syncBreathRose": {
+        "message": "Rosa"
+    },
+    "syncToastTitle": {
+        "message": "Sincronizado"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Ya está al día"
+    },
+    "syncToastChanged": {
+        "message": "Espacios actualizados"
+    },
+    "syncToastCounts": {
+        "message": "Abiertas +$1 · Cerradas −$2"
+    },
+    "syncToastWorking": {
+        "message": "Sincronizando…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Se actualizan las pestañas — espere"
+    },
+    "syncToastDismissHint": {
+        "message": "Clic para cerrar"
+    },
+    "syncBreathEnabled": {
+        "message": "Luz de sincronización"
+    },
+    "syncRawSize": {
+        "message": "Antes de comprimir"
+    },
+    "syncPackedSize": {
+        "message": "Datos guardados"
+    },
+    "syncCompression": {
+        "message": "Reducción de tamaño"
+    },
+    "syncStorageRecords": {
+        "message": "$1 pestañas · $2 espacios · $3 registros de eliminación"
+    },
+    "syncStorageWaiting": {
+        "message": "Los recuentos no están disponibles mientras Firefox transfiere los datos"
+    },
+    "syncLastPrepared": {
+        "message": "Última copia preparada localmente"
+    },
+    "syncProgressOpening": {
+        "message": "Abriendo pestañas"
+    },
+    "syncProgressClosing": {
+        "message": "Cerrando pestañas"
+    },
+    "syncProgressFinishing": {
+        "message": "Finalizando cambios de pestañas"
+    },
+    "syncProgressComplete": {
+        "message": "Cambios de pestañas completados"
+    },
+    "syncProgressFailed": {
+        "message": "No se pudieron aplicar algunos cambios de pestañas"
+    },
+    "syncProgressCounts": {
+        "message": "$1 de $2 completadas · quedan $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Añadido a la sincronización"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Última actualización recibida de este dispositivo"
     }
 }

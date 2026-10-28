@@ -275,8 +275,12 @@ function updateActionsVisibility() {
 }
 
 // Compute and display open tab counts per workspace
+let tabCountGeneration = 0;
+let lastTabCounts = {};
+
 async function updateTabCounts() {
     if (areActionsVisible !== 'counts') return;
+    const generation = ++tabCountGeneration;
     try {
         const storageData = await browser.storage.local.get('tabWorkspaceMap');
         const tabWorkspaceMap = storageData.tabWorkspaceMap || {};
@@ -298,6 +302,8 @@ async function updateTabCounts() {
             }
         }
         
+        if (generation !== tabCountGeneration) return;
+        lastTabCounts = counts;
         document.querySelectorAll('.workspace-item').forEach(item => {
             const wsId = item.dataset.id;
             if (wsId && counts[wsId] !== undefined) {
@@ -835,7 +841,7 @@ function render() {
         
         const countBadge = document.createElement('span');
         countBadge.className = 'ws-tab-count';
-        countBadge.textContent = '0';
+        countBadge.textContent = lastTabCounts[ws.id] === undefined ? '…' : String(lastTabCounts[ws.id]);
         
         item.appendChild(content);
         item.appendChild(countBadge);
@@ -1395,6 +1401,7 @@ async function renderLogs() {
             if (log.action === 'RESET_WORKSPACES') actionTitle = getMessage("resetWorkspaces") || "Reset";
             if (log.action === 'SAFE_MODE_ALL_TABS') actionTitle = getMessage("safeModeAllTabs") || "Safety fallback: All Tabs";
             if (log.action === 'CRASH_RECOVERY') actionTitle = getMessage("crashRecovery") || "Tabs restored after window close";
+            if (log.action === 'SYNC_APPLIED') actionTitle = getMessage("logSyncApplied") || "Sync Applied";
             
             if (!actionTitle) actionTitle = log.action;
 
@@ -1530,12 +1537,12 @@ browser.storage.onChanged.addListener((changes, area) => {
     if (area === 'local') {
         if ((changes.onboardingComplete && !changes.onboardingComplete.newValue) || 
             (changes.tourComplete && !changes.tourComplete.newValue) ||
-            changes.ui_language) {
+            (changes.ui_language && changes.ui_language.newValue !== changes.ui_language.oldValue)) {
             window.location.reload();
             return;
         }
 
-        if (changes.workspaces) {
+        if (changes.workspaces && JSON.stringify(changes.workspaces.newValue) !== JSON.stringify(workspaces)) {
             workspaces = changes.workspaces.newValue || [];
             render();
         }
@@ -1548,14 +1555,14 @@ browser.storage.onChanged.addListener((changes, area) => {
         if (changes.lastActiveWsId && changes.lastActiveWsId.newValue) {
             lastActiveWsId = changes.lastActiveWsId.newValue;
         }
-        if (changes.currentWorkspaceId) {
+        if (changes.currentWorkspaceId && changes.currentWorkspaceId.newValue !== activeWsId) {
             activeWsId = changes.currentWorkspaceId.newValue;
             if (activeWsId) {
                 lastActiveWsId = activeWsId;
                 isAllTabsMode = false;
             }
             render();
-        } else if (changes.isAllTabsMode) {
+        } else if (changes.isAllTabsMode && changes.isAllTabsMode.newValue !== changes.isAllTabsMode.oldValue) {
             render();
         }
     }
@@ -1573,6 +1580,32 @@ if (typeof browser !== 'undefined' && browser.tabs && browser.tabs.onRemoved && 
 }
 
 browser.runtime.onMessage.addListener((message) => {
+    if ((message.action === 'SYNC_BREATH' || message.action === 'SYNC_ACTIVITY') && window.SyncBreath) {
+        window.SyncBreath.playFromSyncMessage(message);
+        return;
+    }
+    // Sync apply uses breath + toast from SYNC_ACTIVITY — no fullscreen dimmer.
+    if (message.action === 'SYNC_APPLY_PROGRESS') {
+        return;
+    }
+    if (message.action === 'SYNC_STATE_CHANGED' || message.action === 'SYNC_JOIN' ||
+        message.action === 'SYNC_CONFLICT' || message.action === 'SYNC_APPLY_PROMPT') {
+        const banner = document.getElementById('sync-join-banner');
+        const textEl = document.getElementById('sync-banner-text');
+        if (banner) {
+            const state = message.state || {};
+            const needApply = !!(message.pendingApply || state.pendingApply);
+            const needJoin = !!(message.join || message.conflict ||
+                state.status === 'join' || state.join || state.conflict);
+            if (textEl) {
+                textEl.textContent = needApply
+                    ? (getMessage('syncBannerApply') || '')
+                    : (getMessage('syncBannerJoin') || '');
+            }
+            banner.style.display = (needApply || needJoin) ? 'block' : 'none';
+        }
+        return;
+    }
     if (message.action === 'RESTORE_PROGRESS') {
         const overlay = document.getElementById('restore-progress-overlay');
         const textEl = document.getElementById('restore-progress-text');
@@ -1589,5 +1622,36 @@ browser.runtime.onMessage.addListener((message) => {
                 }, 500);
             }
         }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('sync-banner-options-btn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            if (browser.runtime.openOptionsPage) browser.runtime.openOptionsPage();
+        });
+    }
+    browser.runtime.sendMessage({ action: 'SYNC_GET_STATE' }).then((res) => {
+        const banner = document.getElementById('sync-join-banner');
+        if (!banner || !res || !res.state) return;
+        const needApply = !!res.state.pendingApply;
+        const needJoin = !!(res.state.status === 'join' || res.state.join || res.state.conflict);
+        const textEl = document.getElementById('sync-banner-text');
+        if (textEl && (needApply || needJoin)) {
+            textEl.textContent = needApply
+                ? (getMessage('syncBannerApply') || '')
+                : (getMessage('syncBannerJoin') || '');
+        }
+        if (needApply) {
+            banner.style.display = 'block';
+            return;
+        }
+        banner.style.display = needJoin ? 'block' : 'none';
+    }).catch(() => {});
+
+    if (window.SyncBreath) {
+        window.SyncBreath.ensureRoot();
+        window.SyncBreath.loadTheme();
     }
 });

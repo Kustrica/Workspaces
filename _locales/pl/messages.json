@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Karty przywrócone po zamknięciu okna"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Przestrzenie i karty synchronizują się automatycznie między Twoimi urządzeniami. Nie musisz nic robić."
+    },
+    "syncToggleLabel": {
+        "message": "Synchronizuj przestrzenie i karty"
+    },
+    "syncHelperText": {
+        "message": "Zaloguj się na to samo konto Mozilla na każdym urządzeniu i sprawdź, czy synchronizacja dodatków jest włączona. Aby zsynchronizować teraz, otwórz menu konta Firefox w prawym górnym rogu → Synchronizacja → Synchronizuj teraz."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Synchronizacja dodatków działa w Firefoksie na komputery."
+    },
+    "syncStatusOn": {
+        "message": "Synchronizacja włączona"
+    },
+    "syncStatusOff": {
+        "message": "Synchronizacja wyłączona"
+    },
+    "syncStatusSyncing": {
+        "message": "Synchronizowanie..."
+    },
+    "syncNever": {
+        "message": "Nigdy"
+    },
+    "syncQuotaLabel": {
+        "message": "Limit:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB z $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Synchronizacja włączona"
+    },
+    "syncDisabledToast": {
+        "message": "Synchronizacja wyłączona"
+    },
+    "syncDisableConfirm": {
+        "message": "Wyłączyć synchronizację? Twoje przestrzenie pozostaną na tym urządzeniu."
+    },
+    "syncSuccess": {
+        "message": "Synchronizacja zakończona"
+    },
+    "syncFailed": {
+        "message": "Synchronizacja nie udała się"
+    },
+    "syncErrorQuota": {
+        "message": "Skompresowane dane przekraczają limit Firefox Sync wynoszący 100 KB. Zmniejsz liczbę kart lub eksportuj do JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Zaloguj się na konto Firefox i włącz „Dodatki” w ustawieniach Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "Nie udało się zsynchronizować. Spróbuj ponownie później."
+    },
+    "syncConflictTitle": {
+        "message": "Konflikt synchronizacji"
+    },
+    "syncConflictDesc": {
+        "message": "Dane na tym urządzeniu różnią się od kopii w synchronizacji. Wybierz, co zachować:"
+    },
+    "syncLocalSummary": {
+        "message": "To urządzenie: $1 przestrzeni, $2 kart"
+    },
+    "syncRemoteSummary": {
+        "message": "Kopia w synchronizacji: $1 przestrzeni, $2 kart"
+    },
+    "syncUseRemote": {
+        "message": "Użyj kopii z synchronizacji"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Zastąp przestrzenie i karty na tym urządzeniu"
+    },
+    "syncUseLocal": {
+        "message": "Użyj tego urządzenia jako źródła"
+    },
+    "syncUseLocalDesc": {
+        "message": "Prześlij to urządzenie i nadpisz kopię w Sync"
+    },
+    "syncMerge": {
+        "message": "Połącz oba"
+    },
+    "syncMergeDesc": {
+        "message": "Zachowaj otwarte karty tutaj i dodaj przestrzenie oraz karty z kopii. Te same nazwy łączą się w jedną przestrzeń."
+    },
+    "syncApplying": {
+        "message": "Stosowanie zsynchronizowanych danych..."
+    },
+    "syncApplyWarning": {
+        "message": "Nie wykonuj żadnych działań w przeglądarce podczas przywracania kart."
+    },
+    "logSyncApplied": {
+        "message": "Zastosowano synchronizację"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 przestrzeni, $2 kart z synchronizacji"
+    },
+    "syncJoinHint": {
+        "message": "Na nowym urządzeniu włącz Sync w rozszerzeniu."
+    },
+    "syncJoinTitle": {
+        "message": "Dołącz do Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Kopia w Sync już istnieje. Wybierz raz na tym urządzeniu. Potem Sync działa automatycznie bez kolejnych monitów."
+    },
+    "syncPrefTheme": {
+        "message": "Synchronizuj motyw"
+    },
+    "syncPrefLanguage": {
+        "message": "Synchronizuj język interfejsu"
+    },
+    "syncPrefSidebar": {
+        "message": "Synchronizuj panel boczny"
+    },
+    "syncPrefLogs": {
+        "message": "Synchronizuj historię działań"
+    },
+    "syncInfoStatus": {
+        "message": "Status"
+    },
+    "syncWaitingFirefox": {
+        "message": "Zapisano dla Sync. Firefox prześle na inne urządzenia (często kilka minut lub «Synchronizuj teraz» w Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "To urządzenie nie jest jeszcze w kręgu Sync. Kliknij «Synchronizuj teraz», aby dołączyć lub utworzyć pierwszą kopię."
+    },
+    "syncDevicesTitle": {
+        "message": "Urządzenia w synchronizacji"
+    },
+    "syncDevicesEmpty": {
+        "message": "Nie zarejestrowano jeszcze żadnych urządzeń."
+    },
+    "syncThisDevice": {
+        "message": "to urządzenie"
+    },
+    "syncDeviceSynced": {
+        "message": "Zsynchronizowano"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Odłączanie: czekamy, aż urządzenie będzie online"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Dołączanie"
+    },
+    "syncDeviceLeft": {
+        "message": "Bez synchronizacji"
+    },
+    "syncLeaveDevice": {
+        "message": "Odłącz"
+    },
+    "syncLeaveConfirm": {
+        "message": "Poprosić o wyjście tego urządzenia? Sync wyłączy się, gdy urządzenie znów będzie online."
+    },
+    "syncForceRemove": {
+        "message": "Usuń teraz"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Usunąć „$1” z listy bez czekania na nie? Użyj tego, jeśli urządzenie zginęło, zostało zresetowane lub nie jest już używane. Nic nie zostanie usunięte. Jeśli kiedyś znów będzie online, synchronizacja wyłączy się na nim automatycznie. Aby podłączyć je ponownie, włącz „Synchronizuj przestrzenie i karty” w ustawieniach Workspaces na tamtym urządzeniu."
+    },
+    "syncForgetDevice": {
+        "message": "Usuń z listy"
+    },
+    "syncForgetConfirm": {
+        "message": "Usunąć „$1” z tej listy? Synchronizacja na tamtym urządzeniu jest już wyłączona i nic nie zostanie usunięte. Jeśli znów ją tam włączysz, urządzenie ponownie pojawi się tutaj."
+    },
+    "syncBannerJoin": {
+        "message": "To urządzenie musi dołączyć do Sync. Otwórz Opcje i wybierz Zastąp lub Scal."
+    },
+    "syncOpenOptions": {
+        "message": "Otwórz Opcje"
+    },
+    "syncPrefUi": {
+        "message": "Synchronizuj ustawienia interfejsu"
+    },
+    "syncLiveReceived": {
+        "message": "Odbieranie zmian…"
+    },
+    "syncToastQueued": {
+        "message": "Wysłano — czekamy na Firefoksa"
+    },
+    "syncToastPulled": {
+        "message": "Zmiany odebrane"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Wyłączyć synchronizację na tym urządzeniu? Przestrzenie i karty zostaną tutaj, a pozostałe urządzenia nadal będą się synchronizować. Aby znów synchronizować, włącz „Synchronizuj przestrzenie i karty” na tej stronie."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Odłączyć „$1” od synchronizacji? Nic nie zostanie usunięte. Synchronizacja wyłączy się na tamtym urządzeniu, gdy następnym razem uruchomi się na nim Firefox z dostępem do internetu; jego przestrzenie i karty na nim zostaną. Aby podłączyć je ponownie, włącz „Synchronizuj przestrzenie i karty” w ustawieniach Workspaces na tamtym urządzeniu."
+    },
+    "syncDevicesHint": {
+        "message": "Odłączenie urządzenia tylko wyłącza na nim synchronizację: nic nie jest usuwane, a pozostałe urządzenia synchronizują się dalej. Aby ponownie podłączyć urządzenie, włącz na nim „Synchronizuj przestrzenie i karty” w ustawieniach Workspaces."
+    },
+    "syncApplyingTitle": {
+        "message": "Synchronizacja: otwieranie kart…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Pierwsza synchronizacja"
+    },
+    "syncApplyPromptDesc": {
+        "message": "To konto Firefox ma już przestrzenie i karty. Zsynchronizować je na to urządzenie teraz? Przy wielu kartach może to zająć kilka minut. Po jednym potwierdzeniu dalsza synchronizacja działa automatycznie bez pytań."
+    },
+    "syncApplyCounts": {
+        "message": "Kart do otwarcia: $1 · Do zamknięcia: $2"
+    },
+    "syncApplyYes": {
+        "message": "Synchronizuj teraz"
+    },
+    "syncApplyLater": {
+        "message": "Później"
+    },
+    "syncApplyDisable": {
+        "message": "Wyłącz synchronizację"
+    },
+    "syncApplySnoozed": {
+        "message": "Odłożono. Zapytamy ponownie za 10 minut o pierwszą synchronizację."
+    },
+    "syncBannerApply": {
+        "message": "Czeka pierwsza synchronizacja: otwórz Opcje, aby zaakceptować, odłożyć lub wyłączyć Sync."
+    },
+    "syncRunawayError": {
+        "message": "Synchronizacja zatrzymana: te same karty otwierały się wielokrotnie. Sprawdź dane i włącz synchronizację ponownie w ustawieniach."
+    },
+    "syncBreathColorLabel": {
+        "message": "Kolor oddechu Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "Światło pojawia się tylko, gdy synchronizacja otwiera lub zamyka karty."
+    },
+    "syncBreathOrange": {
+        "message": "Pomarańczowy"
+    },
+    "syncBreathAmber": {
+        "message": "Bursztynowy"
+    },
+    "syncBreathMint": {
+        "message": "Miętowy"
+    },
+    "syncBreathSky": {
+        "message": "Niebieski"
+    },
+    "syncBreathRose": {
+        "message": "Różowy"
+    },
+    "syncToastTitle": {
+        "message": "Zsynchronizowano"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Już aktualne"
+    },
+    "syncToastChanged": {
+        "message": "Przestrzenie zaktualizowane"
+    },
+    "syncToastCounts": {
+        "message": "Otwarte +$1 · Zamknięte −$2"
+    },
+    "syncToastWorking": {
+        "message": "Synchronizacja…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Karty są aktualizowane — proszę czekać"
+    },
+    "syncToastDismissHint": {
+        "message": "Kliknij, aby zamknąć"
+    },
+    "syncBreathEnabled": {
+        "message": "Światło synchronizacji"
+    },
+    "syncRawSize": {
+        "message": "Przed kompresją"
+    },
+    "syncPackedSize": {
+        "message": "Zapisane dane"
+    },
+    "syncCompression": {
+        "message": "Zmniejszenie rozmiaru"
+    },
+    "syncStorageRecords": {
+        "message": "$1 kart · $2 przestrzeni · $3 zapisów usunięcia"
+    },
+    "syncStorageWaiting": {
+        "message": "Liczba kart i usunięć jest niedostępna podczas przesyłania danych przez Firefoksa"
+    },
+    "syncLastPrepared": {
+        "message": "Ostatnio przygotowana kopia lokalna"
+    },
+    "syncProgressOpening": {
+        "message": "Otwieranie kart"
+    },
+    "syncProgressClosing": {
+        "message": "Zamykanie kart"
+    },
+    "syncProgressFinishing": {
+        "message": "Kończenie zmian kart"
+    },
+    "syncProgressComplete": {
+        "message": "Zmiany kart zakończone"
+    },
+    "syncProgressFailed": {
+        "message": "Nie udało się zastosować niektórych zmian kart"
+    },
+    "syncProgressCounts": {
+        "message": "Ukończono $1 z $2 · pozostało $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Dodano do synchronizacji"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Ostatnia aktualizacja odebrana z tego urządzenia"
     }
 }

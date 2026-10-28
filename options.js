@@ -866,6 +866,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 browser.runtime.onMessage.addListener((message) => {
+    if ((message.action === 'SYNC_BREATH' || message.action === 'SYNC_ACTIVITY') && window.SyncBreath) {
+        window.SyncBreath.playFromSyncMessage(message);
+        return;
+    }
+    // Sync apply uses breath + toast from SYNC_ACTIVITY — not the fullscreen overlay.
+    if (message.action === 'SYNC_APPLY_PROGRESS') {
+        return;
+    }
+    if (message.action === 'SYNC_APPLY_PROMPT') {
+        ensureSyncI18n().then(() => showSyncApplyPrompt(message.pendingApply));
+        return;
+    }
+    if (message.action === 'SYNC_STATE_CHANGED') {
+        ensureSyncI18n().then(() => renderSyncState(message.state));
+        return;
+    }
+    if (message.action === 'SYNC_CONFLICT' || message.action === 'SYNC_JOIN') {
+        showSyncConflictModal(message.join || message.conflict);
+        return;
+    }
     if (message.action === 'RESTORE_PROGRESS') {
         const overlay = document.getElementById('restore-progress-overlay');
         const textEl = document.getElementById('restore-progress-text');
@@ -884,3 +904,497 @@ browser.runtime.onMessage.addListener((message) => {
         }
     }
 });
+
+// --- Firefox Sync UI (1.17) -----------------------------------------------------------
+
+const SYNC_ERROR_KEYS = {
+    QUOTA: 'syncErrorQuota',
+    NOT_SIGNED_IN: 'syncErrorNotSignedIn',
+    UNAVAILABLE: 'syncErrorNotSignedIn',
+    INCOMPLETE: 'syncErrorGeneric',
+    READ_FAILED: 'syncErrorGeneric',
+    WRITE_FAILED: 'syncErrorGeneric',
+    APPLY_FAILED: 'syncErrorGeneric',
+    NOT_JOINED: 'syncErrorGeneric',
+    REMOTE_EXISTS: 'syncErrorGeneric'
+};
+
+let syncUiState = null;
+// --- 1.18: i18n readiness + live sync cycle -------------------------------------------
+//
+// 1.17 bug: this block had its own DOMContentLoaded listener that rendered BEFORE
+// `initI18n()` from the main listener resolved, so getMessage() fell back to
+// browser.i18n (the browser locale, not the chosen UI language) and `currentLang` was
+// still 'auto', which made dates come out in the browser's locale too.
+let syncI18nReady = null;
+
+function ensureSyncI18n() {
+    if (!syncI18nReady) {
+        syncI18nReady = (async () => {
+            if (window.initI18n) {
+                try { await window.initI18n(); } catch (e) { /* fall back to browser locale */ }
+            }
+            try {
+                const res = await browser.storage.local.get('ui_language');
+                if (res && res.ui_language) currentLang = res.ui_language;
+            } catch (e) { /* keep 'auto' */ }
+        })();
+    }
+    return syncI18nReady;
+}
+
+let syncPrefsBound = false;
+
+function formatSyncTime(ts) {
+    if (!ts) return getMessage('syncNever') || 'Never';
+    const langCode = ((currentLang === 'auto' ? navigator.language : currentLang) || 'en').replace('_', '-');
+    try {
+        return new Intl.DateTimeFormat(langCode, {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(new Date(ts));
+    } catch (e) {
+        return new Date(ts).toLocaleString();
+    }
+}
+
+function renderSyncState(state) {
+    if (!state) return;
+    syncUiState = state;
+
+    const checkbox = document.getElementById('sync-enabled');
+    const preparedEl = document.getElementById('sync-last-prepared');
+    const rawSizeEl = document.getElementById('sync-raw-size');
+    const packedSizeEl = document.getElementById('sync-packed-size');
+    const ratioEl = document.getElementById('sync-compression');
+    const statusEl = document.getElementById('sync-info-status');
+    const errorEl = document.getElementById('sync-error-line');
+    if (!checkbox) return;
+
+    checkbox.checked = !!state.enabled;
+    checkbox.disabled = !state.available;
+
+    if (state.prefs) {
+        const t = document.getElementById('sync-pref-theme');
+        const l = document.getElementById('sync-pref-language');
+        const s = document.getElementById('sync-pref-sidebar');
+        const u = document.getElementById('sync-pref-ui');
+        const g = document.getElementById('sync-pref-logs');
+        if (t) t.checked = !!state.prefs.theme;
+        if (l) l.checked = !!state.prefs.language;
+        if (s) s.checked = !!(state.prefs.sidebar !== undefined ? state.prefs.sidebar : state.prefs.sidebarUi);
+        if (u) u.checked = !!(state.prefs.uiSettings !== undefined ? state.prefs.uiSettings : state.prefs.sidebarUi);
+        if (g) g.checked = state.prefs.actionLogs !== false;
+    }
+
+    let statusKey = state.enabled ? 'syncStatusOn' : 'syncStatusOff';
+    let statusColor = state.enabled ? '#4caf50' : '#888';
+    if (!state.available) {
+        statusKey = 'syncFailed';
+        statusColor = '#ff5555';
+    } else if (state.status === 'syncing') {
+        statusKey = 'syncStatusSyncing';
+        statusColor = '#ccc';
+    } else if (state.status === 'waiting') {
+        statusKey = 'syncLiveReceived';
+        statusColor = '#ccc';
+    } else if (state.status === 'join' || state.join || state.conflict) {
+        statusKey = 'syncJoinTitle';
+        statusColor = '#ff9400';
+    } else if (state.status === 'error') {
+        statusKey = 'syncFailed';
+        statusColor = '#ff5555';
+    } else if (!state.enabled) {
+        statusKey = 'syncStatusOff';
+        statusColor = '#888';
+    }
+
+    if (statusEl) {
+        statusEl.textContent = getMessage(statusKey) || statusKey;
+        statusEl.style.color = statusColor;
+    }
+    if (preparedEl) preparedEl.textContent = formatSyncTime(state.lastPreparedAt);
+    const stats = state.lastTransferStats;
+    const formatBytes = (bytes) => `${(bytes / 1024).toFixed(1)} KB`;
+    if (rawSizeEl) rawSizeEl.textContent = stats ? formatBytes(stats.rawBytes) : '—';
+    if (packedSizeEl) packedSizeEl.textContent = stats ? formatBytes(stats.packedBytes) : '—';
+    if (ratioEl) {
+        const reduction = stats && stats.rawBytes > 0
+            ? Math.round((1 - stats.packedBytes / stats.rawBytes) * 100)
+            : null;
+        ratioEl.textContent = reduction === null ? '—' : `${reduction}%`;
+    }
+
+    if (errorEl) {
+        if (!state.available) {
+            errorEl.textContent = getMessage('syncErrorNotSignedIn') || '';
+            errorEl.style.display = 'block';
+        } else if (state.lastError) {
+            const key = SYNC_ERROR_KEYS[state.lastError] || 'syncErrorGeneric';
+            errorEl.textContent = getMessage(key) || state.lastError;
+            errorEl.style.display = 'block';
+        } else {
+            errorEl.style.display = 'none';
+            errorEl.textContent = '';
+        }
+    }
+
+    if (state.pendingApply) showSyncApplyPrompt(state.pendingApply);
+
+    if (state.join || state.conflict) showSyncConflictModal(state.join || state.conflict);
+    refreshSyncQuota();
+    refreshSyncDevices();
+}
+
+async function refreshSyncQuota() {
+    const el = document.getElementById('sync-quota');
+    const recordsEl = document.getElementById('sync-storage-records');
+    if (!el) return;
+    try {
+        const usage = await browser.runtime.sendMessage({ action: 'SYNC_GET_QUOTA' });
+        if (!usage || !usage.total) {
+            el.textContent = '—';
+            return;
+        }
+        const used = (usage.used / 1024).toFixed(1);
+        const total = Math.round(usage.total / 1024);
+        el.textContent = getMessage('syncQuotaValue', [used, total]) || `${used} KB of ${total} KB`;
+        if (recordsEl) {
+            recordsEl.textContent = usage.documentValid
+                ? (getMessage('syncStorageRecords', [usage.tabs, usage.workspaces,
+                    (usage.urlTombstones || 0) + (usage.workspaceTombstones || 0)]) ||
+                    `${usage.tabs} tabs · ${usage.workspaces} workspaces · ${(usage.urlTombstones || 0) + (usage.workspaceTombstones || 0)} deletion records`)
+                : '—';
+        }
+    } catch (e) {
+        el.textContent = '—';
+        if (recordsEl) recordsEl.textContent = '';
+    }
+}
+
+let syncDevicesSignature = null;
+
+async function refreshSyncDevices() {
+    const list = document.getElementById('sync-devices-list');
+    if (!list) return;
+
+    const renderEmpty = (text) => {
+        const empty = document.createElement('div');
+        empty.className = 'info-text';
+        empty.style.padding = '12px';
+        empty.textContent = text;
+        list.replaceChildren(empty);
+    };
+
+    try {
+        const res = await browser.runtime.sendMessage({ action: 'SYNC_GET_DEVICES' });
+        const devices = (res && res.devices) || [];
+
+        // lastSeen is deliberately rounded to the minute: a second-by-second timestamp would
+        // invalidate the signature on every cycle and defeat the whole point.
+        const signature = JSON.stringify(devices.map((d) => [
+            d.id, d.label, d.status, d.isSelf, Math.floor((d.joinedAt || 0) / 60000),
+            Math.floor((d.lastReceivedAt || 0) / 60000), Math.floor((d.lastSeen || 0) / 60000)
+        ])) + '|' + (currentLang || '');
+        if (signature === syncDevicesSignature) return;
+        syncDevicesSignature = signature;
+
+        if (!devices.length) {
+            renderEmpty(getMessage('syncDevicesEmpty') || 'No devices yet.');
+            return;
+        }
+
+        const rows = devices.map((d) => {
+            const statusKey = ({
+                synced: 'syncDeviceSynced',
+                pending_leave: 'syncDevicePendingLeave',
+                pending_join: 'syncDevicePendingJoin',
+                left: 'syncDeviceLeft'
+            })[d.status] || 'syncDeviceSynced';
+            const statusColor = d.status === 'pending_leave' ? '#ff9400' : '#888';
+
+            const row = document.createElement('div');
+            row.className = 'sync-device-row';
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid #333;';
+
+            const info = document.createElement('div');
+            info.style.minWidth = '0';
+
+            const labelEl = document.createElement('div');
+            labelEl.style.cssText = 'color:#ddd;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            const label = String(d.label || '');
+            labelEl.textContent = d.isSelf
+                ? `${label} (${getMessage('syncThisDevice') || 'this device'})`
+                : label;
+
+            const meta = document.createElement('div');
+            meta.style.fontSize = '12px';
+            meta.style.color = statusColor;
+            meta.style.marginTop = '2px';
+            const details = [
+                `${getMessage('syncDeviceAdded') || 'Added'} · ${d.joinedAt ? formatSyncTime(d.joinedAt) : '—'}`
+            ];
+            if (!d.isSelf) {
+                details.push(`${getMessage('syncDeviceLastUpdate') || 'Last update received'} · ${d.lastReceivedAt ? formatSyncTime(d.lastReceivedAt) : '—'}`);
+            }
+            meta.textContent = `${getMessage(statusKey) || d.status}\n${details.join('\n')}`;
+            meta.style.whiteSpace = 'pre-line';
+
+            info.appendChild(labelEl);
+            info.appendChild(meta);
+
+            const actions = document.createElement('div');
+            actions.className = 'sync-device-actions';
+
+            // One clear action per row, depending on the device state:
+            //   this device            -> Disconnect (turns sync off here, immediately)
+            //   other, synced/joining  -> Disconnect (sync turns off there when it is next online)
+            //   other, waiting         -> Remove now (stop waiting; for lost/unused devices)
+            //   other, not syncing     -> Remove from list (tidy up; it re-registers if re-enabled)
+            const addAction = (textKey, fallback, danger, confirmText, action) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = danger ? 'sync-device-btn danger' : 'sync-device-btn';
+                btn.textContent = getMessage(textKey) || fallback;
+                btn.addEventListener('click', () => {
+                    showConfirmModal(btn.textContent, confirmText, async () => {
+                        await browser.runtime.sendMessage({ action, deviceId: d.id });
+                        syncDevicesSignature = null;
+                        refreshSyncDevices();
+                        requestSyncState();
+                    });
+                });
+                actions.appendChild(btn);
+            };
+
+            if (d.isSelf) {
+                if (d.status !== 'left') {
+                    addAction('syncLeaveDevice', 'Disconnect', false,
+                        getMessage('syncLeaveConfirmSelf') || '', 'SYNC_LEAVE_DEVICE');
+                }
+            } else if (d.status === 'pending_leave') {
+                addAction('syncForceRemove', 'Remove now', true,
+                    getMessage('syncForceRemoveConfirm', [label]) || '', 'SYNC_FORCE_REMOVE_DEVICE');
+            } else if (d.status === 'left') {
+                addAction('syncForgetDevice', 'Remove from list', false,
+                    getMessage('syncForgetConfirm', [label]) || '', 'SYNC_FORGET_DEVICE');
+            } else {
+                addAction('syncLeaveDevice', 'Disconnect', false,
+                    getMessage('syncLeaveConfirmOther', [label]) || '', 'SYNC_LEAVE_DEVICE');
+            }
+
+            row.appendChild(info);
+            row.appendChild(actions);
+            return row;
+        });
+
+        list.replaceChildren(...rows);
+    } catch (e) {
+        // Keep whatever is on screen: a transient message failure is not "no devices".
+        if (!syncDevicesSignature) renderEmpty('—');
+    }
+}
+
+async function requestSyncState() {
+    await ensureSyncI18n();
+    try {
+        const res = await browser.runtime.sendMessage({ action: 'SYNC_GET_STATE' });
+        if (res && res.state) renderSyncState(res.state);
+    } catch (e) { /* background not ready yet */ }
+}
+
+function showSyncConflictModal(conflict) {
+    const modal = document.getElementById('sync-conflict-modal');
+    if (!modal || !conflict || modal.classList.contains('visible')) return;
+
+    const localEl = document.getElementById('sync-conflict-local');
+    const remoteEl = document.getElementById('sync-conflict-remote');
+    if (localEl) {
+        localEl.textContent = getMessage('syncLocalSummary', [conflict.local.workspaces, conflict.local.tabs]) ||
+            `This device: ${conflict.local.workspaces} / ${conflict.local.tabs}`;
+    }
+    if (remoteEl) {
+        remoteEl.textContent = getMessage('syncRemoteSummary', [conflict.remote.workspaces, conflict.remote.tabs]) ||
+            `Synced copy: ${conflict.remote.workspaces} / ${conflict.remote.tabs}`;
+    }
+
+    modal.classList.add('visible');
+
+    const close = () => modal.classList.remove('visible');
+
+    const resolve = (resolution, destructive) => {
+        const run = async () => {
+            close();
+            if (resolution !== 'LOCAL') {
+                const overlay = document.getElementById('restore-progress-overlay');
+                const title = document.getElementById('restore-progress-title');
+                if (title) title.textContent = getMessage('syncApplying') || 'Applying synced data...';
+                if (overlay) overlay.style.display = 'flex';
+            }
+            const res = await browser.runtime.sendMessage({ action: 'SYNC_RESOLVE_JOIN', resolution });
+            const overlay = document.getElementById('restore-progress-overlay');
+            if (overlay) overlay.style.display = 'none';
+            if (res && res.success) {
+                showStatus(getMessage('syncSuccess') || 'Sync complete', 'success');
+            } else {
+                const key = SYNC_ERROR_KEYS[res && res.error] || 'syncFailed';
+                showStatus(getMessage(key) || 'Sync failed', 'error');
+            }
+            requestSyncState();
+        };
+
+        if (destructive) {
+            showConfirmModal(
+                getMessage('syncJoinTitle') || 'Join Firefox Sync',
+                getMessage('syncApplyWarning') || '',
+                run
+            );
+        } else {
+            run();
+        }
+    };
+
+    document.getElementById('sync-use-remote-btn').onclick = () => resolve('REMOTE', true);
+    document.getElementById('sync-use-local-btn').onclick = () => resolve('LOCAL', true);
+    document.getElementById('sync-merge-btn').onclick = () => resolve('MERGE', true);
+    document.getElementById('sync-conflict-cancel-btn').onclick = () => {
+        close();
+        browser.runtime.sendMessage({ action: 'SYNC_DISMISS_JOIN' }).catch(() => {});
+        requestSyncState();
+    };
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            close();
+            browser.runtime.sendMessage({ action: 'SYNC_DISMISS_JOIN' }).catch(() => {});
+        }
+    };
+}
+
+
+// --- 1.19: apply prompt + progress ----------------------------------------------------
+let syncApplyModalOpen = false;
+
+function showSyncApplyPrompt(pending) {
+    if (!pending) return;
+    const modal = document.getElementById('sync-apply-modal');
+    if (!modal || syncApplyModalOpen) return;
+    syncApplyModalOpen = true;
+
+    const counts = document.getElementById('sync-apply-counts');
+    if (counts) {
+        counts.textContent = getMessage('syncApplyCounts', [pending.adds, pending.removes]) ||
+            `+${pending.adds} / -${pending.removes}`;
+    }
+
+    modal.classList.add('visible');
+    const close = () => {
+        modal.classList.remove('visible');
+        syncApplyModalOpen = false;
+    };
+
+    document.getElementById('sync-apply-yes-btn').onclick = async () => {
+        close();
+        const res = await browser.runtime.sendMessage({ action: 'SYNC_CONFIRM_APPLY' });
+        if (res && res.success) {
+            showStatus(getMessage('syncToastPulled') || '', 'success');
+        } else {
+            showStatus(getMessage('syncFailed') || '', 'error');
+        }
+        requestSyncState();
+    };
+    document.getElementById('sync-apply-later-btn').onclick = async () => {
+        close();
+        await browser.runtime.sendMessage({ action: 'SYNC_SNOOZE_APPLY' });
+        showStatus(getMessage('syncApplySnoozed') || '', 'success');
+        requestSyncState();
+    };
+    document.getElementById('sync-apply-disable-btn').onclick = () => {
+        close();
+        showConfirmModal(
+            getMessage('syncTitle') || 'Firefox Sync',
+            getMessage('syncDisableConfirm') || '',
+            async () => {
+                const checkbox = document.getElementById('sync-enabled');
+                if (checkbox) checkbox.checked = false;
+                await browser.runtime.sendMessage({ action: 'SYNC_SET_ENABLED', enabled: false });
+                showStatus(getMessage('syncDisabledToast') || '', 'success');
+                requestSyncState();
+            }
+        );
+    };
+    modal.onclick = (e) => { if (e.target === modal) close(); };
+}
+
+function bindSyncPrefChecks() {
+    if (syncPrefsBound) return;
+    syncPrefsBound = true;
+    const map = [
+        ['sync-pref-theme', 'theme'],
+        ['sync-pref-language', 'language'],
+        ['sync-pref-sidebar', 'sidebar'],
+        ['sync-pref-ui', 'uiSettings'],
+        ['sync-pref-logs', 'actionLogs']
+    ];
+    for (const [id, key] of map) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        el.addEventListener('change', async () => {
+            const prefs = {
+                theme: !!(document.getElementById('sync-pref-theme') && document.getElementById('sync-pref-theme').checked),
+                language: !!(document.getElementById('sync-pref-language') && document.getElementById('sync-pref-language').checked),
+                sidebar: !!(document.getElementById('sync-pref-sidebar') && document.getElementById('sync-pref-sidebar').checked),
+                uiSettings: !!(document.getElementById('sync-pref-ui') && document.getElementById('sync-pref-ui').checked),
+                actionLogs: !!(document.getElementById('sync-pref-logs') && document.getElementById('sync-pref-logs').checked)
+            };
+            await browser.runtime.sendMessage({ action: 'SYNC_SET_PREFS', prefs });
+        });
+    }
+}
+
+async function initSyncUi() {
+    await ensureSyncI18n();
+    const checkbox = document.getElementById('sync-enabled');
+    if (!checkbox) return;
+
+    bindSyncPrefChecks();
+
+    checkbox.addEventListener('change', async () => {
+        const enabled = checkbox.checked;
+
+        const apply = async () => {
+            const res = await browser.runtime.sendMessage({ action: 'SYNC_SET_ENABLED', enabled });
+            showStatus(
+                getMessage(enabled ? 'syncEnabledToast' : 'syncDisabledToast') || '',
+                'success'
+            );
+            if (res && res.pull && (res.pull.join || res.pull.conflict)) {
+                showSyncConflictModal(res.pull.join || res.pull.conflict);
+            }
+            requestSyncState();
+        };
+
+        if (!enabled) {
+            checkbox.checked = true;
+            showConfirmModal(
+                getMessage('syncTitle') || 'Firefox Sync',
+                getMessage('syncDisableConfirm') || '',
+                () => {
+                    checkbox.checked = false;
+                    apply();
+                }
+            );
+            return;
+        }
+        apply();
+    });
+
+    await requestSyncState();
+
+    if (window.SyncBreath) {
+        window.SyncBreath.ensureRoot();
+        window.SyncBreath.loadTheme();
+        window.SyncBreath.bindSwatches(document.getElementById('sync-breath-swatches'));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => { initSyncUi(); });

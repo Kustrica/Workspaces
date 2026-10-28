@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Pencere kapandıktan sonra sekmeler geri yüklendi"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Çalışma alanları ve sekmeler cihazlarınız arasında otomatik olarak eşitlenir. Bir şey yapmanız gerekmez."
+    },
+    "syncToggleLabel": {
+        "message": "Çalışma alanlarını ve sekmeleri eşitle"
+    },
+    "syncHelperText": {
+        "message": "Her cihazda aynı Mozilla hesabıyla oturum açın ve eklenti eşitlemesinin açık olduğunu kontrol edin. Hemen eşitlemek için sağ üstteki Firefox hesap menüsünü açın → Eşitleme → Şimdi eşitle."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Eklenti eşitlemesi masaüstü Firefox'ta kullanılabilir."
+    },
+    "syncStatusOn": {
+        "message": "Eşitleme açık"
+    },
+    "syncStatusOff": {
+        "message": "Eşitleme kapalı"
+    },
+    "syncStatusSyncing": {
+        "message": "Eşitleniyor..."
+    },
+    "syncNever": {
+        "message": "Hiç"
+    },
+    "syncQuotaLabel": {
+        "message": "Kota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB / $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Eşitleme etkinleştirildi"
+    },
+    "syncDisabledToast": {
+        "message": "Eşitleme devre dışı bırakıldı"
+    },
+    "syncDisableConfirm": {
+        "message": "Eşitleme kapatılsın mı? Çalışma alanlarınız bu cihazda kalır."
+    },
+    "syncSuccess": {
+        "message": "Eşitleme tamamlandı"
+    },
+    "syncFailed": {
+        "message": "Eşitleme başarısız"
+    },
+    "syncErrorQuota": {
+        "message": "Sıkıştırılmış veriler Firefox Sync’in 100 KB sınırını aşıyor. Sekme sayısını azaltın veya JSON olarak dışa aktarın."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Firefox hesabınıza giriş yapın ve Firefox Sync ayarlarında «Eklentiler» seçeneğini etkinleştirin."
+    },
+    "syncErrorGeneric": {
+        "message": "Eşitlenemedi. Lütfen daha sonra tekrar deneyin."
+    },
+    "syncConflictTitle": {
+        "message": "Eşitleme çakışması"
+    },
+    "syncConflictDesc": {
+        "message": "Bu cihazdaki veriler eşitlenmiş kopyadan farklı. Neyin kalacağını seçin:"
+    },
+    "syncLocalSummary": {
+        "message": "Bu cihaz: $1 çalışma alanı, $2 sekme"
+    },
+    "syncRemoteSummary": {
+        "message": "Eşitlenmiş kopya: $1 çalışma alanı, $2 sekme"
+    },
+    "syncUseRemote": {
+        "message": "Eşitlenmiş kopyayı kullan"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Bu cihazdaki çalışma alanlarını ve sekmeleri değiştir"
+    },
+    "syncUseLocal": {
+        "message": "Bu cihazı kaynak olarak kullan"
+    },
+    "syncUseLocalDesc": {
+        "message": "Bu cihazı yükle ve eşitlenen kopyanın üzerine yaz"
+    },
+    "syncMerge": {
+        "message": "İkisini birleştir"
+    },
+    "syncMergeDesc": {
+        "message": "Buradaki açık sekmeleri tut ve kopyadaki çalışma alanları ile sekmeleri ekle. Aynı adlar tek alanda birleşir."
+    },
+    "syncApplying": {
+        "message": "Eşitlenen veriler uygulanıyor..."
+    },
+    "syncApplyWarning": {
+        "message": "Sekmeler geri yüklenirken lütfen tarayıcıda herhangi bir işlem yapmayın."
+    },
+    "logSyncApplied": {
+        "message": "Eşitleme uygulandı"
+    },
+    "logDetailsSyncApplied": {
+        "message": "Eşitlemeden $1 çalışma alanı, $2 sekme"
+    },
+    "syncJoinHint": {
+        "message": "Yeni bir cihazda eklentide Sync’i açın."
+    },
+    "syncJoinTitle": {
+        "message": "Firefox Sync’e katıl"
+    },
+    "syncJoinDesc": {
+        "message": "Eşitlenen bir kopya zaten var. Bu cihazda bir kez seçin. Sonra Sync ek uyarı olmadan otomatik çalışır."
+    },
+    "syncPrefTheme": {
+        "message": "Temayı eşitle"
+    },
+    "syncPrefLanguage": {
+        "message": "Arayüz dilini eşitle"
+    },
+    "syncPrefSidebar": {
+        "message": "Kenar çubuğunu eşitle"
+    },
+    "syncPrefLogs": {
+        "message": "İşlem geçmişini eşitle"
+    },
+    "syncInfoStatus": {
+        "message": "Durum"
+    },
+    "syncWaitingFirefox": {
+        "message": "Sync için kaydedildi. Firefox diğer cihazlara aktarır (genelde birkaç dakika veya Firefox’ta «Şimdi eşitle»)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Bu cihaz henüz Sync çemberinde değil. Katılmak veya ilk kopyayı oluşturmak için «Şimdi eşitle»ye basın."
+    },
+    "syncDevicesTitle": {
+        "message": "Eşitlenen cihazlar"
+    },
+    "syncDevicesEmpty": {
+        "message": "Henüz kayıtlı cihaz yok."
+    },
+    "syncThisDevice": {
+        "message": "bu cihaz"
+    },
+    "syncDeviceSynced": {
+        "message": "Eşitlendi"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Bağlantı kesiliyor: cihazın çevrimiçi olması bekleniyor"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Katılıyor"
+    },
+    "syncDeviceLeft": {
+        "message": "Eşitlenmiyor"
+    },
+    "syncLeaveDevice": {
+        "message": "Bağlantıyı kes"
+    },
+    "syncLeaveConfirm": {
+        "message": "Bu cihaz için çıkış istensin mi? Cihaz tekrar çevrimiçi olunca Sync kapanır."
+    },
+    "syncForceRemove": {
+        "message": "Şimdi kaldır"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "“$1” beklenmeden listeden kaldırılsın mı? Cihaz kaybolduysa, sıfırlandıysa veya artık kullanılmıyorsa bunu kullanın. Hiçbir şey silinmez. Bir gün yeniden çevrimiçi olursa, orada eşitleme otomatik olarak kapanır. Yeniden bağlamak için o cihazdaki Workspaces ayarlarında “Çalışma alanlarını ve sekmeleri eşitle” seçeneğini açın."
+    },
+    "syncForgetDevice": {
+        "message": "Listeden kaldır"
+    },
+    "syncForgetConfirm": {
+        "message": "“$1” bu listeden kaldırılsın mı? O cihazda eşitleme zaten kapalı ve hiçbir şey silinmez. Orada eşitleme yeniden açılırsa cihaz burada tekrar görünür."
+    },
+    "syncBannerJoin": {
+        "message": "Bu cihazın Sync’e katılması gerekiyor. Seçenekler’i açıp Değiştir veya Birleştir’i seçin."
+    },
+    "syncOpenOptions": {
+        "message": "Seçenekleri aç"
+    },
+    "syncPrefUi": {
+        "message": "Arayüz ayarlarını eşitle"
+    },
+    "syncLiveReceived": {
+        "message": "Değişiklikler alınıyor…"
+    },
+    "syncToastQueued": {
+        "message": "Gönderildi — Firefox bekleniyor"
+    },
+    "syncToastPulled": {
+        "message": "Değişiklikler alındı"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Bu cihazda eşitleme kapatılsın mı? Çalışma alanlarınız ve sekmeleriniz burada kalır, diğer cihazlarınız eşitlemeye devam eder. Yeniden eşitlemek için bu sayfada “Çalışma alanlarını ve sekmeleri eşitle” seçeneğini açın."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "“$1” eşitlemeden ayrılsın mı? Hiçbir şey silinmez. O cihazda Firefox bir sonraki sefer internete bağlıyken çalıştığında eşitleme kapanır; çalışma alanları ve sekmeleri o cihazda kalır. Yeniden bağlamak için o cihazdaki Workspaces ayarlarında “Çalışma alanlarını ve sekmeleri eşitle” seçeneğini açın."
+    },
+    "syncDevicesHint": {
+        "message": "Bir cihazın bağlantısını kesmek yalnızca o cihazda eşitlemeyi kapatır: hiçbir şey silinmez ve diğer cihazlar eşitlemeye devam eder. Bir cihazı yeniden bağlamak için o cihazdaki Workspaces ayarlarında “Çalışma alanlarını ve sekmeleri eşitle” seçeneğini açın."
+    },
+    "syncApplyingTitle": {
+        "message": "Eşitleme: sekmeler açılıyor…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "İlk eşitleme"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Bu Firefox Hesabında zaten çalışma alanları ve sekmeler var. Şimdi bu cihaza eşitlensin mi? Çok sekme varsa birkaç dakika sürebilir. Bir kez onayladıktan sonra sonraki eşitlemeler sorulmadan otomatik gider."
+    },
+    "syncApplyCounts": {
+        "message": "Açılacak sekme: $1 · Kapatılacak: $2"
+    },
+    "syncApplyYes": {
+        "message": "Şimdi eşitle"
+    },
+    "syncApplyLater": {
+        "message": "Daha sonra"
+    },
+    "syncApplyDisable": {
+        "message": "Eşitlemeyi kapat"
+    },
+    "syncApplySnoozed": {
+        "message": "Ertelendi. 10 dakika sonra ilk eşitlemeyi yeniden soracağız."
+    },
+    "syncBannerApply": {
+        "message": "İlk eşitleme bekliyor: kabul etmek, ertelemek veya Sync’i kapatmak için Seçenekler’i açın."
+    },
+    "syncRunawayError": {
+        "message": "Eşitleme durduruldu: aynı sekmeler tekrar tekrar açılıyordu. Verilerinizi denetleyin, ardından ayarlardan eşitlemeyi yeniden açın."
+    },
+    "syncBreathColorLabel": {
+        "message": "Sync nefes rengi"
+    },
+    "syncBreathColorHint": {
+        "message": "Işık yalnızca eşitleme sekme açtığında veya kapattığında görünür."
+    },
+    "syncBreathOrange": {
+        "message": "Turuncu"
+    },
+    "syncBreathAmber": {
+        "message": "Kehribar"
+    },
+    "syncBreathMint": {
+        "message": "Nane"
+    },
+    "syncBreathSky": {
+        "message": "Gökyüzü"
+    },
+    "syncBreathRose": {
+        "message": "Gül"
+    },
+    "syncToastTitle": {
+        "message": "Eşitlendi"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Zaten güncel"
+    },
+    "syncToastChanged": {
+        "message": "Çalışma alanları güncellendi"
+    },
+    "syncToastCounts": {
+        "message": "Açılan +$1 · Kapanan −$2"
+    },
+    "syncToastWorking": {
+        "message": "Eşitleniyor…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Sekmeler güncelleniyor — lütfen bekleyin"
+    },
+    "syncToastDismissHint": {
+        "message": "Kapatmak için tıklayın"
+    },
+    "syncBreathEnabled": {
+        "message": "Eşitleme ışığı"
+    },
+    "syncRawSize": {
+        "message": "Sıkıştırmadan önce"
+    },
+    "syncPackedSize": {
+        "message": "Depolanan veri"
+    },
+    "syncCompression": {
+        "message": "Boyut azalması"
+    },
+    "syncStorageRecords": {
+        "message": "$1 sekme · $2 çalışma alanı · $3 silme kaydı"
+    },
+    "syncStorageWaiting": {
+        "message": "Firefox verileri aktarırken sekme ve silme sayıları kullanılamaz"
+    },
+    "syncLastPrepared": {
+        "message": "Son yerel kopya hazırlama"
+    },
+    "syncProgressOpening": {
+        "message": "Sekmeler açılıyor"
+    },
+    "syncProgressClosing": {
+        "message": "Sekmeler kapatılıyor"
+    },
+    "syncProgressFinishing": {
+        "message": "Sekme değişiklikleri tamamlanıyor"
+    },
+    "syncProgressComplete": {
+        "message": "Sekme değişiklikleri tamamlandı"
+    },
+    "syncProgressFailed": {
+        "message": "Bazı sekme değişiklikleri uygulanamadı"
+    },
+    "syncProgressCounts": {
+        "message": "$1 / $2 tamamlandı · $3 kaldı"
+    },
+    "syncDeviceAdded": {
+        "message": "Eşitlemeye eklendi"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Bu cihazdan alınan son güncelleme"
     }
 }

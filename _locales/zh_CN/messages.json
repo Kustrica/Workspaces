@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "窗口关闭后已恢复标签页"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "工作区和标签页会在您的设备之间自动同步，无需手动操作。"
+    },
+    "syncToggleLabel": {
+        "message": "同步工作区和标签页"
+    },
+    "syncHelperText": {
+        "message": "请在每台设备上登录同一个 Mozilla 账户，并确认已启用附加组件同步。如需立即同步，请打开右上角的 Firefox 账户菜单 → 同步 → 立即同步。"
+    },
+    "syncDesktopOnlyNote": {
+        "message": "附加组件同步适用于桌面版 Firefox。"
+    },
+    "syncStatusOn": {
+        "message": "同步已开启"
+    },
+    "syncStatusOff": {
+        "message": "同步已关闭"
+    },
+    "syncStatusSyncing": {
+        "message": "正在同步..."
+    },
+    "syncNever": {
+        "message": "从未"
+    },
+    "syncQuotaLabel": {
+        "message": "配额："
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB / 共 $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "已开启同步"
+    },
+    "syncDisabledToast": {
+        "message": "已关闭同步"
+    },
+    "syncDisableConfirm": {
+        "message": "要关闭同步吗？你的工作区仍会保留在本设备上。"
+    },
+    "syncSuccess": {
+        "message": "同步完成"
+    },
+    "syncFailed": {
+        "message": "同步失败"
+    },
+    "syncErrorQuota": {
+        "message": "压缩后的数据超过 Firefox Sync 的 100 KB 限制。请减少标签页或导出为 JSON。"
+    },
+    "syncErrorNotSignedIn": {
+        "message": "请登录 Firefox 账户，并在 Firefox Sync 设置中启用“附加组件”。"
+    },
+    "syncErrorGeneric": {
+        "message": "无法同步，请稍后重试。"
+    },
+    "syncConflictTitle": {
+        "message": "同步冲突"
+    },
+    "syncConflictDesc": {
+        "message": "本设备的数据与已同步的副本不同。请选择要保留的内容："
+    },
+    "syncLocalSummary": {
+        "message": "本设备：$1 个工作区，$2 个标签页"
+    },
+    "syncRemoteSummary": {
+        "message": "已同步副本：$1 个工作区，$2 个标签页"
+    },
+    "syncUseRemote": {
+        "message": "使用已同步副本"
+    },
+    "syncUseRemoteDesc": {
+        "message": "替换本设备上的工作区和标签页"
+    },
+    "syncUseLocal": {
+        "message": "以此设备为源"
+    },
+    "syncUseLocalDesc": {
+        "message": "上传此设备并覆盖已同步的副本"
+    },
+    "syncMerge": {
+        "message": "合并两者"
+    },
+    "syncMergeDesc": {
+        "message": "保留此处已打开的标签页，并从副本添加工作区和标签页。同名会合并为一个工作区。"
+    },
+    "syncApplying": {
+        "message": "正在应用已同步的数据..."
+    },
+    "syncApplyWarning": {
+        "message": "标签页恢复期间，请不要在浏览器中进行任何操作。"
+    },
+    "logSyncApplied": {
+        "message": "已应用同步"
+    },
+    "logDetailsSyncApplied": {
+        "message": "来自同步：$1 个工作区，$2 个标签页"
+    },
+    "syncJoinHint": {
+        "message": "在新设备上，请在扩展中打开 Sync。"
+    },
+    "syncJoinTitle": {
+        "message": "加入 Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "已有同步副本。请在此设备上选择一次。之后会自动同步，不再弹出提示。"
+    },
+    "syncPrefTheme": {
+        "message": "同步主题"
+    },
+    "syncPrefLanguage": {
+        "message": "同步界面语言"
+    },
+    "syncPrefSidebar": {
+        "message": "同步侧边栏"
+    },
+    "syncPrefLogs": {
+        "message": "同步操作历史"
+    },
+    "syncInfoStatus": {
+        "message": "状态"
+    },
+    "syncWaitingFirefox": {
+        "message": "已保存到 Sync。Firefox 会传到其他设备（通常几分钟，或在 Firefox 中使用“立即同步”）。"
+    },
+    "syncNotJoinedHint": {
+        "message": "此设备尚未加入同步圈。按“立即同步”以加入或创建首份副本。"
+    },
+    "syncDevicesTitle": {
+        "message": "同步中的设备"
+    },
+    "syncDevicesEmpty": {
+        "message": "尚未注册设备。"
+    },
+    "syncThisDevice": {
+        "message": "此设备"
+    },
+    "syncDeviceSynced": {
+        "message": "已同步"
+    },
+    "syncDevicePendingLeave": {
+        "message": "正在断开：等待设备联网"
+    },
+    "syncDevicePendingJoin": {
+        "message": "正在加入"
+    },
+    "syncDeviceLeft": {
+        "message": "未同步"
+    },
+    "syncLeaveDevice": {
+        "message": "断开"
+    },
+    "syncLeaveConfirm": {
+        "message": "请求此设备离开？设备再次上线后将关闭 Sync。"
+    },
+    "syncForceRemove": {
+        "message": "立即移除"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "不等待该设备，直接将“$1”从列表中移除吗？适用于设备丢失、已重置或不再使用的情况。不会删除任何内容。如果它以后再次联网，该设备上的同步会自动关闭。要重新连接，请在该设备的 Workspaces 设置中开启“同步工作区和标签页”。"
+    },
+    "syncForgetDevice": {
+        "message": "从列表中移除"
+    },
+    "syncForgetConfirm": {
+        "message": "要将“$1”从此列表中移除吗？该设备上的同步已关闭，不会删除任何内容。如果在该设备上重新开启同步，它会再次出现在这里。"
+    },
+    "syncBannerJoin": {
+        "message": "此设备需要加入 Sync。打开选项并选择替换或合并。"
+    },
+    "syncOpenOptions": {
+        "message": "打开选项"
+    },
+    "syncPrefUi": {
+        "message": "同步界面设置"
+    },
+    "syncLiveReceived": {
+        "message": "正在接收更改…"
+    },
+    "syncToastQueued": {
+        "message": "已发送 — 等待 Firefox 传输"
+    },
+    "syncToastPulled": {
+        "message": "已接收更改"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "要在此设备上关闭同步吗？工作区和标签页会保留在这里，其他设备会继续同步。要重新同步，请在此页面开启“同步工作区和标签页”。"
+    },
+    "syncLeaveConfirmOther": {
+        "message": "要将“$1”断开同步吗？不会删除任何内容。该设备下次联网运行 Firefox 时会关闭同步，它的工作区和标签页仍保留在该设备上。要重新连接，请在该设备的 Workspaces 设置中开启“同步工作区和标签页”。"
+    },
+    "syncDevicesHint": {
+        "message": "断开设备只会关闭该设备上的同步：不会删除任何内容，其他设备会继续同步。要重新连接设备，请在该设备的 Workspaces 设置中开启“同步工作区和标签页”。"
+    },
+    "syncApplyingTitle": {
+        "message": "同步：正在打开标签页…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "首次同步"
+    },
+    "syncApplyPromptDesc": {
+        "message": "此 Firefox 账户已有工作区和标签页。现在同步到此设备？标签很多时可能需要几分钟。确认一次后，之后会自动同步，不再询问。"
+    },
+    "syncApplyCounts": {
+        "message": "将打开标签页：$1 · 将关闭：$2"
+    },
+    "syncApplyYes": {
+        "message": "立即同步"
+    },
+    "syncApplyLater": {
+        "message": "稍后"
+    },
+    "syncApplyDisable": {
+        "message": "关闭同步"
+    },
+    "syncApplySnoozed": {
+        "message": "已推迟。我们将在 10 分钟后再次询问首次同步。"
+    },
+    "syncBannerApply": {
+        "message": "首次同步待确认：打开选项以接受、稍后或关闭 Sync。"
+    },
+    "syncRunawayError": {
+        "message": "同步已停止：相同的标签页被反复打开。请检查数据，然后在设置中重新开启同步。"
+    },
+    "syncBreathColorLabel": {
+        "message": "同步呼吸颜色"
+    },
+    "syncBreathColorHint": {
+        "message": "仅在同步打开或关闭标签页时亮起。"
+    },
+    "syncBreathOrange": {
+        "message": "橙色"
+    },
+    "syncBreathAmber": {
+        "message": "琥珀"
+    },
+    "syncBreathMint": {
+        "message": "薄荷"
+    },
+    "syncBreathSky": {
+        "message": "天蓝"
+    },
+    "syncBreathRose": {
+        "message": "玫瑰"
+    },
+    "syncToastTitle": {
+        "message": "已同步"
+    },
+    "syncToastQuietTitle": {
+        "message": "同步"
+    },
+    "syncToastQuiet": {
+        "message": "已是最新"
+    },
+    "syncToastChanged": {
+        "message": "工作区已更新"
+    },
+    "syncToastCounts": {
+        "message": "打开 +$1 · 关闭 −$2"
+    },
+    "syncToastWorking": {
+        "message": "正在同步…"
+    },
+    "syncToastWorkingHint": {
+        "message": "正在更新标签页 — 请稍候"
+    },
+    "syncToastDismissHint": {
+        "message": "点击关闭"
+    },
+    "syncBreathEnabled": {
+        "message": "同步呼吸灯"
+    },
+    "syncRawSize": {
+        "message": "压缩前"
+    },
+    "syncPackedSize": {
+        "message": "存储数据"
+    },
+    "syncCompression": {
+        "message": "体积缩减"
+    },
+    "syncStorageRecords": {
+        "message": "$1 个标签页 · $2 个工作区 · $3 条删除记录"
+    },
+    "syncStorageWaiting": {
+        "message": "Firefox 正在传输数据，暂时无法统计标签页和删除记录"
+    },
+    "syncLastPrepared": {
+        "message": "上次在本机准备副本"
+    },
+    "syncProgressOpening": {
+        "message": "正在打开标签页"
+    },
+    "syncProgressClosing": {
+        "message": "正在关闭标签页"
+    },
+    "syncProgressFinishing": {
+        "message": "正在完成标签页更改"
+    },
+    "syncProgressComplete": {
+        "message": "标签页更改已完成"
+    },
+    "syncProgressFailed": {
+        "message": "部分标签页更改未能应用"
+    },
+    "syncProgressCounts": {
+        "message": "已完成 $1/$2 · 剩余 $3"
+    },
+    "syncDeviceAdded": {
+        "message": "已加入同步"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "从此设备收到的最近更新"
     }
 }

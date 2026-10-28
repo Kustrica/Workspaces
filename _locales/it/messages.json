@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Schede ripristinate dopo la chiusura della finestra"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Gli spazi e le schede si sincronizzano automaticamente tra i tuoi dispositivi. Non devi fare nulla."
+    },
+    "syncToggleLabel": {
+        "message": "Sincronizza spazi di lavoro e schede"
+    },
+    "syncHelperText": {
+        "message": "Accedi allo stesso account Mozilla su ogni dispositivo e verifica che la sincronizzazione dei componenti aggiuntivi sia attiva. Per sincronizzare subito, apri il menu dell’account Firefox in alto a destra → Sincronizzazione → Sincronizza adesso."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "La sincronizzazione dei componenti aggiuntivi è disponibile su Firefox per desktop."
+    },
+    "syncStatusOn": {
+        "message": "Sincronizzazione attiva"
+    },
+    "syncStatusOff": {
+        "message": "Sincronizzazione disattivata"
+    },
+    "syncStatusSyncing": {
+        "message": "Sincronizzazione..."
+    },
+    "syncNever": {
+        "message": "Mai"
+    },
+    "syncQuotaLabel": {
+        "message": "Quota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB su $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sincronizzazione attivata"
+    },
+    "syncDisabledToast": {
+        "message": "Sincronizzazione disattivata"
+    },
+    "syncDisableConfirm": {
+        "message": "Disattivare la sincronizzazione? I tuoi spazi di lavoro restano su questo dispositivo."
+    },
+    "syncSuccess": {
+        "message": "Sincronizzazione completata"
+    },
+    "syncFailed": {
+        "message": "Sincronizzazione non riuscita"
+    },
+    "syncErrorQuota": {
+        "message": "I dati compressi superano il limite di 100 KB di Firefox Sync. Riduci le schede o esporta in JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Accedi al tuo account Firefox e attiva «Componenti aggiuntivi» nelle impostazioni di Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "Sincronizzazione non possibile. Riprova più tardi."
+    },
+    "syncConflictTitle": {
+        "message": "Conflitto di sincronizzazione"
+    },
+    "syncConflictDesc": {
+        "message": "I dati su questo dispositivo sono diversi dalla copia sincronizzata. Scegli cosa mantenere:"
+    },
+    "syncLocalSummary": {
+        "message": "Questo dispositivo: $1 spazi, $2 schede"
+    },
+    "syncRemoteSummary": {
+        "message": "Copia sincronizzata: $1 spazi, $2 schede"
+    },
+    "syncUseRemote": {
+        "message": "Usa la copia sincronizzata"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Sostituisci spazi di lavoro e schede su questo dispositivo"
+    },
+    "syncUseLocal": {
+        "message": "Usa questo dispositivo come origine"
+    },
+    "syncUseLocalDesc": {
+        "message": "Carica questo dispositivo e sovrascrivi la copia sincronizzata"
+    },
+    "syncMerge": {
+        "message": "Unisci entrambi"
+    },
+    "syncMergeDesc": {
+        "message": "Tieni le schede aperte qui e aggiungi spazi e schede dalla copia. Gli stessi nomi si uniscono in uno spazio."
+    },
+    "syncApplying": {
+        "message": "Applicazione dei dati sincronizzati..."
+    },
+    "syncApplyWarning": {
+        "message": "Non eseguire alcuna azione nel browser durante il ripristino delle schede."
+    },
+    "logSyncApplied": {
+        "message": "Sincronizzazione applicata"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 spazi, $2 schede dalla sincronizzazione"
+    },
+    "syncJoinHint": {
+        "message": "Su un nuovo dispositivo, attiva Sync nell’estensione."
+    },
+    "syncJoinTitle": {
+        "message": "Unisci a Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Esiste già una copia sincronizzata. Scegli una volta su questo dispositivo. Poi Sync procede automaticamente senza altri avvisi."
+    },
+    "syncPrefTheme": {
+        "message": "Sincronizza tema"
+    },
+    "syncPrefLanguage": {
+        "message": "Sincronizza lingua dell’interfaccia"
+    },
+    "syncPrefSidebar": {
+        "message": "Sincronizza barra laterale"
+    },
+    "syncPrefLogs": {
+        "message": "Sincronizza la cronologia delle azioni"
+    },
+    "syncInfoStatus": {
+        "message": "Stato"
+    },
+    "syncWaitingFirefox": {
+        "message": "Salvato per Sync. Firefox lo trasferisce ad altri dispositivi (spesso pochi minuti, oppure «Sincronizza ora» in Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Questo dispositivo non è ancora nel cerchio Sync. Premi «Sincronizza ora» per unirti o creare la prima copia."
+    },
+    "syncDevicesTitle": {
+        "message": "Dispositivi in sync"
+    },
+    "syncDevicesEmpty": {
+        "message": "Nessun dispositivo è ancora registrato."
+    },
+    "syncThisDevice": {
+        "message": "questo dispositivo"
+    },
+    "syncDeviceSynced": {
+        "message": "Sincronizzato"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Disconnessione: in attesa che il dispositivo sia online"
+    },
+    "syncDevicePendingJoin": {
+        "message": "In ingresso"
+    },
+    "syncDeviceLeft": {
+        "message": "Non sincronizzato"
+    },
+    "syncLeaveDevice": {
+        "message": "Disconnetti"
+    },
+    "syncLeaveConfirm": {
+        "message": "Richiedere l’uscita di questo dispositivo? Sync si spegne al prossimo collegamento online."
+    },
+    "syncForceRemove": {
+        "message": "Rimuovi ora"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Rimuovere «$1» dall’elenco senza attenderlo? Usalo se il dispositivo è perso, ripristinato o non più usato. Non viene eliminato nulla. Se tornerà online, la sincronizzazione lì si disattiverà automaticamente. Per ricollegarlo, attiva «Sincronizza spazi di lavoro e schede» nelle impostazioni di Workspaces su quel dispositivo."
+    },
+    "syncForgetDevice": {
+        "message": "Rimuovi dall’elenco"
+    },
+    "syncForgetConfirm": {
+        "message": "Rimuovere «$1» da questo elenco? La sincronizzazione su quel dispositivo è già disattivata e non viene eliminato nulla. Se viene riattivata lì, il dispositivo ricomparirà qui."
+    },
+    "syncBannerJoin": {
+        "message": "Questo dispositivo deve unirsi a Sync. Apri Opzioni e scegli Sostituisci o Unisci."
+    },
+    "syncOpenOptions": {
+        "message": "Apri Opzioni"
+    },
+    "syncPrefUi": {
+        "message": "Sincronizza impostazioni interfaccia"
+    },
+    "syncLiveReceived": {
+        "message": "Ricezione delle modifiche…"
+    },
+    "syncToastQueued": {
+        "message": "Inviato — in attesa di Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Modifiche ricevute"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Disattivare la sincronizzazione su questo dispositivo? Spazi di lavoro e schede restano qui, e gli altri dispositivi continuano a sincronizzarsi. Per sincronizzare di nuovo, attiva «Sincronizza spazi di lavoro e schede» in questa pagina."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Disconnettere «$1» dalla sincronizzazione? Non viene eliminato nulla. La sincronizzazione si disattiverà su quel dispositivo la prossima volta che Firefox vi sarà avviato con Internet; i suoi spazi di lavoro e le sue schede restano lì. Per ricollegarlo, attiva «Sincronizza spazi di lavoro e schede» nelle impostazioni di Workspaces su quel dispositivo."
+    },
+    "syncDevicesHint": {
+        "message": "Disconnettere un dispositivo disattiva solo la sincronizzazione su di esso: non viene eliminato nulla e gli altri dispositivi continuano a sincronizzarsi. Per ricollegare un dispositivo, attiva «Sincronizza spazi di lavoro e schede» nelle impostazioni di Workspaces su quel dispositivo."
+    },
+    "syncApplyingTitle": {
+        "message": "Sincronizzazione: apertura delle schede…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Prima sincronizzazione"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Questo account Firefox ha già spazi e schede. Sincronizzarli su questo dispositivo ora? Con molte schede può richiedere alcuni minuti. Dopo una conferma, le sync successive sono automatiche senza chiedere."
+    },
+    "syncApplyCounts": {
+        "message": "Schede da aprire: $1 · Da chiudere: $2"
+    },
+    "syncApplyYes": {
+        "message": "Sincronizza ora"
+    },
+    "syncApplyLater": {
+        "message": "Più tardi"
+    },
+    "syncApplyDisable": {
+        "message": "Disattiva la sincronizzazione"
+    },
+    "syncApplySnoozed": {
+        "message": "Rimandato. Chiederemo di nuovo tra 10 minuti per la prima sync."
+    },
+    "syncBannerApply": {
+        "message": "La prima sync è in attesa: apri Opzioni per accettare, rimandare o disattivare Sync."
+    },
+    "syncRunawayError": {
+        "message": "Sincronizzazione interrotta: le stesse schede venivano aperte più volte. Controlla i dati e riattiva la sincronizzazione nelle impostazioni."
+    },
+    "syncBreathColorLabel": {
+        "message": "Colore respiro Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "La luce appare solo quando la sincronizzazione apre o chiude schede."
+    },
+    "syncBreathOrange": {
+        "message": "Arancione"
+    },
+    "syncBreathAmber": {
+        "message": "Ambra"
+    },
+    "syncBreathMint": {
+        "message": "Menta"
+    },
+    "syncBreathSky": {
+        "message": "Cielo"
+    },
+    "syncBreathRose": {
+        "message": "Rosa"
+    },
+    "syncToastTitle": {
+        "message": "Sincronizzato"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Già aggiornato"
+    },
+    "syncToastChanged": {
+        "message": "Spazi aggiornati"
+    },
+    "syncToastCounts": {
+        "message": "Aperte +$1 · Chiuse −$2"
+    },
+    "syncToastWorking": {
+        "message": "Sincronizzazione…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Schede in aggiornamento — attendere"
+    },
+    "syncToastDismissHint": {
+        "message": "Clic per chiudere"
+    },
+    "syncBreathEnabled": {
+        "message": "Luce di sincronizzazione"
+    },
+    "syncRawSize": {
+        "message": "Prima della compressione"
+    },
+    "syncPackedSize": {
+        "message": "Dati archiviati"
+    },
+    "syncCompression": {
+        "message": "Riduzione delle dimensioni"
+    },
+    "syncStorageRecords": {
+        "message": "$1 schede · $2 spazi · $3 registri di eliminazione"
+    },
+    "syncStorageWaiting": {
+        "message": "I conteggi non sono disponibili durante il trasferimento dei dati da parte di Firefox"
+    },
+    "syncLastPrepared": {
+        "message": "Ultima copia preparata localmente"
+    },
+    "syncProgressOpening": {
+        "message": "Apertura schede"
+    },
+    "syncProgressClosing": {
+        "message": "Chiusura schede"
+    },
+    "syncProgressFinishing": {
+        "message": "Completamento delle modifiche alle schede"
+    },
+    "syncProgressComplete": {
+        "message": "Modifiche alle schede completate"
+    },
+    "syncProgressFailed": {
+        "message": "Impossibile applicare alcune modifiche alle schede"
+    },
+    "syncProgressCounts": {
+        "message": "$1 di $2 completate · ne restano $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Aggiunto alla sincronizzazione"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Ultimo aggiornamento ricevuto da questo dispositivo"
     }
 }

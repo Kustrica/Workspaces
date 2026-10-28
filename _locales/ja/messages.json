@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "ウィンドウ閉じた後にタブを復元しました"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "ワークスペースとタブはデバイス間で自動的に同期されます。手動操作は必要ありません。"
+    },
+    "syncToggleLabel": {
+        "message": "ワークスペースとタブを同期"
+    },
+    "syncHelperText": {
+        "message": "各デバイスで同じ Mozilla アカウントにログインし、アドオンの同期が有効になっていることを確認してください。今すぐ同期するには、右上の Firefox アカウントメニュー → 同期 → 今すぐ同期を選択してください。"
+    },
+    "syncDesktopOnlyNote": {
+        "message": "アドオンの同期はデスクトップ版 Firefox で利用できます。"
+    },
+    "syncStatusOn": {
+        "message": "同期オン"
+    },
+    "syncStatusOff": {
+        "message": "同期オフ"
+    },
+    "syncStatusSyncing": {
+        "message": "同期中..."
+    },
+    "syncNever": {
+        "message": "なし"
+    },
+    "syncQuotaLabel": {
+        "message": "使用量:"
+    },
+    "syncQuotaValue": {
+        "message": "$2 KB 中 $1 KB"
+    },
+    "syncEnabledToast": {
+        "message": "同期を有効にしました"
+    },
+    "syncDisabledToast": {
+        "message": "同期を無効にしました"
+    },
+    "syncDisableConfirm": {
+        "message": "同期をオフにしますか? ワークスペースはこのデバイスに残ります。"
+    },
+    "syncSuccess": {
+        "message": "同期が完了しました"
+    },
+    "syncFailed": {
+        "message": "同期に失敗しました"
+    },
+    "syncErrorQuota": {
+        "message": "圧縮データがFirefox Syncの100 KBの上限を超えています。タブを減らすか、JSONにエクスポートしてください。"
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Firefox アカウントにログインし、Firefox Sync の設定で「アドオン」を有効にしてください。"
+    },
+    "syncErrorGeneric": {
+        "message": "同期できませんでした。しばらくしてからお試しください。"
+    },
+    "syncConflictTitle": {
+        "message": "同期の競合"
+    },
+    "syncConflictDesc": {
+        "message": "このデバイスのデータが同期されたコピーと異なります。どちらを保持するか選択してください:"
+    },
+    "syncLocalSummary": {
+        "message": "このデバイス: ワークスペース $1 件、タブ $2 件"
+    },
+    "syncRemoteSummary": {
+        "message": "同期されたコピー: ワークスペース $1 件、タブ $2 件"
+    },
+    "syncUseRemote": {
+        "message": "同期されたコピーを使用"
+    },
+    "syncUseRemoteDesc": {
+        "message": "このデバイスのワークスペースとタブを置き換えます"
+    },
+    "syncUseLocal": {
+        "message": "この端末をソースにする"
+    },
+    "syncUseLocalDesc": {
+        "message": "この端末をアップロードして同期コピーを上書きする"
+    },
+    "syncMerge": {
+        "message": "両方を結合"
+    },
+    "syncMergeDesc": {
+        "message": "ここに開いているタブを残し、同期コピーのワークスペースとタブを追加します。同名は1つのワークスペースにまとめます。"
+    },
+    "syncApplying": {
+        "message": "同期されたデータを適用中..."
+    },
+    "syncApplyWarning": {
+        "message": "タブの復元中はブラウザーで操作しないでください。"
+    },
+    "logSyncApplied": {
+        "message": "同期を適用"
+    },
+    "logDetailsSyncApplied": {
+        "message": "同期から $1 ワークスペース、$2 タブ"
+    },
+    "syncJoinHint": {
+        "message": "新しい端末では拡張機能で Sync をオンにしてください。"
+    },
+    "syncJoinTitle": {
+        "message": "Firefox Sync に参加"
+    },
+    "syncJoinDesc": {
+        "message": "同期コピーが既にあります。この端末で一度だけ選択してください。以降は自動で同期され、確認は出ません。"
+    },
+    "syncPrefTheme": {
+        "message": "テーマを同期"
+    },
+    "syncPrefLanguage": {
+        "message": "インターフェース言語を同期"
+    },
+    "syncPrefSidebar": {
+        "message": "サイドバーを同期"
+    },
+    "syncPrefLogs": {
+        "message": "操作履歴を同期"
+    },
+    "syncInfoStatus": {
+        "message": "状態"
+    },
+    "syncWaitingFirefox": {
+        "message": "Sync 用に保存しました。Firefox が他の端末へ転送します（数分かかることがあります。Firefox の「今すぐ同期」も利用可）。"
+    },
+    "syncNotJoinedHint": {
+        "message": "この端末はまだ同期サークルに入っていません。「今すぐ同期」で参加するか、最初のコピーを作成してください。"
+    },
+    "syncDevicesTitle": {
+        "message": "同期中の端末"
+    },
+    "syncDevicesEmpty": {
+        "message": "登録済みの端末はありません。"
+    },
+    "syncThisDevice": {
+        "message": "この端末"
+    },
+    "syncDeviceSynced": {
+        "message": "同期済み"
+    },
+    "syncDevicePendingLeave": {
+        "message": "切断中：端末のオンラインを待っています"
+    },
+    "syncDevicePendingJoin": {
+        "message": "参加中"
+    },
+    "syncDeviceLeft": {
+        "message": "同期していません"
+    },
+    "syncLeaveDevice": {
+        "message": "切断"
+    },
+    "syncLeaveConfirm": {
+        "message": "この端末の退出を要求しますか？ 次回オンライン時に Sync がオフになります。"
+    },
+    "syncForceRemove": {
+        "message": "今すぐ削除"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "「$1」を待たずに一覧から削除しますか? 端末を紛失した、初期化した、もう使わない場合に使用してください。何も削除されません。再びオンラインになった場合、その端末の同期は自動的にオフになります。再接続するには、その端末の Workspaces 設定で「ワークスペースとタブを同期」をオンにしてください。"
+    },
+    "syncForgetDevice": {
+        "message": "一覧から削除"
+    },
+    "syncForgetConfirm": {
+        "message": "「$1」をこの一覧から削除しますか? その端末の同期はすでにオフで、何も削除されません。その端末で同期を再びオンにすると、ここに再表示されます。"
+    },
+    "syncBannerJoin": {
+        "message": "この端末は Sync への参加が必要です。オプションを開き、置換またはマージを選んでください。"
+    },
+    "syncOpenOptions": {
+        "message": "オプションを開く"
+    },
+    "syncPrefUi": {
+        "message": "UI設定を同期"
+    },
+    "syncLiveReceived": {
+        "message": "変更を受信中…"
+    },
+    "syncToastQueued": {
+        "message": "送信しました — Firefox の転送待ちです"
+    },
+    "syncToastPulled": {
+        "message": "変更を受信しました"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "この端末で同期をオフにしますか? ワークスペースとタブはここに残り、ほかの端末は同期を続けます。再び同期するには、このページで「ワークスペースとタブを同期」をオンにしてください。"
+    },
+    "syncLeaveConfirmOther": {
+        "message": "「$1」を同期から切断しますか? 何も削除されません。その端末で次にインターネットに接続した状態で Firefox が動作したときに、同期がオフになります。その端末のワークスペースとタブはそのまま残ります。再接続するには、その端末の Workspaces 設定で「ワークスペースとタブを同期」をオンにしてください。"
+    },
+    "syncDevicesHint": {
+        "message": "端末を切断しても、その端末の同期がオフになるだけです。何も削除されず、ほかの端末は同期を続けます。端末を再接続するには、その端末の Workspaces 設定で「ワークスペースとタブを同期」をオンにしてください。"
+    },
+    "syncApplyingTitle": {
+        "message": "同期: タブを開いています…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "初回の同期"
+    },
+    "syncApplyPromptDesc": {
+        "message": "この Firefox アカウントには既にワークスペースとタブがあります。今この端末に同期しますか？タブが多い場合は数分かかることがあります。一度確認すれば、以降の同期は確認なしで自動です。"
+    },
+    "syncApplyCounts": {
+        "message": "開くタブ: $1 · 閉じるタブ: $2"
+    },
+    "syncApplyYes": {
+        "message": "今すぐ同期"
+    },
+    "syncApplyLater": {
+        "message": "あとで"
+    },
+    "syncApplyDisable": {
+        "message": "同期をオフにする"
+    },
+    "syncApplySnoozed": {
+        "message": "延期しました。10分後に初回同期について再度確認します。"
+    },
+    "syncBannerApply": {
+        "message": "初回同期の確認待ちです。オプションで取り込み、後で、または Sync のオフを選べます。"
+    },
+    "syncRunawayError": {
+        "message": "同期を停止しました: 同じタブが繰り返し開かれていました。データを確認してから、設定で同期を再度オンにしてください。"
+    },
+    "syncBreathColorLabel": {
+        "message": "同期の呼吸カラー"
+    },
+    "syncBreathColorHint": {
+        "message": "同期でタブが開閉されたときだけ点灯します。"
+    },
+    "syncBreathOrange": {
+        "message": "オレンジ"
+    },
+    "syncBreathAmber": {
+        "message": "アンバー"
+    },
+    "syncBreathMint": {
+        "message": "ミント"
+    },
+    "syncBreathSky": {
+        "message": "スカイ"
+    },
+    "syncBreathRose": {
+        "message": "ローズ"
+    },
+    "syncToastTitle": {
+        "message": "同期しました"
+    },
+    "syncToastQuietTitle": {
+        "message": "同期"
+    },
+    "syncToastQuiet": {
+        "message": "すでに最新です"
+    },
+    "syncToastChanged": {
+        "message": "ワークスペースを更新しました"
+    },
+    "syncToastCounts": {
+        "message": "開く +$1 · 閉じる −$2"
+    },
+    "syncToastWorking": {
+        "message": "同期中…"
+    },
+    "syncToastWorkingHint": {
+        "message": "タブを更新しています — お待ちください"
+    },
+    "syncToastDismissHint": {
+        "message": "クリックで閉じる"
+    },
+    "syncBreathEnabled": {
+        "message": "同期の点滅表示"
+    },
+    "syncRawSize": {
+        "message": "圧縮前"
+    },
+    "syncPackedSize": {
+        "message": "保存データ"
+    },
+    "syncCompression": {
+        "message": "サイズ削減率"
+    },
+    "syncStorageRecords": {
+        "message": "$1 個のタブ · $2 個のワークスペース · 削除記録 $3 件"
+    },
+    "syncStorageWaiting": {
+        "message": "Firefox によるデータ転送中はタブ数と削除記録を表示できません"
+    },
+    "syncLastPrepared": {
+        "message": "コピーの最終準備時刻"
+    },
+    "syncProgressOpening": {
+        "message": "タブを開いています"
+    },
+    "syncProgressClosing": {
+        "message": "タブを閉じています"
+    },
+    "syncProgressFinishing": {
+        "message": "タブの変更を完了しています"
+    },
+    "syncProgressComplete": {
+        "message": "タブの変更が完了しました"
+    },
+    "syncProgressFailed": {
+        "message": "一部のタブ変更を適用できませんでした"
+    },
+    "syncProgressCounts": {
+        "message": "$2 件中 $1 件完了・残り $3 件"
+    },
+    "syncDeviceAdded": {
+        "message": "同期に追加"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "このデバイスから受信した最終更新"
     }
 }

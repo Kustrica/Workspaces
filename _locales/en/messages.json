@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Tabs restored after window close"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Workspaces and tabs sync automatically across your devices. No manual action is needed."
+    },
+    "syncToggleLabel": {
+        "message": "Sync workspaces and tabs"
+    },
+    "syncHelperText": {
+        "message": "Sign into the same Mozilla account on each device and check that Add-ons sync is enabled. To sync now, open the Firefox account menu at the top right → Sync → Sync Now."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Add-on sync is available on Firefox for desktop."
+    },
+    "syncStatusOn": {
+        "message": "Sync on"
+    },
+    "syncStatusOff": {
+        "message": "Sync off"
+    },
+    "syncStatusSyncing": {
+        "message": "Syncing..."
+    },
+    "syncNever": {
+        "message": "Never"
+    },
+    "syncQuotaLabel": {
+        "message": "Quota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB of $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sync enabled"
+    },
+    "syncDisabledToast": {
+        "message": "Sync disabled"
+    },
+    "syncDisableConfirm": {
+        "message": "Turn off sync? Your workspaces stay on this device."
+    },
+    "syncSuccess": {
+        "message": "Sync complete"
+    },
+    "syncFailed": {
+        "message": "Sync failed"
+    },
+    "syncErrorQuota": {
+        "message": "The compressed data exceeds the 100 KB Firefox Sync limit. Reduce the synced tabs or use JSON export."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Sign in to your Firefox Account and enable Add-ons in Firefox Sync settings."
+    },
+    "syncErrorGeneric": {
+        "message": "Could not sync. Please try again later."
+    },
+    "syncConflictTitle": {
+        "message": "Sync Conflict"
+    },
+    "syncConflictDesc": {
+        "message": "The data on this device differs from the synced copy. Choose what to keep:"
+    },
+    "syncLocalSummary": {
+        "message": "This device: $1 workspaces, $2 tabs"
+    },
+    "syncRemoteSummary": {
+        "message": "Synced copy: $1 workspaces, $2 tabs"
+    },
+    "syncUseRemote": {
+        "message": "Use synced copy"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Replace workspaces and tabs on this device"
+    },
+    "syncUseLocal": {
+        "message": "Use this device as source"
+    },
+    "syncUseLocalDesc": {
+        "message": "Upload this device and overwrite the synced copy"
+    },
+    "syncMerge": {
+        "message": "Merge both"
+    },
+    "syncMergeDesc": {
+        "message": "Keep open tabs here and add workspaces and tabs from the synced copy. Same names merge into one workspace."
+    },
+    "syncApplying": {
+        "message": "Applying synced data..."
+    },
+    "syncApplyWarning": {
+        "message": "Please do not perform any actions in the browser while tabs are being restored."
+    },
+    "logSyncApplied": {
+        "message": "Sync Applied"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 workspaces, $2 tabs from sync"
+    },
+    "syncJoinHint": {
+        "message": "On a new device, turn Sync on in the extension."
+    },
+    "syncJoinTitle": {
+        "message": "Join Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "A synced copy already exists. Choose once on this device. After this, sync runs automatically with no more prompts."
+    },
+    "syncPrefTheme": {
+        "message": "Sync theme"
+    },
+    "syncPrefLanguage": {
+        "message": "Sync interface language"
+    },
+    "syncPrefSidebar": {
+        "message": "Sync sidebar"
+    },
+    "syncPrefLogs": {
+        "message": "Sync action history"
+    },
+    "syncInfoStatus": {
+        "message": "Status"
+    },
+    "syncWaitingFirefox": {
+        "message": "Saved for Sync. Firefox transfers to other devices (often a few minutes, or use Sync Now in Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "This device is not in the sync circle yet. Press Sync Now to join or create the first copy."
+    },
+    "syncDevicesTitle": {
+        "message": "Devices in sync"
+    },
+    "syncDevicesEmpty": {
+        "message": "No devices are registered yet."
+    },
+    "syncThisDevice": {
+        "message": "this device"
+    },
+    "syncDeviceSynced": {
+        "message": "Synced"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Disconnecting: waiting for the device to come online"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Joining"
+    },
+    "syncDeviceLeft": {
+        "message": "Not syncing"
+    },
+    "syncLeaveDevice": {
+        "message": "Disconnect"
+    },
+    "syncLeaveConfirm": {
+        "message": "Request leave for this device? It turns Sync off after it next comes online."
+    },
+    "syncForceRemove": {
+        "message": "Remove now"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Remove “$1” from the list without waiting for it? Use this if the device is lost, reset or no longer used. Nothing is deleted. If it ever comes online again, sync turns off there automatically. To sync it again, turn on “Sync workspaces and tabs” in Workspaces settings on that device."
+    },
+    "syncForgetDevice": {
+        "message": "Remove from list"
+    },
+    "syncForgetConfirm": {
+        "message": "Remove “$1” from this list? Sync is already off on that device, and nothing is deleted. If sync is turned on there again, the device will reappear here."
+    },
+    "syncBannerJoin": {
+        "message": "This device needs to join Sync. Open Options to choose Replace or Merge."
+    },
+    "syncOpenOptions": {
+        "message": "Open Options"
+    },
+    "syncPrefUi": {
+        "message": "Sync UI settings"
+    },
+    "syncLiveReceived": {
+        "message": "Receiving changes…"
+    },
+    "syncToastQueued": {
+        "message": "Sent — waiting for Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Changes received"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Turn off sync on this device? Your workspaces and tabs stay here, and your other devices keep syncing. To sync again, turn on “Sync workspaces and tabs” on this page."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Disconnect “$1” from sync? Nothing is deleted. Sync turns off on that device the next time Firefox runs there with internet access; its workspaces and tabs stay on it. To sync it again, turn on “Sync workspaces and tabs” in Workspaces settings on that device."
+    },
+    "syncDevicesHint": {
+        "message": "Disconnecting a device only turns sync off on that device: nothing is deleted, and the other devices keep syncing. To sync a device again, turn on “Sync workspaces and tabs” in Workspaces settings on that device."
+    },
+    "syncApplyingTitle": {
+        "message": "Sync: opening tabs…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "First sync"
+    },
+    "syncApplyPromptDesc": {
+        "message": "This Firefox Account already has workspaces and tabs. Sync them to this device now? With many tabs this can take a few minutes. After you confirm once, later syncs run automatically without asking."
+    },
+    "syncApplyCounts": {
+        "message": "Tabs to open: $1 · Tabs to close: $2"
+    },
+    "syncApplyYes": {
+        "message": "Sync now"
+    },
+    "syncApplyLater": {
+        "message": "Later"
+    },
+    "syncApplyDisable": {
+        "message": "Turn off sync"
+    },
+    "syncApplySnoozed": {
+        "message": "Postponed. We will ask again in 10 minutes about the first sync."
+    },
+    "syncBannerApply": {
+        "message": "First sync is waiting: open Options to bring this device into sync, postpone, or turn sync off."
+    },
+    "syncRunawayError": {
+        "message": "Sync stopped: the same tabs were being opened over and over. Check your data, then turn sync on again in the settings."
+    },
+    "syncBreathColorLabel": {
+        "message": "Sync breath color"
+    },
+    "syncBreathColorHint": {
+        "message": "Glow only when sync opens or closes tabs."
+    },
+    "syncBreathOrange": {
+        "message": "Orange"
+    },
+    "syncBreathAmber": {
+        "message": "Amber"
+    },
+    "syncBreathMint": {
+        "message": "Mint"
+    },
+    "syncBreathSky": {
+        "message": "Sky"
+    },
+    "syncBreathRose": {
+        "message": "Rose"
+    },
+    "syncToastTitle": {
+        "message": "Synced"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Already up to date"
+    },
+    "syncToastChanged": {
+        "message": "Workspaces updated"
+    },
+    "syncToastCounts": {
+        "message": "Opened +$1 · Closed −$2"
+    },
+    "syncToastWorking": {
+        "message": "Syncing…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Tabs are updating — please wait"
+    },
+    "syncToastDismissHint": {
+        "message": "Click to dismiss"
+    },
+    "syncBreathEnabled": {
+        "message": "Sync breathing light"
+    },
+    "syncRawSize": {
+        "message": "Before compression"
+    },
+    "syncPackedSize": {
+        "message": "Stored payload"
+    },
+    "syncCompression": {
+        "message": "Size reduction"
+    },
+    "syncStorageRecords": {
+        "message": "$1 tabs · $2 workspaces · $3 deletion records"
+    },
+    "syncStorageWaiting": {
+        "message": "Tab and deletion counts are unavailable while Firefox is delivering the payload"
+    },
+    "syncLastPrepared": {
+        "message": "Last copy prepared locally"
+    },
+    "syncProgressOpening": {
+        "message": "Opening tabs"
+    },
+    "syncProgressClosing": {
+        "message": "Closing tabs"
+    },
+    "syncProgressFinishing": {
+        "message": "Finishing tab changes"
+    },
+    "syncProgressComplete": {
+        "message": "Tab changes complete"
+    },
+    "syncProgressFailed": {
+        "message": "Some tab changes could not be applied"
+    },
+    "syncProgressCounts": {
+        "message": "$1 of $2 complete · $3 remaining"
+    },
+    "syncDeviceAdded": {
+        "message": "Added to sync"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Last update received from this device"
     }
 }

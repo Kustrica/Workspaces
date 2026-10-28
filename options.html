@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html class="options-page">
 <head>
     <meta charset="utf-8">
     <title data-i18n="settingsTitle">Settings</title>
+    <link rel="stylesheet" href="sync-breath.css">
+    <link rel="stylesheet" href="sync-progress.css">
     <style>
         body {
             background-color: #1c1b22;
             color: #fbfbfe;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding: 40px;
+            padding-bottom: 48px;
             max-width: 700px;
             margin: 0 auto;
         }
@@ -133,6 +136,43 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+        #sync-devices-list .sync-device-row:last-child {
+            border-bottom: none;
+        }
+        .sync-device-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        /* Same palette as .btn / .btn-danger, sized for a list row. */
+        .sync-device-btn {
+            background-color: #42414d;
+            color: #fbfbfe;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-size: 12px;
+            line-height: 1.3;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .sync-device-btn:hover {
+            background-color: #52525e;
+            border-color: #777;
+        }
+        .sync-device-btn.danger {
+            background-color: rgba(255, 50, 50, 0.1);
+            color: #ff5555;
+            border-color: #ff5555;
+        }
+        .sync-device-btn.danger:hover {
+            background-color: rgba(255, 50, 50, 0.2);
+        }
+        .sync-device-btn:focus-visible {
+            outline: 2px solid #ff9400;
+            outline-offset: 1px;
+        }
     </style>
 </head>
 <body>
@@ -228,6 +268,96 @@
         </div>
         <input type="file" id="import-file" accept=".json" style="display: none;">
     </div>
+
+    <div class="section" id="sync-section">
+        <h2 data-i18n="syncTitle">Firefox Sync</h2>
+        <p class="info-text" data-i18n="syncDesc">Workspaces and tabs sync automatically across your devices. No manual action is needed.</p>
+
+        <label for="sync-enabled" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="sync-enabled" style="width: 16px; height: 16px;">
+            <span data-i18n="syncToggleLabel">Sync workspaces and tabs</span>
+        </label>
+
+        <p class="info-text" data-i18n="syncHelperText" style="margin-top: 12px;">Sign into the same Mozilla account on each device and check that Add-ons sync is enabled. To sync now, open the Firefox account menu at the top right → Sync → Sync Now.</p>
+        <p class="info-text" data-i18n="syncJoinHint" style="margin-top: 6px; opacity: 0.85;">When you add a new device, turn Sync on there. Only that new device asks once: download the synced copy or merge with what is already open.</p>
+
+        <div id="sync-pref-checks" style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sync-pref-theme" style="width: 16px; height: 16px;" checked>
+                <span data-i18n="syncPrefTheme">Sync theme</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sync-pref-language" style="width: 16px; height: 16px;" checked>
+                <span data-i18n="syncPrefLanguage">Sync interface language</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sync-pref-sidebar" style="width: 16px; height: 16px;" checked>
+                <span data-i18n="syncPrefSidebar">Sync sidebar</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sync-pref-ui" style="width: 16px; height: 16px;" checked>
+                <span data-i18n="syncPrefUi">Sync UI settings</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="sync-pref-logs" style="width: 16px; height: 16px;" checked>
+                <span data-i18n="syncPrefLogs">Sync History log</span>
+            </label>
+        </div>
+
+        <div class="sync-breath-row" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #3a3942;">
+            <div class="sync-breath-copy">
+                <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; cursor: pointer;">
+                    <input type="checkbox" id="sync-breath-enabled" style="width: 16px; height: 16px;" checked>
+                    <span data-i18n="syncBreathEnabled">Sync breathing light</span>
+                </label>
+                <p class="info-text" style="margin: 0; font-size: 12px;" data-i18n="syncBreathColorHint">Glow only when sync opens or closes tabs.</p>
+            </div>
+            <div id="sync-breath-swatches" class="sync-breath-swatches" role="group" aria-label="Sync breath color">
+                <button type="button" class="sync-breath-swatch" data-theme="orange" data-i18n-title="syncBreathOrange" title="Orange" aria-label="Orange"></button>
+                <button type="button" class="sync-breath-swatch" data-theme="amber" data-i18n-title="syncBreathAmber" title="Amber" aria-label="Amber"></button>
+                <button type="button" class="sync-breath-swatch" data-theme="mint" data-i18n-title="syncBreathMint" title="Mint" aria-label="Mint"></button>
+                <button type="button" class="sync-breath-swatch" data-theme="sky" data-i18n-title="syncBreathSky" title="Sky" aria-label="Sky"></button>
+                <button type="button" class="sync-breath-swatch" data-theme="rose" data-i18n-title="syncBreathRose" title="Rose" aria-label="Rose"></button>
+            </div>
+        </div>
+
+        <div id="sync-info-card" style="margin-top: 16px; background: #26252d; padding: 12px 15px; border-radius: 4px; border: 1px solid #3a3942; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncInfoStatus">Status</span>
+                <strong id="sync-info-status" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncLastPrepared">Last copy prepared</span>
+                <strong id="sync-last-prepared" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncRawSize">Before compression</span>
+                <strong id="sync-raw-size" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncPackedSize">Stored payload</span>
+                <strong id="sync-packed-size" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncCompression">Size reduction</span>
+                <strong id="sync-compression" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                <span style="color: #888;" data-i18n="syncQuotaLabel">Quota</span>
+                <strong id="sync-quota" style="color: #ddd; text-align: right;">—</strong>
+            </div>
+            <div id="sync-storage-records" class="info-text" style="margin: -4px 0 0; font-size: 11px;"></div>
+            <div style="height: 1px; background: #3a3942; margin: 2px 0;"></div>
+        </div>
+
+        <div id="sync-error-line" class="info-text" style="display: none; color: #ff5555; margin-top: 10px;"></div>
+
+        <h3 style="margin: 18px 0 8px; font-size: 14px; color: #ff9400;" data-i18n="syncDevicesTitle">Devices in sync</h3>
+        <p class="info-text" style="margin: 0 0 8px; font-size: 12px;" data-i18n="syncDevicesHint">Disconnecting a device only turns sync off on that device.</p>
+        <div id="sync-devices-list" style="background: #1c1b22; border-radius: 6px; border: 1px solid #444; min-height: 44px;">
+            <div class="info-text" style="padding: 12px;" data-i18n="syncDevicesEmpty">No devices listed yet. Press Sync Now to register this computer.</div>
+        </div>
+    </div>
     
     <div class="section">
         <h2 data-i18n="autoBackupTitle">Auto-Backups</h2>
@@ -311,6 +441,15 @@
 
 
     <div id="status-msg"></div>
+    <div id="sync-apply-progress" role="status" aria-live="polite" aria-atomic="true" aria-label="">
+        <div class="sync-progress-heading">
+            <span id="sync-apply-progress-label"></span>
+            <span id="sync-apply-progress-count"></span>
+        </div>
+        <div id="sync-apply-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="sync-apply-progress-fill"></div>
+        </div>
+    </div>
 
     <!-- Confirmation Modal -->
     <div id="confirm-modal" class="modal-overlay">
@@ -376,6 +515,48 @@
     </div>
     
     <!-- Auto-Backups Select Modal -->
+
+    <!-- Firefox Sync one-time join chooser (new device only) -->
+    <!-- Sync wants to open/close a lot of tabs: ask first, never do it silently (1.19) -->
+    <div id="sync-apply-modal" class="modal-overlay">
+        <div class="modal" style="width: 460px;">
+            <h3 style="color: #ff9400;" data-i18n="syncApplyPromptTitle">First sync</h3>
+            <p id="sync-apply-desc" data-i18n="syncApplyPromptDesc">This Firefox Account already has workspaces and tabs. Sync them to this device now?</p>
+            <div id="sync-apply-counts" style="background: #1c1b22; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; margin: 14px 0; font-size: 13px; line-height: 1.8;"></div>
+            <p class="info-text" style="font-size: 12px; margin: 0 0 12px;" data-i18n="importWarning">Please do not perform any actions in the browser during tab restoration.</p>
+            <div class="modal-buttons" style="flex-direction: column; gap: 8px;">
+                <button id="sync-apply-yes-btn" class="modal-btn confirm" data-i18n="syncApplyYes">Sync now</button>
+                <button id="sync-apply-later-btn" class="modal-btn import-opt" data-i18n="syncApplyLater">Later</button>
+                <button id="sync-apply-disable-btn" class="modal-btn cancel" data-i18n="syncApplyDisable">Turn off sync</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sync-conflict-modal" class="modal-overlay">
+        <div class="modal" style="width: 460px;">
+            <h3 style="color: #ff9400;" data-i18n="syncJoinTitle">Join Firefox Sync</h3>
+            <p id="sync-conflict-desc" data-i18n="syncJoinDesc">A synced copy already exists. Choose once on this device:</p>
+
+            <div style="background: #1c1b22; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; margin: 14px 0; font-size: 13px; line-height: 1.8;">
+                <div id="sync-conflict-local"></div>
+                <div id="sync-conflict-remote"></div>
+            </div>
+
+            <div class="modal-buttons" style="flex-direction: column; gap: 6px;">
+                <button id="sync-use-remote-btn" class="modal-btn import-opt" data-i18n="syncUseRemote">Use synced copy</button>
+                <p class="info-text" data-i18n="syncUseRemoteDesc" style="margin: 0 0 6px; font-size: 12px;">Replace workspaces and tabs on this device</p>
+
+                <button id="sync-merge-btn" class="modal-btn import-opt" data-i18n="syncMerge">Merge both</button>
+                <p class="info-text" data-i18n="syncMergeDesc" style="margin: 0 0 6px; font-size: 12px;">Keep open tabs here and add workspaces/tabs from the synced copy. Same names merge into one.</p>
+
+                <button id="sync-use-local-btn" class="modal-btn import-opt" data-i18n="syncUseLocal">Use this device as source</button>
+                <p class="info-text" data-i18n="syncUseLocalDesc" style="margin: 0 0 6px; font-size: 12px;">Upload this device and overwrite the synced copy</p>
+
+                <button id="sync-conflict-cancel-btn" class="modal-btn cancel" data-i18n="cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="auto-backups-modal" class="modal-overlay">
         <div class="modal" style="width: 500px;">
             <h3 data-i18n="selectBackupTitle">Select Auto-Backup</h3>
@@ -479,7 +660,12 @@
             }
         }
     </style>
+    <div id="sync-breath" aria-hidden="true"></div>
+    <div id="sync-activity-toast" role="status"></div>
     <script src="i18n.js"></script>
+    <script src="sync.js"></script>
+    <script src="sync-breath.js"></script>
+    <script src="sync-progress.js"></script>
     <script src="options.js"></script>
 </body>
 </html>

@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Tab dipulihkan setelah jendela ditutup"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Ruang kerja dan tab disinkronkan secara otomatis antarperangkat Anda. Anda tidak perlu melakukan apa pun."
+    },
+    "syncToggleLabel": {
+        "message": "Sinkronkan ruang kerja dan tab"
+    },
+    "syncHelperText": {
+        "message": "Masuk ke akun Mozilla yang sama di setiap perangkat dan pastikan sinkronisasi pengaya diaktifkan. Untuk menyinkronkan sekarang, buka menu akun Firefox di kanan atas → Sinkronisasi → Sinkronkan sekarang."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "Sinkronisasi add-on tersedia di Firefox untuk desktop."
+    },
+    "syncStatusOn": {
+        "message": "Sinkronisasi aktif"
+    },
+    "syncStatusOff": {
+        "message": "Sinkronisasi nonaktif"
+    },
+    "syncStatusSyncing": {
+        "message": "Menyinkronkan..."
+    },
+    "syncNever": {
+        "message": "Belum pernah"
+    },
+    "syncQuotaLabel": {
+        "message": "Kuota:"
+    },
+    "syncQuotaValue": {
+        "message": "$1 KB dari $2 KB"
+    },
+    "syncEnabledToast": {
+        "message": "Sinkronisasi diaktifkan"
+    },
+    "syncDisabledToast": {
+        "message": "Sinkronisasi dinonaktifkan"
+    },
+    "syncDisableConfirm": {
+        "message": "Matikan sinkronisasi? Ruang kerja Anda tetap ada di perangkat ini."
+    },
+    "syncSuccess": {
+        "message": "Sinkronisasi selesai"
+    },
+    "syncFailed": {
+        "message": "Sinkronisasi gagal"
+    },
+    "syncErrorQuota": {
+        "message": "Data terkompresi melebihi batas Firefox Sync sebesar 100 KB. Kurangi tab atau ekspor ke JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Masuk ke akun Firefox Anda dan aktifkan «Add-on» di pengaturan Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "Tidak dapat menyinkronkan. Coba lagi nanti."
+    },
+    "syncConflictTitle": {
+        "message": "Konflik sinkronisasi"
+    },
+    "syncConflictDesc": {
+        "message": "Data di perangkat ini berbeda dari salinan tersinkronisasi. Pilih yang ingin disimpan:"
+    },
+    "syncLocalSummary": {
+        "message": "Perangkat ini: $1 ruang kerja, $2 tab"
+    },
+    "syncRemoteSummary": {
+        "message": "Salinan tersinkronisasi: $1 ruang kerja, $2 tab"
+    },
+    "syncUseRemote": {
+        "message": "Gunakan salinan tersinkronisasi"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Ganti ruang kerja dan tab di perangkat ini"
+    },
+    "syncUseLocal": {
+        "message": "Gunakan perangkat ini sebagai sumber"
+    },
+    "syncUseLocalDesc": {
+        "message": "Unggah perangkat ini dan timpa salinan yang disinkronkan"
+    },
+    "syncMerge": {
+        "message": "Gabungkan keduanya"
+    },
+    "syncMergeDesc": {
+        "message": "Pertahankan tab terbuka di sini dan tambahkan ruang kerja serta tab dari salinan. Nama yang sama digabung menjadi satu ruang."
+    },
+    "syncApplying": {
+        "message": "Menerapkan data tersinkronisasi..."
+    },
+    "syncApplyWarning": {
+        "message": "Mohon jangan melakukan tindakan apa pun di peramban saat tab sedang dipulihkan."
+    },
+    "logSyncApplied": {
+        "message": "Sinkronisasi diterapkan"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 ruang kerja, $2 tab dari sinkronisasi"
+    },
+    "syncJoinHint": {
+        "message": "Di perangkat baru, aktifkan Sync di ekstensi."
+    },
+    "syncJoinTitle": {
+        "message": "Gabung Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Salinan tersinkron sudah ada. Pilih sekali di perangkat ini. Setelah itu Sync berjalan otomatis tanpa prompt lagi."
+    },
+    "syncPrefTheme": {
+        "message": "Sinkronkan tema"
+    },
+    "syncPrefLanguage": {
+        "message": "Sinkronkan bahasa antarmuka"
+    },
+    "syncPrefSidebar": {
+        "message": "Sinkronkan bilah sisi"
+    },
+    "syncPrefLogs": {
+        "message": "Sinkronkan riwayat tindakan"
+    },
+    "syncInfoStatus": {
+        "message": "Status"
+    },
+    "syncWaitingFirefox": {
+        "message": "Disimpan untuk Sync. Firefox mentransfer ke perangkat lain (sering beberapa menit, atau «Sinkronkan sekarang» di Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Perangkat ini belum masuk lingkaran Sync. Tekan «Sinkronkan sekarang» untuk bergabung atau membuat salinan pertama."
+    },
+    "syncDevicesTitle": {
+        "message": "Perangkat dalam sinkronisasi"
+    },
+    "syncDevicesEmpty": {
+        "message": "Belum ada perangkat yang terdaftar."
+    },
+    "syncThisDevice": {
+        "message": "perangkat ini"
+    },
+    "syncDeviceSynced": {
+        "message": "Disinkronkan"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Memutuskan: menunggu perangkat daring"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Bergabung"
+    },
+    "syncDeviceLeft": {
+        "message": "Tidak disinkronkan"
+    },
+    "syncLeaveDevice": {
+        "message": "Putuskan"
+    },
+    "syncLeaveConfirm": {
+        "message": "Minta keluar untuk perangkat ini? Sync dimatikan saat perangkat kembali online."
+    },
+    "syncForceRemove": {
+        "message": "Hapus sekarang"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Hapus “$1” dari daftar tanpa menunggunya? Gunakan ini jika perangkat hilang, direset, atau tidak dipakai lagi. Tidak ada yang dihapus dari perangkat. Jika suatu saat daring lagi, sinkronisasi di sana mati otomatis. Untuk menyambungkannya lagi, aktifkan “Sinkronkan ruang kerja dan tab” di pengaturan Workspaces pada perangkat itu."
+    },
+    "syncForgetDevice": {
+        "message": "Hapus dari daftar"
+    },
+    "syncForgetConfirm": {
+        "message": "Hapus “$1” dari daftar ini? Sinkronisasi di perangkat itu sudah mati, dan tidak ada yang dihapus. Jika sinkronisasi diaktifkan lagi di sana, perangkat akan muncul lagi di sini."
+    },
+    "syncBannerJoin": {
+        "message": "Perangkat ini perlu bergabung ke Sync. Buka Opsi dan pilih Ganti atau Gabungkan."
+    },
+    "syncOpenOptions": {
+        "message": "Buka Opsi"
+    },
+    "syncPrefUi": {
+        "message": "Sinkronkan pengaturan antarmuka"
+    },
+    "syncLiveReceived": {
+        "message": "Menerima perubahan…"
+    },
+    "syncToastQueued": {
+        "message": "Terkirim — menunggu Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Perubahan diterima"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Matikan sinkronisasi di perangkat ini? Ruang kerja dan tab Anda tetap di sini, dan perangkat lain tetap tersinkron. Untuk menyinkronkan lagi, aktifkan “Sinkronkan ruang kerja dan tab” di halaman ini."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Putuskan “$1” dari sinkronisasi? Tidak ada yang dihapus. Sinkronisasi di perangkat itu akan mati saat Firefox berikutnya berjalan di sana dengan internet; ruang kerja dan tabnya tetap ada di sana. Untuk menyambungkannya lagi, aktifkan “Sinkronkan ruang kerja dan tab” di pengaturan Workspaces pada perangkat itu."
+    },
+    "syncDevicesHint": {
+        "message": "Memutuskan perangkat hanya mematikan sinkronisasi di perangkat itu: tidak ada yang dihapus, dan perangkat lain tetap tersinkron. Untuk menyambungkan perangkat lagi, aktifkan “Sinkronkan ruang kerja dan tab” di pengaturan Workspaces pada perangkat itu."
+    },
+    "syncApplyingTitle": {
+        "message": "Sinkronisasi: membuka tab…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Sinkronisasi pertama"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Akun Firefox ini sudah punya ruang kerja dan tab. Sinkronkan ke perangkat ini sekarang? Dengan banyak tab bisa memakan beberapa menit. Setelah konfirmasi sekali, sinkron berikutnya otomatis tanpa bertanya."
+    },
+    "syncApplyCounts": {
+        "message": "Tab yang dibuka: $1 · Ditutup: $2"
+    },
+    "syncApplyYes": {
+        "message": "Sinkronkan sekarang"
+    },
+    "syncApplyLater": {
+        "message": "Nanti"
+    },
+    "syncApplyDisable": {
+        "message": "Matikan sinkronisasi"
+    },
+    "syncApplySnoozed": {
+        "message": "Ditunda. Kami akan bertanya lagi dalam 10 menit tentang sinkronisasi pertama."
+    },
+    "syncBannerApply": {
+        "message": "Sinkronisasi pertama menunggu: buka Opsi untuk menerima, menunda, atau mematikan Sync."
+    },
+    "syncRunawayError": {
+        "message": "Sinkronisasi dihentikan: tab yang sama dibuka berulang kali. Periksa data Anda, lalu aktifkan sinkronisasi lagi di pengaturan."
+    },
+    "syncBreathColorLabel": {
+        "message": "Warna napas Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "Cahaya hanya muncul saat sinkronisasi membuka atau menutup tab."
+    },
+    "syncBreathOrange": {
+        "message": "Oranye"
+    },
+    "syncBreathAmber": {
+        "message": "Amber"
+    },
+    "syncBreathMint": {
+        "message": "Mint"
+    },
+    "syncBreathSky": {
+        "message": "Langit"
+    },
+    "syncBreathRose": {
+        "message": "Mawar"
+    },
+    "syncToastTitle": {
+        "message": "Disinkronkan"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Sudah mutakhir"
+    },
+    "syncToastChanged": {
+        "message": "Ruang kerja diperbarui"
+    },
+    "syncToastCounts": {
+        "message": "Dibuka +$1 · Ditutup −$2"
+    },
+    "syncToastWorking": {
+        "message": "Menyinkronkan…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Tab sedang diperbarui — harap tunggu"
+    },
+    "syncToastDismissHint": {
+        "message": "Klik untuk menutup"
+    },
+    "syncBreathEnabled": {
+        "message": "Cahaya sinkronisasi"
+    },
+    "syncRawSize": {
+        "message": "Sebelum kompresi"
+    },
+    "syncPackedSize": {
+        "message": "Data tersimpan"
+    },
+    "syncCompression": {
+        "message": "Pengurangan ukuran"
+    },
+    "syncStorageRecords": {
+        "message": "$1 tab · $2 ruang kerja · $3 catatan penghapusan"
+    },
+    "syncStorageWaiting": {
+        "message": "Jumlah tab dan penghapusan tidak tersedia saat Firefox mengirim data"
+    },
+    "syncLastPrepared": {
+        "message": "Salinan terakhir disiapkan secara lokal"
+    },
+    "syncProgressOpening": {
+        "message": "Membuka tab"
+    },
+    "syncProgressClosing": {
+        "message": "Menutup tab"
+    },
+    "syncProgressFinishing": {
+        "message": "Menyelesaikan perubahan tab"
+    },
+    "syncProgressComplete": {
+        "message": "Perubahan tab selesai"
+    },
+    "syncProgressFailed": {
+        "message": "Beberapa perubahan tab tidak dapat diterapkan"
+    },
+    "syncProgressCounts": {
+        "message": "$1 dari $2 selesai · tersisa $3"
+    },
+    "syncDeviceAdded": {
+        "message": "Ditambahkan ke sinkronisasi"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Pembaruan terakhir diterima dari perangkat ini"
     }
 }

@@ -534,5 +534,320 @@
     },
     "crashRecovery": {
         "message": "Onglets restaurés après la fermeture de la fenêtre"
+    },
+    "syncTitle": {
+        "message": "Firefox Sync"
+    },
+    "syncDesc": {
+        "message": "Les espaces et les onglets se synchronisent automatiquement entre vos appareils. Vous n’avez rien à faire."
+    },
+    "syncToggleLabel": {
+        "message": "Synchroniser les espaces de travail et les onglets"
+    },
+    "syncHelperText": {
+        "message": "Connectez-vous au même compte Mozilla sur chaque appareil et vérifiez que la synchronisation des modules complémentaires est activée. Pour synchroniser maintenant, ouvrez le menu du compte Firefox en haut à droite → Synchronisation → Synchroniser maintenant."
+    },
+    "syncDesktopOnlyNote": {
+        "message": "La synchronisation des modules est disponible sur Firefox pour ordinateur."
+    },
+    "syncStatusOn": {
+        "message": "Synchronisation activée"
+    },
+    "syncStatusOff": {
+        "message": "Synchronisation désactivée"
+    },
+    "syncStatusSyncing": {
+        "message": "Synchronisation..."
+    },
+    "syncNever": {
+        "message": "Jamais"
+    },
+    "syncQuotaLabel": {
+        "message": "Quota :"
+    },
+    "syncQuotaValue": {
+        "message": "$1 Ko sur $2 Ko"
+    },
+    "syncEnabledToast": {
+        "message": "Synchronisation activée"
+    },
+    "syncDisabledToast": {
+        "message": "Synchronisation désactivée"
+    },
+    "syncDisableConfirm": {
+        "message": "Désactiver la synchronisation ? Vos espaces de travail restent sur cet appareil."
+    },
+    "syncSuccess": {
+        "message": "Synchronisation terminée"
+    },
+    "syncFailed": {
+        "message": "Échec de la synchronisation"
+    },
+    "syncErrorQuota": {
+        "message": "Les données compressées dépassent la limite de 100 Ko de Firefox Sync. Réduisez les onglets ou exportez en JSON."
+    },
+    "syncErrorNotSignedIn": {
+        "message": "Connectez-vous à votre compte Firefox et activez « Modules complémentaires » dans les paramètres de Firefox Sync."
+    },
+    "syncErrorGeneric": {
+        "message": "Synchronisation impossible. Veuillez réessayer plus tard."
+    },
+    "syncConflictTitle": {
+        "message": "Conflit de synchronisation"
+    },
+    "syncConflictDesc": {
+        "message": "Les données de cet appareil diffèrent de la copie synchronisée. Choisissez ce qu'il faut conserver :"
+    },
+    "syncLocalSummary": {
+        "message": "Cet appareil : $1 espaces, $2 onglets"
+    },
+    "syncRemoteSummary": {
+        "message": "Copie synchronisée : $1 espaces, $2 onglets"
+    },
+    "syncUseRemote": {
+        "message": "Utiliser la copie synchronisée"
+    },
+    "syncUseRemoteDesc": {
+        "message": "Remplacer les espaces de travail et onglets de cet appareil"
+    },
+    "syncUseLocal": {
+        "message": "Utiliser cet appareil comme source"
+    },
+    "syncUseLocalDesc": {
+        "message": "Envoyer cet appareil et écraser la copie synchronisée"
+    },
+    "syncMerge": {
+        "message": "Fusionner les deux"
+    },
+    "syncMergeDesc": {
+        "message": "Garder les onglets ouverts ici et ajouter les espaces et onglets de la copie. Les mêmes noms fusionnent en un espace."
+    },
+    "syncApplying": {
+        "message": "Application des données synchronisées..."
+    },
+    "syncApplyWarning": {
+        "message": "Veuillez n'effectuer aucune action dans le navigateur pendant la restauration des onglets."
+    },
+    "logSyncApplied": {
+        "message": "Synchronisation appliquée"
+    },
+    "logDetailsSyncApplied": {
+        "message": "$1 espaces, $2 onglets depuis la synchronisation"
+    },
+    "syncJoinHint": {
+        "message": "Sur un nouvel appareil, activez Sync dans l’extension."
+    },
+    "syncJoinTitle": {
+        "message": "Rejoindre Firefox Sync"
+    },
+    "syncJoinDesc": {
+        "message": "Une copie synchronisée existe déjà. Choisissez une fois sur cet appareil. Ensuite Sync tourne automatiquement sans autres invites."
+    },
+    "syncPrefTheme": {
+        "message": "Synchroniser le thème"
+    },
+    "syncPrefLanguage": {
+        "message": "Synchroniser la langue de l’interface"
+    },
+    "syncPrefSidebar": {
+        "message": "Synchroniser la barre latérale"
+    },
+    "syncPrefLogs": {
+        "message": "Synchroniser l’historique des actions"
+    },
+    "syncInfoStatus": {
+        "message": "État"
+    },
+    "syncWaitingFirefox": {
+        "message": "Enregistré pour Sync. Firefox transfère vers les autres appareils (souvent quelques minutes, ou « Synchroniser maintenant » dans Firefox)."
+    },
+    "syncNotJoinedHint": {
+        "message": "Cet appareil n’est pas encore dans le cercle Sync. Cliquez sur « Synchroniser maintenant » pour rejoindre ou créer la première copie."
+    },
+    "syncDevicesTitle": {
+        "message": "Appareils synchronisés"
+    },
+    "syncDevicesEmpty": {
+        "message": "Aucun appareil n’est encore enregistré."
+    },
+    "syncThisDevice": {
+        "message": "cet appareil"
+    },
+    "syncDeviceSynced": {
+        "message": "Synchronisé"
+    },
+    "syncDevicePendingLeave": {
+        "message": "Déconnexion : en attente de la connexion de l’appareil"
+    },
+    "syncDevicePendingJoin": {
+        "message": "Connexion"
+    },
+    "syncDeviceLeft": {
+        "message": "Non synchronisé"
+    },
+    "syncLeaveDevice": {
+        "message": "Déconnecter"
+    },
+    "syncLeaveConfirm": {
+        "message": "Demander le départ de cet appareil ? Sync s’éteindra lorsqu’il sera de nouveau en ligne."
+    },
+    "syncForceRemove": {
+        "message": "Retirer maintenant"
+    },
+    "syncForceRemoveConfirm": {
+        "message": "Retirer « $1 » de la liste sans l’attendre ? À utiliser si l’appareil est perdu, réinitialisé ou n’est plus utilisé. Rien n’est supprimé. S’il se reconnecte un jour, la synchronisation y sera désactivée automatiquement. Pour le reconnecter, activez « Synchroniser les espaces de travail et les onglets » dans les paramètres de Workspaces sur cet appareil."
+    },
+    "syncForgetDevice": {
+        "message": "Retirer de la liste"
+    },
+    "syncForgetConfirm": {
+        "message": "Retirer « $1 » de cette liste ? La synchronisation est déjà désactivée sur cet appareil et rien n’est supprimé. Si elle y est réactivée, l’appareil réapparaîtra ici."
+    },
+    "syncBannerJoin": {
+        "message": "Cet appareil doit rejoindre Sync. Ouvrez les Options et choisissez Remplacer ou Fusionner."
+    },
+    "syncOpenOptions": {
+        "message": "Ouvrir les Options"
+    },
+    "syncPrefUi": {
+        "message": "Synchroniser les paramètres d’interface"
+    },
+    "syncLiveReceived": {
+        "message": "Réception des modifications…"
+    },
+    "syncToastQueued": {
+        "message": "Envoyé — en attente de Firefox"
+    },
+    "syncToastPulled": {
+        "message": "Modifications reçues"
+    },
+    "syncLeaveConfirmSelf": {
+        "message": "Désactiver la synchronisation sur cet appareil ? Vos espaces de travail et onglets restent ici, et vos autres appareils continuent de se synchroniser. Pour synchroniser à nouveau, activez « Synchroniser les espaces de travail et les onglets » sur cette page."
+    },
+    "syncLeaveConfirmOther": {
+        "message": "Déconnecter « $1 » de la synchronisation ? Rien n’est supprimé. La synchronisation se désactivera sur cet appareil la prochaine fois que Firefox y sera lancé avec Internet ; ses espaces de travail et onglets y restent. Pour le reconnecter, activez « Synchroniser les espaces de travail et les onglets » dans les paramètres de Workspaces sur cet appareil."
+    },
+    "syncDevicesHint": {
+        "message": "Déconnecter un appareil désactive seulement la synchronisation sur celui-ci : rien n’est supprimé et les autres appareils continuent de se synchroniser. Pour reconnecter un appareil, activez « Synchroniser les espaces de travail et les onglets » dans les paramètres de Workspaces sur cet appareil."
+    },
+    "syncApplyingTitle": {
+        "message": "Synchronisation : ouverture des onglets…"
+    },
+    "syncApplyPromptTitle": {
+        "message": "Première synchronisation"
+    },
+    "syncApplyPromptDesc": {
+        "message": "Ce compte Firefox a déjà des espaces et des onglets. Les synchroniser sur cet appareil maintenant ? Avec beaucoup d’onglets cela peut prendre quelques minutes. Après une confirmation, les sync suivantes sont automatiques sans demander."
+    },
+    "syncApplyCounts": {
+        "message": "Onglets à ouvrir : $1 · À fermer : $2"
+    },
+    "syncApplyYes": {
+        "message": "Synchroniser maintenant"
+    },
+    "syncApplyLater": {
+        "message": "Plus tard"
+    },
+    "syncApplyDisable": {
+        "message": "Désactiver la synchronisation"
+    },
+    "syncApplySnoozed": {
+        "message": "Reporté. Nous redemanderons dans 10 minutes pour la première sync."
+    },
+    "syncBannerApply": {
+        "message": "La première sync attend : ouvrez les Options pour accepter, reporter ou désactiver Sync."
+    },
+    "syncRunawayError": {
+        "message": "Synchronisation arrêtée : les mêmes onglets s'ouvraient en boucle. Vérifiez vos données, puis réactivez la synchronisation dans les paramètres."
+    },
+    "syncBreathColorLabel": {
+        "message": "Couleur du souffle Sync"
+    },
+    "syncBreathColorHint": {
+        "message": "La lueur apparaît uniquement quand la synchronisation ouvre ou ferme des onglets."
+    },
+    "syncBreathOrange": {
+        "message": "Orange"
+    },
+    "syncBreathAmber": {
+        "message": "Ambre"
+    },
+    "syncBreathMint": {
+        "message": "Menthe"
+    },
+    "syncBreathSky": {
+        "message": "Ciel"
+    },
+    "syncBreathRose": {
+        "message": "Rose"
+    },
+    "syncToastTitle": {
+        "message": "Synchronisé"
+    },
+    "syncToastQuietTitle": {
+        "message": "Sync"
+    },
+    "syncToastQuiet": {
+        "message": "Déjà à jour"
+    },
+    "syncToastChanged": {
+        "message": "Espaces mis à jour"
+    },
+    "syncToastCounts": {
+        "message": "Ouverts +$1 · Fermés −$2"
+    },
+    "syncToastWorking": {
+        "message": "Synchronisation…"
+    },
+    "syncToastWorkingHint": {
+        "message": "Mise à jour des onglets — veuillez patienter"
+    },
+    "syncToastDismissHint": {
+        "message": "Cliquer pour fermer"
+    },
+    "syncBreathEnabled": {
+        "message": "Lueur de synchronisation"
+    },
+    "syncRawSize": {
+        "message": "Avant compression"
+    },
+    "syncPackedSize": {
+        "message": "Données stockées"
+    },
+    "syncCompression": {
+        "message": "Réduction de taille"
+    },
+    "syncStorageRecords": {
+        "message": "$1 onglets · $2 espaces · $3 suppressions enregistrées"
+    },
+    "syncStorageWaiting": {
+        "message": "Les nombres ne sont pas disponibles pendant le transfert des données par Firefox"
+    },
+    "syncLastPrepared": {
+        "message": "Dernière copie préparée localement"
+    },
+    "syncProgressOpening": {
+        "message": "Ouverture des onglets"
+    },
+    "syncProgressClosing": {
+        "message": "Fermeture des onglets"
+    },
+    "syncProgressFinishing": {
+        "message": "Finalisation des changements d’onglets"
+    },
+    "syncProgressComplete": {
+        "message": "Changements d’onglets terminés"
+    },
+    "syncProgressFailed": {
+        "message": "Certains changements d’onglets n’ont pas pu être appliqués"
+    },
+    "syncProgressCounts": {
+        "message": "$1 sur $2 terminés · $3 restants"
+    },
+    "syncDeviceAdded": {
+        "message": "Ajouté à la synchronisation"
+    },
+    "syncDeviceLastUpdate": {
+        "message": "Dernière mise à jour reçue de cet appareil"
     }
 }
