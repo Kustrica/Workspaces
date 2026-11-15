@@ -156,3 +156,5 @@
 - [x] STEP-88: Combine group restoration operations while preserving recovery after partial browser API failures.
 - [x] STEP-89: Update the existing release notes and project context.
 - [x] STEP-90: Run focused success and failure regressions and verify the package.
+  - [x] STEP-90.1: Move the optimization to release 1.19.19 because 1.19.18 was already published.
+  - [x] STEP-90.2: Build and verify the 1.19.19 release archive.
