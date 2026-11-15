@@ -209,19 +209,23 @@
                         // retry, use the group snapshot already fetched above.
                         let liveGroup = existingGroupId == null ? null : groupById.get(groupId);
                         const marker = markedTitle(meta.title, meta.operationToken);
+                        const appearance = { color: meta.color || 'grey', collapsed: Boolean(meta.collapsed) };
                         if (liveGroup?.title !== marker) {
                             try {
-                                await withExpectedGroupUpdate(groupId, { title: marker });
+                                // Firefox accepts all three properties in one update. Keep the
+                                // marker until the durable finalizing journal is complete.
+                                await withExpectedGroupUpdate(groupId, { title: marker, ...appearance });
+                                liveGroup = { title: marker, ...appearance };
                             } catch (error) {
-                                // An API rejection may follow an applied update; confirm the marker.
+                                // A rejection may follow a partial update. Only a confirmed
+                                // marker authorizes applying or retrying the group appearance.
                                 liveGroup = (await browserApi.tabGroups.query({})).find(group => group.id === groupId);
                                 if (liveGroup?.title !== marker) throw Object.assign(error, { stage: 'mark-owned' });
                             }
                         }
-                        await withExpectedGroupUpdate(groupId, {
-                            color: meta.color || 'grey',
-                            collapsed: Boolean(meta.collapsed)
-                        });
+                        if (liveGroup.color !== appearance.color || Boolean(liveGroup.collapsed) !== appearance.collapsed) {
+                            await withExpectedGroupUpdate(groupId, appearance);
+                        }
                         // Journal completion while the ownership marker remains visible, then
                         // publish the original title. A retry can safely finish either stage.
                         const stages = await Promise.allSettled(windowTabs.map(async tab => {

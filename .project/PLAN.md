@@ -151,3 +151,8 @@
 - [x] STEP-85: Remove redundant browser API calls from group hiding and restoration without weakening recovery.
 - [x] STEP-86: Document the optimization in the existing 1.19.18 entry.
 - [x] STEP-87: Run focused regression and API-call checks and rebuild the release archive; Firefox timing was not measured under the existing no-launch constraint.
+
+## Phase 17: Reduce group restoration round trips
+- [x] STEP-88: Combine group restoration operations while preserving recovery after partial browser API failures.
+- [x] STEP-89: Update the existing release notes and project context.
+- [x] STEP-90: Run focused success and failure regressions and verify the package.

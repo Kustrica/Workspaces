@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 
 const source = readFileSync(new URL('../group-visibility.js', import.meta.url), 'utf8');
 
-function fixture({ splitViewId = -1, failSession = false, failSessionTab = null, delaySessionTab = null, failStyleOnce = false, failMarkerOnce = false, failFinalTitleOnce = false, eventTtlMs } = {}) {
+function fixture({ splitViewId = -1, failSession = false, failSessionTab = null, delaySessionTab = null, failStyleOnce = false, failMarkerOnce = false, failAfterApplyOnce = false, failFinalTitleOnce = false, eventTtlMs } = {}) {
     const tabs = [
         { id: 1, windowId: 9, groupId: 40, ...(splitViewId !== -1 ? { splitViewId } : {}) },
         { id: 2, windowId: 9, groupId: 40 },
@@ -16,6 +16,8 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
     let groupQueries = 0;
     let markerFailed = false;
     let styleFailed = false;
+    let partialMarkerApplied = false;
+    let failedAfterApply = false;
     let finalTitleFailed = false;
     const nativeGroups = new Map([[40, { id: 40, title: 'Research', color: 'blue', collapsed: true, splitViewId }]]);
     const browser = {
@@ -38,6 +40,11 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
                     markerFailed = true;
                     throw new Error('marker update failed before apply');
                 }
+                if ('title' in props && props.title.includes('⟦wv:') && failStyleOnce && !partialMarkerApplied) {
+                    partialMarkerApplied = true;
+                    nativeGroups.get(id).title = props.title;
+                    throw new Error('partial marker update');
+                }
                 if (props.title === 'Research' && failFinalTitleOnce && !finalTitleFailed && id === 77) {
                     finalTitleFailed = true;
                     throw new Error('final title update failed before apply');
@@ -47,6 +54,10 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
                     throw new Error('style update failed');
                 }
                 Object.assign(nativeGroups.get(id), props);
+                if (failAfterApplyOnce && !failedAfterApply && props.title?.includes('⟦wv:')) {
+                    failedAfterApply = true;
+                    throw new Error('rejected after applying combined update');
+                }
             }
         },
         sessions: {
@@ -66,6 +77,16 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
 }
 
 {
+    const f = fixture({ failAfterApplyOnce: true });
+    await f.api.prepareForHide([1, 2], () => 'work');
+    const result = await f.api.restoreVisible([1, 2], 'work');
+    assert.equal(result.restored.length, 1, 'a confirmed applied update is not repeated after rejection');
+    assert.equal(f.nativeGroups.get(77).title, 'Research');
+    assert.equal(f.nativeGroups.get(77).color, 'blue');
+    assert.equal(await f.api.getSavedMetadata(1), null);
+}
+
+{
     const f = fixture();
     const result = await f.api.prepareForHide([1], id => id === 1 ? 'work' : 'other');
     assert.equal(result.ungrouped.length, 1);
@@ -79,6 +100,10 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
     assert.equal(f.groupQueries, 2, 'one group query per hide and restore, with no extra query for a newly created group');
     assert.equal(f.nativeGroups.get(77).title, 'Research');
     assert.equal(f.nativeGroups.get(77).color, 'blue');
+    const updates = f.calls.filter(call => call[0] === 'update');
+    assert.equal(updates.length, 2, 'marker and appearance use one update before the final title');
+    assert.equal(updates[0][2].color, 'blue');
+    assert.equal(updates[0][2].collapsed, true);
     assert.equal(await f.api.getSavedMetadata(1), null);
 }
 
