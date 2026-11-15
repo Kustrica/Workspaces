@@ -6,6 +6,21 @@ let tabWorkspaceMap = {};
 let workspaceActiveTabMap = {};
 let actionLogs = [];
 const TAB_WORKSPACE_SESSION_KEY = 'workspaceId';
+const tabSyncInstanceIds = new Map();
+const pendingSyncInstanceWrites = new Map();
+
+function persistSyncTabInstance(tabId, instanceId) {
+    tabSyncInstanceIds.set(tabId, instanceId);
+    if (typeof WorkspacesGroupSnapshot !== 'undefined') WorkspacesGroupSnapshot.invalidate(tabId);
+    const write = browser.sessions.setTabValue(tabId, 'workspacesSyncTabId', instanceId);
+    pendingSyncInstanceWrites.set(tabId, write);
+    write.then(() => {
+        if (pendingSyncInstanceWrites.get(tabId) === write) pendingSyncInstanceWrites.delete(tabId);
+    }, () => {
+        if (pendingSyncInstanceWrites.get(tabId) === write) pendingSyncInstanceWrites.delete(tabId);
+    });
+    return write;
+}
 let isInitializingState = true;
 let isRestoringData = false;
 
@@ -162,7 +177,7 @@ function assignTabToWorkspace(tabId, workspaceId, options = {}) {
             if (movedUrl && typeof recordTabTombstone === 'function') {
                 // It is gone from the old workspace on purpose — record it so the peer
                 // does not add it back there.
-                recordTabTombstone(previousWorkspaceId, movedUrl);
+                recordTabTombstone(previousWorkspaceId, movedUrl, tabSyncInstanceIds.get(tabId));
             } else {
                 bumpWorkspaceRev(previousWorkspaceId);
             }
@@ -173,7 +188,12 @@ function assignTabToWorkspace(tabId, workspaceId, options = {}) {
     if (options.persistSession !== false) {
         // Return the promise (instead of true fire-and-forget) so callers that care about
         // durability — e.g. right before a workspace switch or on suspend — can await it.
-        return setSessionWorkspace(tabId, workspaceId);
+        const writes = [setSessionWorkspace(tabId, workspaceId)];
+        if (previousWorkspaceId && previousWorkspaceId !== workspaceId
+            && typeof WorkspacesGroupVisibility !== 'undefined') {
+            writes.push(WorkspacesGroupVisibility.create(browser).reassignSavedMetadata(tabId, workspaceId));
+        }
+        return Promise.all(writes);
     }
 }
 
@@ -306,6 +326,8 @@ async function rebuildTabWorkspaceMapFromOpenTabs() {
                     tabIntendedUrl[tab.id] = identity.url;
                     if (identity.settled) settledSyncTabs.add(tab.id);
                 }
+                const instanceId = await browser.sessions.getTabValue(tab.id, 'workspacesSyncTabId');
+                if (typeof instanceId === 'string') tabSyncInstanceIds.set(tab.id, instanceId);
             } catch (e) { /* sessions unavailable */ }
         }
 
@@ -517,8 +539,7 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
             continue;
         }
 
-        const keepVisible = tab.groupId !== undefined && tab.groupId !== -1;
-        if (ws === workspaceId || keepVisible) {
+        if (ws === workspaceId) {
             toShow.push(tab.id);
         } else {
             toHide.push(tab.id);
@@ -529,6 +550,9 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
         try { await browser.tabs.show(toShow); } catch (e) {}
     }
 
+    const groupVisibility = typeof WorkspacesGroupVisibility !== 'undefined'
+        ? WorkspacesGroupVisibility.create(browser)
+        : null;
     if (allowActivate) {
         const activeQuery = typeof windowId === 'number'
             ? { active: true, windowId }
@@ -560,9 +584,27 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
         if (stillActive && hideList.includes(stillActive.id)) {
             hideList = hideList.filter(id => id !== stillActive.id);
         }
+        if (hideList.length > 0 && groupVisibility) {
+            const membersByGroup = new Map();
+            for (const tab of tabs) {
+                if (tab.groupId == null || tab.groupId < 0) continue;
+                if (!membersByGroup.has(tab.groupId)) membersByGroup.set(tab.groupId, []);
+                membersByGroup.get(tab.groupId).push(tab.id);
+            }
+            const prepared = await groupVisibility.prepareForHide(hideList, id => tabWorkspaceMap[id]);
+            const unsafeGroupIds = new Set([...prepared.skipped, ...prepared.errors].map(item => item.groupId));
+            if (unsafeGroupIds.size) {
+                const unsafeTabs = new Set([...unsafeGroupIds].flatMap(id => membersByGroup.get(id) || []));
+                hideList = hideList.filter(id => !unsafeTabs.has(id));
+            }
+        }
         if (hideList.length > 0) {
             try { await browser.tabs.hide(hideList); } catch (e) {}
         }
+    }
+
+    if (groupVisibility && toShow.length > 0) {
+        try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch (e) {}
     }
 
     saveState({ force: !isInitializingState });
@@ -609,6 +651,9 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     const activeQuery = typeof windowId === 'number'
         ? { active: true, windowId }
         : { active: true, currentWindow: true };
+    const groupVisibility = typeof WorkspacesGroupVisibility !== 'undefined'
+        ? WorkspacesGroupVisibility.create(browser)
+        : null;
 
     try {
     if (currentWorkspaceId) {
@@ -665,12 +710,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             hasWorkspaceTabs = true;
         }
         
-        let keepVisible = false;
-        if (tab.groupId !== undefined && tab.groupId !== -1) {
-             keepVisible = true;
-        }
-
-        if (ws === currentWorkspaceId || keepVisible) {
+        if (ws === currentWorkspaceId) {
             toShow.push(tab.id);
         } else {
             toHide.push(tab.id);
@@ -737,7 +777,33 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             if (idx > -1) toHide.splice(idx, 1);
         }
         
-        try { await browser.tabs.hide(toHide); } catch(e) {}
+        let hideList = toHide;
+        if (groupVisibility && hideList.length > 0) {
+            const membersByGroup = new Map();
+            for (const tab of tabs) {
+                if (tab.groupId == null || tab.groupId < 0) continue;
+                if (!membersByGroup.has(tab.groupId)) membersByGroup.set(tab.groupId, []);
+                membersByGroup.get(tab.groupId).push(tab.id);
+            }
+            const prepared = await groupVisibility.prepareForHide(hideList, id => tabWorkspaceMap[id]);
+            const unsafeGroupIds = new Set([...prepared.skipped, ...prepared.errors].map(item => item.groupId));
+            if (unsafeGroupIds.size) {
+                const unsafeTabs = new Set([...unsafeGroupIds].flatMap(id => membersByGroup.get(id) || []));
+                hideList = hideList.filter(id => !unsafeTabs.has(id));
+            }
+        }
+        if (hideList.length > 0) {
+            const [activeBeforeHide] = await browser.tabs.query(activeQuery);
+            if (activeBeforeHide && hideList.includes(activeBeforeHide.id)) {
+                hideList = hideList.filter(id => id !== activeBeforeHide.id);
+            }
+            if (hideList.length > 0) {
+                try { await browser.tabs.hide(hideList); } catch(e) {}
+            }
+        }
+    }
+    if (groupVisibility && toShow.length > 0) {
+        try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch(e) {}
     }
     } finally {
         isSwitchingWorkspace = false;
@@ -926,7 +992,11 @@ browser.tabs.onCreated.addListener(async (tab) => {
             // Ensure session is persisted after init barrier.
             assignTabToWorkspace(tab.id, targetWorkspaceId, { persistSession: true });
         }
-        noteSyncTabUrlAlive(targetWorkspaceId, syncApi() && syncApi().tabSyncIdentity(tab));
+        if (!tabSyncInstanceIds.has(tab.id) && browser.sessions?.setTabValue) {
+            const instanceId = `tab:${crypto.randomUUID()}`;
+            persistSyncTabInstance(tab.id, instanceId).catch(() => {});
+        }
+        noteSyncTabUrlAlive(targetWorkspaceId, syncApi() && syncApi().tabSyncIdentity(tab), tabSyncInstanceIds.get(tab.id));
 
         // Background middle-click must not become the remembered active tab for the workspace.
         let isActiveTab = !!tab.active;
@@ -962,15 +1032,33 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
 // Keep URL/window cache fresh for crash-recovery snapshots (no await needed on the hot path).
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    const internalGroupMembershipChange = typeof changeInfo.groupId === 'number'
+        && typeof WorkspacesGroupVisibility !== 'undefined'
+        && WorkspacesGroupVisibility.consumeInternalTabGroupChange(tabId, changeInfo.groupId);
+    if (typeof changeInfo.groupId === 'number' && !isRestoringData && !syncApplyInProgress && !internalGroupMembershipChange) {
+        const workspaceId = tabWorkspaceMap[tabId];
+        if (workspaceId) {
+            // A manual group/ungroup action supersedes any saved fragment from an earlier
+            // workspace switch. Keep metadata only when our own regroup operation caused it.
+            if (typeof WorkspacesGroupVisibility !== 'undefined') {
+                WorkspacesGroupVisibility.create(browser).clearSavedMetadata(tabId);
+            }
+            bumpWorkspaceRev(workspaceId);
+        }
+    }
     const previousUrl = tabIntendedUrl[tabId] || tabUrlCache[tabId];
     const navigated = changeInfo.url && (!tabIntendedUrl[tabId] || settledSyncTabs.has(tabId));
     if (navigated && previousUrl && previousUrl !== changeInfo.url && !isRestoringData) {
         const wsId = tabWorkspaceMap[tabId];
-        if (wsId) recordTabTombstone(wsId, previousUrl);
+        if (wsId) recordTabTombstone(wsId, previousUrl, tabSyncInstanceIds.get(tabId));
         delete tabIntendedUrl[tabId];
         settledSyncTabs.delete(tabId);
         if (browser.sessions && browser.sessions.removeTabValue) {
             browser.sessions.removeTabValue(tabId, 'syncIdentity').catch(() => {});
+        }
+        if (browser.sessions?.setTabValue) {
+            const newInstanceId = `tab:${crypto.randomUUID()}`;
+            persistSyncTabInstance(tabId, newInstanceId).catch(() => {});
         }
     }
     if (changeInfo.url || tab.url) {
@@ -988,9 +1076,29 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // Intentional open/navigate after a peer close: stamp birth > tombstone.
     if (!isRestoringData && navigated && typeof noteSyncTabUrlAlive === 'function') {
         const wsId = tabWorkspaceMap[tabId];
-        if (wsId) noteSyncTabUrlAlive(wsId, changeInfo.url);
+        if (wsId) noteSyncTabUrlAlive(wsId, changeInfo.url, tabSyncInstanceIds.get(tabId));
     }
 });
+
+if (browser.tabGroups?.onUpdated?.addListener) {
+    browser.tabGroups.onUpdated.addListener(async (group) => {
+        if (!group) return;
+        const internalGroupUpdate = typeof WorkspacesGroupVisibility !== 'undefined'
+            && WorkspacesGroupVisibility.consumeInternalGroupUpdate(group);
+        if (internalGroupUpdate || isRestoringData || syncApplyInProgress) return;
+        try {
+            const query = typeof group.windowId === 'number' ? { windowId: group.windowId } : {};
+            const tabs = await browser.tabs.query(query);
+            const affectedWorkspaces = new Set(tabs
+                .filter(tab => tab.groupId === group.id)
+                .map(tab => tabWorkspaceMap[tab.id])
+                .filter(Boolean));
+            for (const workspaceId of affectedWorkspaces) bumpWorkspaceRev(workspaceId);
+        } catch (error) {
+            // A later tab/group event can retry; never fail an API event listener outward.
+        }
+    });
+}
 
 if (browser.tabs.onAttached) {
     browser.tabs.onAttached.addListener((tabId, attachInfo) => {
@@ -1030,8 +1138,9 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
     // union merge brings the tab back on the next exchange, forever.
     if (removedWorkspaceId && !(removeInfo && removeInfo.isWindowClosing) &&
         typeof recordTabTombstone === 'function') {
-        recordTabTombstone(removedWorkspaceId, closedUrl);
+        recordTabTombstone(removedWorkspaceId, closedUrl, tabSyncInstanceIds.get(tabId));
     }
+    tabSyncInstanceIds.delete(tabId);
     const windowId = (removeInfo && typeof removeInfo.windowId === 'number')
         ? removeInfo.windowId
         : tabWindowMap[tabId];
@@ -1159,152 +1268,191 @@ browser.storage.onChanged.addListener((changes, area) => {
 // (safety tab, chunked close, explicit windowId, visibility repair) instead of
 // reimplementing hide/show races.
 async function restoreData(data, mode = 'REPLACE') {
-    const { workspaces: newWorkspaces, tabs: tabsData } = data;
-        
-        // Explicitly get the current window to avoid background script context loss
-        const targetWindow = await browser.windows.getCurrent();
-        const targetWindowId = targetWindow.id;
+    if (!data || !Array.isArray(data.workspaces)) {
+        return { success: false, error: 'Invalid backup: missing workspaces' };
+    }
+    const { workspaces: newWorkspaces } = data;
+    const normalized = typeof WorkspacesGroupSnapshot !== 'undefined'
+        ? WorkspacesGroupSnapshot.normalizeImport(data)
+        : { tabs: data.tabs || {}, groups: [] };
+    const tabsData = normalized.tabs;
+    const groupMetadata = new Map(normalized.groups.map(group => [`${group.workspaceId}\n${group.id}`, group]));
+    const previous = {
+        workspaces, currentWorkspaceId, lastActiveWsId, isAllTabsMode, isRestoringData,
+        tabWorkspaceMap: { ...tabWorkspaceMap }, workspaceActiveTabMap: { ...workspaceActiveTabMap },
+        tabWindowMap: { ...tabWindowMap }, tabUrlCache: { ...tabUrlCache },
+        syncWsRevs: typeof syncWsRevs !== 'undefined' ? { ...syncWsRevs } : null,
+        tabIntendedUrl: typeof tabIntendedUrl !== 'undefined' ? { ...tabIntendedUrl } : null,
+        settledSyncTabs: typeof settledSyncTabs !== 'undefined' ? new Set(settledSyncTabs) : null
+    };
+    let targetWindowId;
+    let safetyTab;
+    let oldTabIds = [];
+    let oldTabWorkspaceSessions = {};
+    const createdTabIds = [];
+    const newActiveTabs = {};
+    let totalTabs = 0;
+    let restoredTabs = 0;
 
-        const safetyTab = await browser.tabs.create({ windowId: targetWindowId, url: 'about:blank', active: true });
-        
+    try {
+        const targetWindow = await browser.windows.getCurrent();
+        targetWindowId = targetWindow.id;
+        // Suppress normal tab listeners for all operation-owned tabs, including the safety tab.
+        isRestoringData = true;
+        safetyTab = await browser.tabs.create({ windowId: targetWindowId, url: 'about:blank', active: true });
+        createdTabIds.push(safetyTab.id);
         await new Promise(r => setTimeout(r, 500));
 
-        let oldTabIds = [];
         if (mode === 'REPLACE') {
             const winTabs = await browser.tabs.query({ windowId: targetWindowId });
-            oldTabIds = winTabs.map(t => t.id).filter(id => id !== safetyTab.id);
-            
+            oldTabIds = winTabs.map(t => t.id).filter(id => !createdTabIds.includes(id));
+            const oldSessionValues = await Promise.all(oldTabIds.map(id => getSessionWorkspace(id)));
+            oldTabIds.forEach((id, index) => { oldTabWorkspaceSessions[id] = oldSessionValues[index]; });
             tabWorkspaceMap = {};
             workspaceActiveTabMap = {};
         } else {
-            oldTabIds = Object.keys(tabWorkspaceMap).map(id => parseInt(id));
-            
-            const newDefaultId = newWorkspaces.length > 0 ? newWorkspaces[0].id : 'ws_default';
-            for (let id of oldTabIds) {
-                assignTabToWorkspace(id, newDefaultId);
-            }
+            oldTabIds = Object.keys(tabWorkspaceMap).map(id => parseInt(id, 10));
             workspaceActiveTabMap = {};
         }
-        
         workspaces = newWorkspaces;
-        
-        let totalTabs = 0;
-        
+
         if (mode !== 'NO_TABS') {
-            isRestoringData = true;
-            
             for (const ws of workspaces) {
-                if (tabsData[ws.id]) totalTabs += tabsData[ws.id].length;
+                if (Array.isArray(tabsData[ws.id])) totalTabs += tabsData[ws.id].length;
             }
-            
-            let restoredTabs = 0;
             for (const ws of workspaces) {
                 const tabsList = tabsData[ws.id];
-                if (tabsList && Array.isArray(tabsList)) {
-                    const groupMap = {}; 
-                    let lastTabId = null;
-
-                    for (const tabInfo of tabsList) {
-                        try {
-                            const url = typeof tabInfo === 'string' ? tabInfo : tabInfo.url;
-                            const oldGroupId = typeof tabInfo === 'object' ? tabInfo.groupId : -1;
-
-                            const newTab = await browser.tabs.create({ 
-                                windowId: targetWindowId,
-                                url: url, 
-                                active: false
-                            });
-                            if (syncApplyInProgress) {
-                                tabIntendedUrl[newTab.id] = url;
-                                await persistTabSyncIdentity(newTab.id, newTab.url, newTab.status === 'complete');
-                                if (newTab.status === 'complete') settledSyncTabs.add(newTab.id);
-                            }
-                            await assignTabToWorkspace(newTab.id, ws.id);
-                            rememberTabMeta(newTab);
-                            lastTabId = newTab.id;
-
-                            if (oldGroupId !== -1 && oldGroupId !== undefined && browser.tabs.group) {
-                                let newGroupId = groupMap[oldGroupId];
-                                if (!newGroupId) {
-                                    newGroupId = await browser.tabs.group({ tabIds: newTab.id });
-                                    groupMap[oldGroupId] = newGroupId;
-                                } else {
-                                    await browser.tabs.group({ tabIds: newTab.id, groupId: newGroupId });
-                                }
-                            }
-
-                            restoredTabs++;
-                            const progress = totalTabs > 0 ? Math.round((restoredTabs / totalTabs) * 99) : 99; // Cap at 99% until fully done
-                            browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: progress, restored: restoredTabs, total: totalTabs }).catch(() => {});
-                            
-                            // Yield to the event loop every few tabs to prevent UI freezing and massive slowdowns
-                            if (restoredTabs % 3 === 0) {
-                                await new Promise(r => setTimeout(r, 30));
-                            }
-
-                        } catch (e) {
-                            console.error("Failed to restore tab:", e);
-                        }
+                if (!Array.isArray(tabsList)) continue;
+                const groupMap = new Map();
+                let lastTabId = null;
+                for (const tabInfo of tabsList) {
+                    const url = typeof tabInfo === 'string' ? tabInfo : tabInfo?.url;
+                    if (typeof url !== 'string' || !url) throw new Error('Invalid tab URL in backup');
+                    const groupRef = typeof tabInfo === 'object' && tabInfo ? tabInfo.groupRef : null;
+                    const newTab = await browser.tabs.create({ windowId: targetWindowId, url, active: false });
+                    createdTabIds.push(newTab.id);
+                    if (syncApplyInProgress) {
+                        tabIntendedUrl[newTab.id] = url;
+                        await persistTabSyncIdentity(newTab.id, newTab.url, newTab.status === 'complete');
+                        if (newTab.status === 'complete') settledSyncTabs.add(newTab.id);
                     }
-                    if (lastTabId) {
-                        workspaceActiveTabMap[ws.id] = lastTabId;
+                    await assignTabToWorkspace(newTab.id, ws.id);
+                    rememberTabMeta(newTab);
+                    lastTabId = newTab.id;
+                    if (groupRef) {
+                        if (!groupMap.has(groupRef)) groupMap.set(groupRef, []);
+                        groupMap.get(groupRef).push(newTab.id);
                     }
+                    restoredTabs++;
+                    const progress = totalTabs > 0 ? Math.round((restoredTabs / totalTabs) * 99) : 99;
+                    browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress, restored: restoredTabs, total: totalTabs }).catch(() => {});
+                    if (restoredTabs % 3 === 0) await new Promise(r => setTimeout(r, 30));
+                }
+                if (lastTabId) newActiveTabs[ws.id] = lastTabId;
+                for (const [groupRef, tabIds] of groupMap) {
+                    const group = groupMetadata.get(`${ws.id}\n${groupRef}`);
+                    if (!group) throw new Error(`Missing group metadata for ${groupRef}`);
+                    if (!browser.tabs.group || !browser.tabGroups?.update) throw new Error('Native tab groups are unavailable');
+                    const groupId = await browser.tabs.group({ tabIds, createProperties: { windowId: targetWindowId } });
+                    await browser.tabGroups.update(groupId, { title: group.title, color: group.color, collapsed: group.collapsed });
                 }
             }
         }
-        
-        if (mode === 'REPLACE' && oldTabIds.length > 0) {
-             if (totalTabs === 0) {
-                 // Prevent window from closing if the backup was completely empty
-                 const newTab = await browser.tabs.create({ windowId: targetWindowId, active: true });
-                 assignTabToWorkspace(newTab.id, workspaces.length > 0 ? workspaces[0].id : 'ws_default');
-             }
-             
-             // Safely close old tabs in small chunks to avoid browser crash
-             const chunkSize = 5;
-             for (let i = 0; i < oldTabIds.length; i += chunkSize) {
-                 const chunk = oldTabIds.slice(i, i + chunkSize);
-                 try {
-                     await browser.tabs.remove(chunk);
-                     await new Promise(r => setTimeout(r, 50));
-                 } catch (e) {
-                     console.error("Failed to remove old tab chunk:", e);
-                 }
-             }
+    } catch (error) {
+        let rollbackFailed = false;
+        for (let i = createdTabIds.length - 1; i >= 0; i--) {
+            const id = createdTabIds[i];
+            try { await browser.tabs.remove(id); } catch (_) { rollbackFailed = true; }
+            unassignTab(id);
+            await clearSessionWorkspace(id);
+            if (browser.sessions?.removeTabValue) {
+                for (const key of ['syncIdentity', 'workspacesSyncTabId', 'workspacesGroupSyncRef', 'workspacesNativeGroup']) {
+                    try { await browser.sessions.removeTabValue(id, key); } catch (_) { }
+                }
+            }
+            delete tabWindowMap[id];
+            delete tabUrlCache[id];
+            if (typeof tabIntendedUrl !== 'undefined') delete tabIntendedUrl[id];
+            if (typeof settledSyncTabs !== 'undefined') settledSyncTabs.delete(id);
         }
-        
-        if (workspaces.length > 0) {
-            currentWorkspaceId = workspaces[0].id;
-        } else {
-            workspaces = getLocalizedDefaults();
-            currentWorkspaceId = 'ws_default';
+        tabWorkspaceMap = previous.tabWorkspaceMap;
+        workspaceActiveTabMap = previous.workspaceActiveTabMap;
+        Object.assign(tabWindowMap, previous.tabWindowMap);
+        Object.assign(tabUrlCache, previous.tabUrlCache);
+        workspaces = previous.workspaces;
+        currentWorkspaceId = previous.currentWorkspaceId;
+        lastActiveWsId = previous.lastActiveWsId;
+        isAllTabsMode = previous.isAllTabsMode;
+        isRestoringData = previous.isRestoringData;
+        if (previous.syncWsRevs) syncWsRevs = previous.syncWsRevs;
+        if (previous.tabIntendedUrl) Object.assign(tabIntendedUrl, previous.tabIntendedUrl);
+        if (previous.settledSyncTabs) {
+            settledSyncTabs.clear();
+            for (const id of previous.settledSyncTabs) settledSyncTabs.add(id);
         }
-        lastActiveWsId = currentWorkspaceId;
-        isAllTabsMode = false;
-        
-        await saveState();
-        await browser.storage.local.set({ workspaces, currentWorkspaceId, isAllTabsMode: false, lastActiveWsId }); 
-        updateContextMenus();
+        return { success: false, error: 'RESTORE_FAILED', message: error?.message || String(error), rollbackIncomplete: rollbackFailed };
+    }
 
-        // Finish restore flag BEFORE visibility pass so tab listeners behave normally,
-        // then hide non-current workspace tabs in the SAME window we restored into.
-        // (background scripts have no reliable "currentWindow" — that was why all restored
-        // tabs stayed visible in Main until the user manually switched workspaces.)
-        isRestoringData = false;
-        await switchWorkspace(currentWorkspaceId, true, { windowId: targetWindowId });
-        await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: true, windowId: targetWindowId });
-        
-        await new Promise(r => setTimeout(r, 300));
-
-        try {
-            await browser.tabs.remove(safetyTab.id);
-        } catch (e) { }
-        
-        if (mode !== 'NO_TABS') {
-            browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: 100, restored: totalTabs, total: totalTabs }).catch(() => {});
+    // Stage completed without a tab or group failure. Existing tabs may now be reassigned or closed.
+    if (mode !== 'REPLACE') {
+        const newDefaultId = newWorkspaces[0]?.id || 'ws_default';
+        for (const id of oldTabIds) await assignTabToWorkspace(id, newDefaultId);
+    }
+    workspaceActiveTabMap = mode === 'REPLACE' ? newActiveTabs : { ...newActiveTabs };
+    if (mode === 'REPLACE' && totalTabs === 0) {
+        await assignTabToWorkspace(safetyTab.id, workspaces[0]?.id || 'ws_default');
+    }
+    if (mode === 'REPLACE' && oldTabIds.length > 0) {
+        for (let i = 0; i < oldTabIds.length; i += 5) {
+            try {
+                await browser.tabs.remove(oldTabIds.slice(i, i + 5));
+                await new Promise(r => setTimeout(r, 50));
+            } catch (e) {
+                console.error('Failed to remove old tab chunk:', e);
+            }
         }
-        
-        return { success: true };
+        const remaining = new Set((await browser.tabs.query({})).map(tab => tab.id));
+        const unremovedOldIds = oldTabIds.filter(id => remaining.has(id));
+        if (unremovedOldIds.length > 0) {
+            // Some originals may already be gone. Keep all restored tabs and every
+            // surviving original; duplicates are safer than deleting either copy.
+            const fallbackWorkspace = workspaces[0]?.id || 'ws_default';
+            for (const id of unremovedOldIds) {
+                const originalWorkspace = previous.tabWorkspaceMap[id];
+                const destination = workspaces.some(ws => ws.id === originalWorkspace) ? originalWorkspace : fallbackWorkspace;
+                await assignTabToWorkspace(id, destination);
+            }
+            currentWorkspaceId = fallbackWorkspace;
+            lastActiveWsId = fallbackWorkspace;
+            isAllTabsMode = true;
+            isRestoringData = previous.isRestoringData;
+            await saveState({ force: true });
+            await browser.storage.local.set({ workspaces, currentWorkspaceId, isAllTabsMode, lastActiveWsId });
+            if (totalTabs > 0 || unremovedOldIds.length > 0) {
+                try { await browser.tabs.remove(safetyTab.id); } catch (_) {}
+            }
+            return { success: false, error: 'RESTORE_PARTIAL', message: 'Some previous tabs could not be closed; restored and remaining tabs were preserved' };
+        }
+    }
+
+    if (workspaces.length > 0) currentWorkspaceId = workspaces[0].id;
+    else { workspaces = getLocalizedDefaults(); currentWorkspaceId = 'ws_default'; }
+    lastActiveWsId = currentWorkspaceId;
+    isAllTabsMode = false;
+    await saveState();
+    await browser.storage.local.set({ workspaces, currentWorkspaceId, isAllTabsMode: false, lastActiveWsId });
+    updateContextMenus();
+    isRestoringData = false;
+    await switchWorkspace(currentWorkspaceId, true, { windowId: targetWindowId });
+    await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: true, windowId: targetWindowId });
+    await new Promise(r => setTimeout(r, 300));
+    if (!(mode === 'REPLACE' && totalTabs === 0)) {
+        try { await browser.tabs.remove(safetyTab.id); } catch (e) { }
+    }
+    if (mode !== 'NO_TABS') {
+        browser.runtime.sendMessage({ action: 'RESTORE_PROGRESS', progress: 100, restored: totalTabs, total: totalTabs }).catch(() => {});
+    }
+    return { success: true };
 }
 
 // Message handler
@@ -1313,7 +1461,10 @@ browser.runtime.onMessage.addListener(async (message) => {
     if (message && typeof message.action === 'string' && message.action.startsWith('SYNC_')) {
         return handleSyncMessage(message);
     }
-    if (message.action === 'SWITCH_WORKSPACE') {
+    if (message.action === 'GET_GROUP_BACKUP_SNAPSHOT') {
+        await initReadyPromise;
+        return createGroupBackupSnapshot();
+    } else if (message.action === 'SWITCH_WORKSPACE') {
         return runWhenReady(async () => {
             await switchWorkspace(message.workspaceId);
             return { currentWorkspaceId };
@@ -1592,6 +1743,7 @@ browser.runtime.onMessage.addListener(async (message) => {
             const tabsToShow = [];
             const tabsToHide = [];
             let hasShownNewTab = false;
+            let shownNewTabId = null;
             
             const isNewTab = (tab) => {
                  const url = tab.url || "";
@@ -1606,8 +1758,19 @@ browser.runtime.onMessage.addListener(async (message) => {
                                         (tab.title === "Новая вкладка" && tab.url === "about:newtab");
 
                 if (looksLikeNewTab) {
+                    if (tab.active) {
+                        if (shownNewTabId != null) {
+                            tabsToShow.splice(tabsToShow.indexOf(shownNewTabId), 1);
+                            tabsToHide.push(shownNewTabId);
+                        }
+                        tabsToShow.push(tab.id);
+                        shownNewTabId = tab.id;
+                        hasShownNewTab = true;
+                        continue;
+                    }
                     if (!hasShownNewTab) {
                         tabsToShow.push(tab.id);
+                        shownNewTabId = tab.id;
                         hasShownNewTab = true;
                     } else {
                         tabsToHide.push(tab.id);
@@ -1616,9 +1779,50 @@ browser.runtime.onMessage.addListener(async (message) => {
                     tabsToShow.push(tab.id);
                 }
             }
+
+            const groupVisibility = typeof WorkspacesGroupVisibility !== 'undefined'
+                ? WorkspacesGroupVisibility.create(browser)
+                : null;
+            if (groupVisibility && tabsToHide.length > 0) {
+                const membersByGroup = new Map();
+                for (const tab of allTabs) {
+                    if (tab.groupId == null || tab.groupId < 0) continue;
+                    if (!membersByGroup.has(tab.groupId)) membersByGroup.set(tab.groupId, []);
+                    membersByGroup.get(tab.groupId).push(tab.id);
+                }
+                const prepared = await groupVisibility.prepareForHide(tabsToHide, id => tabWorkspaceMap[id]);
+                const unsafeGroupIds = new Set([...prepared.skipped, ...prepared.errors].map(item => item.groupId));
+                if (unsafeGroupIds.size) {
+                    const unsafeTabs = new Set([...unsafeGroupIds].flatMap(id => membersByGroup.get(id) || []));
+                    for (let i = tabsToHide.length - 1; i >= 0; i--) {
+                        if (unsafeTabs.has(tabsToHide[i])) {
+                            tabsToShow.push(tabsToHide[i]);
+                            tabsToHide.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            const [activeAllTabs] = await browser.tabs.query({ active: true, currentWindow: true });
+            if (activeAllTabs && tabsToHide.includes(activeAllTabs.id)) {
+                tabsToHide.splice(tabsToHide.indexOf(activeAllTabs.id), 1);
+                if (!tabsToShow.includes(activeAllTabs.id)) tabsToShow.push(activeAllTabs.id);
+            }
             
             if (tabsToShow.length > 0) {
                 await browser.tabs.show(tabsToShow);
+            }
+            if (groupVisibility) {
+                const visibleByWorkspace = new Map();
+                for (const tabId of tabsToShow) {
+                    const workspaceId = tabWorkspaceMap[tabId];
+                    if (!workspaceId) continue;
+                    if (!visibleByWorkspace.has(workspaceId)) visibleByWorkspace.set(workspaceId, []);
+                    visibleByWorkspace.get(workspaceId).push(tabId);
+                }
+                for (const [workspaceId, tabIds] of visibleByWorkspace) {
+                    try { await groupVisibility.restoreVisible(tabIds, workspaceId); } catch (e) {}
+                }
             }
             if (tabsToHide.length > 0) {
                 try { await browser.tabs.hide(tabsToHide); } catch (e) {}
@@ -1818,6 +2022,14 @@ function normalizeBackupPeriodMinutes(freqRaw, freqIsMinutes) {
     return DEFAULT_BACKUP_PERIOD_MINUTES;
 }
 
+async function createGroupBackupSnapshot() {
+    const allTabs = await browser.tabs.query({});
+    const fallback = workspaces.find(ws => ws.id === 'ws_default')?.id || workspaces[0]?.id;
+    const snapshot = await WorkspacesGroupSnapshot.create(browser).capture(allTabs, id => tabWorkspaceMap[id] || fallback);
+    for (const ws of workspaces) if (!snapshot.tabs[ws.id]) snapshot.tabs[ws.id] = [];
+    return { timestamp: Date.now(), formatVersion: 2, workspaces: structuredClone(workspaces), ...snapshot };
+}
+
 async function createAutoBackup(reason = 'scheduled') {
     await initReadyPromise;
     const res = await browser.storage.local.get(['autoBackupEnabled', 'autoBackupFrequency', 'autoBackups', 'autoBackupMax', 'autoBackupStorageMax']);
@@ -1825,27 +2037,8 @@ async function createAutoBackup(reason = 'scheduled') {
     if (!workspaces || workspaces.length === 0) return;
     
     // Generate backup data
-    const backupData = {
-        timestamp: Date.now(),
-        reason: reason,
-        workspaces: workspaces,
-        tabs: {}
-    };
-    
-    const allTabs = await browser.tabs.query({});
-    for (let ws of workspaces) {
-        backupData.tabs[ws.id] = [];
-    }
-    
-    for (let tab of allTabs) {
-        let wsId = tabWorkspaceMap[tab.id];
-        if (wsId && backupData.tabs[wsId]) {
-            backupData.tabs[wsId].push({
-                url: tab.url,
-                groupId: tab.groupId !== undefined ? tab.groupId : -1
-            });
-        }
-    }
+    const backupData = await createGroupBackupSnapshot();
+    backupData.reason = reason;
     
     let backups = res.autoBackups || [];
     backups.push(backupData);
@@ -2308,7 +2501,7 @@ function scheduleSyncSnapshotPreparation() {
 }
 
 async function areTombstonesAcknowledged(x) {
-    const count = ((x && x.u) || []).length + ((x && x.w) || []).length;
+    const count = ((x && x.u) || []).length + ((x && x.w) || []).length + ((x && x.k) || []).length;
     if (!count) return false;
     const fingerprint = syncTombstoneFingerprint(x);
     const roster = await readDeviceRoster();
@@ -2352,11 +2545,16 @@ function bumpWorkspaceRev(workspaceId, when) {
     scheduleSyncSnapshotPreparation();
 }
 
-function recordTabTombstone(workspaceId, url) {
+function recordTabTombstone(workspaceId, url, instanceId) {
     const api = syncApi();
     if (!api || !workspaceId || !url || !api.isSyncableUrl(url)) return;
     if (!syncTrackingAllowed()) return;
     if (!syncTombstones || !syncTombstones.u) syncTombstones = api.emptyTombstones();
+    if (instanceId && api.recordInstanceTombstone) {
+        api.recordInstanceTombstone(syncTombstones, workspaceId, url, instanceId);
+        bumpWorkspaceRev(workspaceId);
+        return;
+    }
     const key = api.tombKey(workspaceId, url);
     const prev = syncTombstones.u[key];
     const prevN = (prev && typeof prev === 'object') ? (Number(prev.n) || 0)
@@ -2369,11 +2567,20 @@ function recordTabTombstone(workspaceId, url) {
 }
 
 /** User opened/navigated to a URL: reopen clears one close-count for that URL. */
-function noteSyncTabUrlAlive(workspaceId, url) {
+function noteSyncTabUrlAlive(workspaceId, url, instanceId) {
     const api = syncApi();
     if (!api || !workspaceId || !url || !api.isSyncableUrl(url)) return;
     if (!syncTrackingAllowed()) return;
     const key = api.tombKey(workspaceId, url);
+    const instanceKey = instanceId && api.instanceTombKey ? api.instanceTombKey(workspaceId, url, instanceId) : null;
+    if (instanceKey && syncTombstones.k?.[instanceKey]) {
+        const closedAt = syncTombstones.k[instanceKey];
+        delete syncTombstones.k[instanceKey];
+        syncTabBorn[key] = Math.max(Date.now(), Number(closedAt) + 1);
+        scheduleSyncMetaPersist();
+        scheduleSyncSnapshotPreparation();
+        return;
+    }
     const tomb = syncTombstones.u && syncTombstones.u[key];
     // A reopen follows the close we have observed, even if device clocks differ.
     const closeTime = typeof tomb === 'object' ? Number(tomb.t) || 0 : Number(tomb) || 0;
@@ -2537,6 +2744,9 @@ async function ensureSyncAlarm() {
 // Collect the local document from LIVE state (never from a stale storage snapshot).
 async function collectLocalSyncDoc() {
     await initReadyPromise;
+    if (typeof pendingSyncInstanceWrites !== 'undefined' && pendingSyncInstanceWrites.size) {
+        await Promise.all(pendingSyncInstanceWrites.values());
+    }
     const api = syncApi();
     if (!api) return null;
 
@@ -2546,6 +2756,11 @@ async function collectLocalSyncDoc() {
     for (const ws of workspaces) tabsByWorkspace[ws.id] = [];
 
     const allTabs = await browser.tabs.query({});
+    const groupSnapshot = (typeof WorkspacesGroupSnapshot !== 'undefined' && browser.tabGroups && browser.sessions?.setTabValue)
+        ? await WorkspacesGroupSnapshot.create(browser).capture(allTabs, id => tabWorkspaceMap[id], { stableIds: true })
+        : { groups: [], tabs: {} };
+    const groupedRows = new Map(Object.values(groupSnapshot.tabs).flat().map(row => [row.liveTabId, row]));
+    for (const [tabId, row] of groupedRows) if (row.instanceId) tabSyncInstanceIds.set(tabId, row.instanceId);
     for (const tab of allTabs) {
         const wsId = tabWorkspaceMap[tab.id];
         if (wsId && tabsByWorkspace[wsId]) {
@@ -2553,7 +2768,8 @@ async function collectLocalSyncDoc() {
             if (!identity || !api.isSyncableUrl(identity)) continue;
             tabsByWorkspace[wsId].push({
                 url: identity,
-                groupId: tab.groupId !== undefined ? tab.groupId : -1,
+                groupRef: groupedRows.get(tab.id)?.groupRef,
+                instanceId: groupedRows.get(tab.id)?.instanceId,
                 a: syncTabBorn[api.tombKey(wsId, identity)] || 0
             });
         }
@@ -2569,9 +2785,11 @@ async function collectLocalSyncDoc() {
         scheduleSyncMetaPersist();
     }
 
+    const usedGroupRefs = new Set(Object.values(tabsByWorkspace).flat().map(row => row.groupRef).filter(Boolean));
     const doc = api.buildSyncDoc(workspaces, tabsByWorkspace, settings, syncDeviceId, {
         revs: syncWsRevs,
-        tombstones: syncTombstones
+        tombstones: syncTombstones,
+        groups: groupSnapshot.groups.filter(group => usedGroupRefs.has(group.id))
     });
     if (syncBaseDoc && syncBaseDoc.g) doc.g = syncBaseDoc.g;
     return doc;
@@ -2627,7 +2845,8 @@ async function pushSyncNow(options = {}) {
         if (options.tombstones) {
             const previousX = doc.x;
             doc.x = api.tombstonesToDoc(options.tombstones);
-            if ((previousX.w.length || previousX.u.length) && !doc.x.w.length && !doc.x.u.length) {
+            if ((previousX.w.length || previousX.u.length || (previousX.k || []).length)
+                && !doc.x.w.length && !doc.x.u.length && !(doc.x.k || []).length) {
                 doc.g = { fp: syncTombstoneFingerprint(previousX), ts: Math.max(Date.now(), (doc.g && doc.g.ts || 0) + 1) };
             }
         }
@@ -2652,8 +2871,8 @@ async function pushSyncNow(options = {}) {
         const meta = await api.writeSyncDoc(doc);
         // Commit compaction only after the complete replacement was written.
         if (options.tombstones) syncTombstones = options.tombstones;
-        syncLastFingerprint = meta.fp;
-        syncBaseFp = meta.fp;           // Local ancestor; delivery to peers is not confirmed.
+        syncLastFingerprint = api.dataFingerprint(doc);
+        syncBaseFp = syncLastFingerprint; // Local ancestor; delivery to peers is not confirmed.
         syncBaseDoc = doc;
         syncLastSyncAt = Date.now();
         syncLastPreparedAt = syncLastSyncAt;
@@ -2741,7 +2960,7 @@ async function pullSyncNow(options = {}) {
             return { success: true, action: 'NOOP_EMPTY_BOTH' };
         }
 
-        const remoteFp = (remoteMeta && remoteMeta.fp) || api.dataFingerprint(remoteDoc);
+        const remoteFp = api.dataFingerprint(remoteDoc);
 
         const remoteVersion = remoteMeta && remoteMeta.dev
             ? JSON.stringify([remoteMeta.dev, remoteMeta.ts || remoteDoc.ts || 0, remoteFp])
@@ -2895,11 +3114,11 @@ async function pullSyncNow(options = {}) {
             // Per-key conflicts may temporarily mix slot contents. Only the author
             // named by the winning meta may repair it from its durable snapshot.
             if (e.meta && e.meta.dev === syncDeviceId && syncBaseDoc &&
-                api.dataFingerprint(syncBaseDoc) === e.meta.fp) {
+                api.dataFingerprint(syncBaseDoc, true) === e.meta.fp) {
                 const candidate = await api.pack(syncBaseDoc, e.meta.gen);
                 if (candidate.meta.digest === e.meta.digest) {
                     const repaired = await api.writeSyncDoc(syncBaseDoc);
-                    syncLastFingerprint = repaired.fp;
+                    syncLastFingerprint = api.dataFingerprint(syncBaseDoc);
                     setSyncStatus('idle', null, 'WAITING_FIREFOX');
                     return { success: true, action: 'REPAIRED', message: 'WAITING_FIREFOX' };
                 }
@@ -2968,6 +3187,114 @@ async function resolveSyncConflict(resolution, remoteDocInput = null, localDocIn
 // Routine convergence applies only the difference. A full REPLACE would close and
 // recreate every tab on every remote edit — unusable on a 160-tab profile.
 //
+// Reconcile native group membership only after the existing URL multiset apply has
+// finished. Stable instance IDs disambiguate duplicate URLs; legacy rows fall back
+// to their occurrence in the workspace.
+async function applySyncedTabGroups(targetDoc) {
+    if (!Array.isArray(targetDoc.gr) || !browser.tabGroups || !browser.tabs.group) return;
+    const api = syncApi();
+    const allTabs = await browser.tabs.query({});
+    const savedIds = await Promise.all(allTabs.map(tab => browser.sessions.getTabValue(tab.id, 'workspacesSyncTabId')));
+    const buckets = new Map();
+    for (let i = 0; i < allTabs.length; i++) {
+        const tab = allTabs[i];
+        const wsId = tabWorkspaceMap[tab.id];
+        const url = api.tabSyncIdentity(tab, tabIntendedUrl[tab.id]);
+        if (!wsId || !url) continue;
+        const key = api.identityKey(wsId, url);
+        if (!buckets.has(key)) buckets.set(key, []);
+        buckets.get(key).push({ tab, instanceId: savedIds[i], used: false });
+    }
+    const groups = new Map(targetDoc.gr.map(group => [String(group.i), group]));
+    for (const ws of targetDoc.ws || []) {
+        for (const row of targetDoc.t?.[ws.i] || []) {
+            if (row && typeof row === 'object' && row.h) {
+                const group = groups.get(String(row.h));
+                if (!group || String(group.w) !== String(ws.i)) throw new Error('Invalid synchronized group reference');
+            }
+        }
+    }
+    const desiredRows = [];
+    for (const ws of targetDoc.ws || []) {
+        for (const row of targetDoc.t?.[ws.i] || []) {
+            const url = api.urlOf(row);
+            const items = buckets.get(api.identityKey(ws.i, url)) || [];
+            const instanceId = typeof row === 'object' && row ? row.k : null;
+            desiredRows.push({ ws, row, items, instanceId, match: null });
+        }
+    }
+    for (const desiredRow of desiredRows) {
+        const { items, instanceId } = desiredRow;
+        const match = instanceId && items.find(item => !item.used && item.instanceId === instanceId);
+        if (match) { match.used = true; desiredRow.match = match; }
+    }
+    const assignments = [];
+    for (const desiredRow of desiredRows) {
+            const { ws, row, items, instanceId } = desiredRow;
+            const match = desiredRow.match || items.find(item => !item.used);
+            if (!match) continue;
+            match.used = true;
+            const ref = typeof row === 'object' && row ? row.h : null;
+            assignments.push({ tab: match.tab, existingInstanceId: match.instanceId, wsId: ws.i, instanceId, ref, group: ref && groups.get(String(ref)) });
+    }
+    const nativeGroups = new Map((await browser.tabGroups.query({})).map(group => [group.id, group]));
+    const membersByNativeGroup = new Map();
+    for (const tab of allTabs) {
+        if (!(tab.groupId >= 0)) continue;
+        if (!membersByNativeGroup.has(tab.groupId)) membersByNativeGroup.set(tab.groupId, []);
+        membersByNativeGroup.get(tab.groupId).push(tab);
+    }
+    const desired = new Map();
+    for (const item of assignments) {
+        if (typeof WorkspacesGroupSnapshot !== 'undefined') WorkspacesGroupSnapshot.invalidate(item.tab.id);
+        if (item.instanceId && item.instanceId !== item.existingInstanceId) {
+            await persistSyncTabInstance(item.tab.id, item.instanceId);
+        }
+        if (item.instanceId) tabSyncInstanceIds.set(item.tab.id, item.instanceId);
+        if (item.ref && item.group && String(item.group.w) === String(item.wsId)) {
+            await browser.sessions.setTabValue(item.tab.id, 'workspacesGroupSyncRef', String(item.ref));
+            if (item.tab.hidden && item.tab.groupId === -1) {
+                const token = `${item.ref}:${item.wsId}`;
+                await browser.sessions.setTabValue(item.tab.id, 'workspacesNativeGroup', {
+                    version: 1, identity: token, originalIdentity: String(item.ref), operationToken: String(item.ref),
+                    workspaceId: item.wsId, title: item.group.t || '', color: item.group.c || 'grey',
+                    collapsed: !!item.group.x
+                });
+            } else {
+                const key = `${item.tab.windowId}\n${item.wsId}\n${item.ref}`;
+                if (!desired.has(key)) desired.set(key, { group: item.group, items: [] });
+                desired.get(key).items.push(item);
+            }
+        } else if (!item.ref) {
+            await browser.sessions.removeTabValue(item.tab.id, 'workspacesGroupSyncRef').catch(() => {});
+            await browser.sessions.removeTabValue(item.tab.id, 'workspacesNativeGroup').catch(() => {});
+            if (item.tab.groupId >= 0) {
+                const groupMembers = membersByNativeGroup.get(item.tab.groupId) || [];
+                if (groupMembers.some(tab => tab.splitViewId != null && tab.splitViewId !== -1)) throw new Error('Cannot change a tab group containing a split view');
+                await browser.tabs.ungroup([item.tab.id]);
+            }
+        }
+    }
+    const usedNativeGroups = new Set();
+    for (const { group, items } of desired.values()) {
+        const ids = items.map(item => item.tab.id);
+        const existing = items[0].tab.groupId;
+        const desiredIds = new Set(ids);
+        let groupId = existing >= 0 && !usedNativeGroups.has(existing) && items.every(item => item.tab.groupId === existing)
+            && (membersByNativeGroup.get(existing) || []).every(tab => desiredIds.has(tab.id)) ? existing : null;
+        if (groupId == null) {
+            const sourceGroups = new Set(items.map(item => item.tab.groupId).filter(id => id >= 0));
+            if ([...sourceGroups].some(id => (membersByNativeGroup.get(id) || []).some(tab => tab.splitViewId != null && tab.splitViewId !== -1))) throw new Error('Cannot change a tab group containing a split view');
+            groupId = await browser.tabs.group({ tabIds: ids, createProperties: { windowId: items[0].tab.windowId } });
+        }
+        usedNativeGroups.add(groupId);
+        const current = nativeGroups.get(groupId);
+        if (!current || current.title !== (group.t || '') || current.color !== (group.c || 'grey') || !!current.collapsed !== !!group.x) {
+            await browser.tabGroups.update(groupId, { title: group.t || '', color: group.c || 'grey', collapsed: !!group.x });
+        }
+    }
+}
+
 // 1.19 hardening after the field report ("tabs just kept opening, 165 → 300+, all of them
 // in Main, with no indication"):
 //   * the apply runs with isRestoringData set, so tabs.onCreated does NOT re-resolve the
@@ -3075,10 +3402,6 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
                 byId.set(up.id, created);
             }
         }
-        if (diff.workspaceIdsRemove.length > 0) {
-            const removeSet = new Set(diff.workspaceIdsRemove);
-            workspaces = workspaces.filter((ws) => !removeSet.has(ws.id));
-        }
         workspaces.sort((a, b) => {
             const ai = order.has(a.id) ? order.get(a.id) : Number.MAX_SAFE_INTEGER;
             const bi = order.has(b.id) ? order.get(b.id) : Number.MAX_SAFE_INTEGER;
@@ -3091,23 +3414,29 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
         const closeQueue = []; // { wsId, url }
         for (const row of diff.tabsRemove) {
             if (!row.url) continue;
-            closeQueue.push({ wsId: row.wsId, url: row.url });
+            closeQueue.push({ wsId: row.wsId, url: row.url, instanceId: row.instanceId });
             const bornKey = api.tombKey(row.wsId, row.url);
             if (syncTabBorn[bornKey]) delete syncTabBorn[bornKey];
         }
         const tabIdsToClose = [];
         if (closeQueue.length > 0) {
             const allTabs = await browser.tabs.query({});
-            const candidates = allTabs.map((tab) => ({
+            const needIds = closeQueue.some(row => row.instanceId) && browser.sessions?.getTabValue;
+            const candidates = await Promise.all(allTabs.map(async (tab) => ({
                 id: tab.id,
                 wsId: tabWorkspaceMap[tab.id],
-                url: api.tabSyncIdentity(tab, tabIntendedUrl[tab.id])
-            })).filter((t) => t.wsId && t.url);
+                url: api.tabSyncIdentity(tab, tabIntendedUrl[tab.id]),
+                instanceId: needIds ? await browser.sessions.getTabValue(tab.id, 'workspacesSyncTabId') : null
+            })));
 
             for (const need of closeQueue) {
-                const idx = candidates.findIndex((t) =>
-                    t.wsId === need.wsId && t.url === need.url);
-                if (idx < 0) continue;
+                let idx = need.instanceId ? candidates.findIndex(t =>
+                    t.wsId === need.wsId && t.url === need.url && t.instanceId === need.instanceId) : -1;
+                if (idx < 0 && !need.instanceId) idx = candidates.findIndex(t => t.wsId === need.wsId && t.url === need.url);
+                if (idx < 0) {
+                    if (need.instanceId) throw new Error('Cannot identify the tab to close safely');
+                    continue;
+                }
                 tabIdsToClose.push(candidates[idx].id);
                 candidates.splice(idx, 1);
             }
@@ -3119,6 +3448,7 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
         {
             const allTabs = await browser.tabs.query({});
             for (const tab of allTabs) {
+                if (tabIdsToClose.includes(tab.id)) continue;
                 const wsId = tabWorkspaceMap[tab.id];
                 if (!wsId) continue;
                 const identity = api.tabSyncIdentity(tab, tabIntendedUrl[tab.id]);
@@ -3133,7 +3463,9 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
         const desiredAdds = [];
         for (const ws of targetDoc.ws || []) {
             for (const row of (targetDoc.t && targetDoc.t[ws.i]) || []) {
-                desiredAdds.push({ wsId: ws.i, url: api.urlOf(row), groupId: typeof row === 'object' ? row.g : -1 });
+                desiredAdds.push({ wsId: ws.i, url: api.urlOf(row), groupId: typeof row === 'object' ? row.g : -1,
+                    groupRef: typeof row === 'object' && row ? row.h : null,
+                    instanceId: typeof row === 'object' && row ? row.k : null });
             }
         }
         const creationPlan = api.planCreations(desiredAdds, existingCounts);
@@ -3157,6 +3489,8 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
                 await persistTabSyncIdentity(tab.id, tab.url, settled);
                 if (settled) settledSyncTabs.add(tab.id);
                 await assignTabToWorkspace(tab.id, add.wsId);
+                if (add.instanceId) await persistSyncTabInstance(tab.id, add.instanceId);
+                if (add.groupRef) await browser.sessions.setTabValue(tab.id, 'workspacesGroupSyncRef', add.groupRef);
                 rememberTabMeta(tab);
                 noteSyncTabUrlAlive(add.wsId, add.url);
                 const key = api.identityKey(add.wsId, add.url);
@@ -3227,6 +3561,17 @@ async function applySyncedDocIncremental(targetDoc, reason = 'remote', options =
                     phaseTotal: closingTotal
                 });
             }
+        }
+
+        if (failedCreates || removed !== tabIdsToClose.length) throw new Error('Incomplete sync tab apply');
+        await applySyncedTabGroups(targetDoc);
+        if (diff.workspaceIdsRemove.length > 0) {
+            const removeSet = new Set(diff.workspaceIdsRemove);
+            const liveTabs = await browser.tabs.query({});
+            if (liveTabs.some(tab => removeSet.has(tabWorkspaceMap[tab.id]))) {
+                throw new Error('Cannot remove a workspace while its tabs remain open');
+            }
+            workspaces = workspaces.filter(ws => !removeSet.has(ws.id));
         }
 
         // 5. Persist and repair visibility across every normal window.
@@ -3419,7 +3764,8 @@ browser.storage.onChanged.addListener((changes, area) => {
 
     const meta = changes[api.META_KEY] && changes[api.META_KEY].newValue;
     if (changes[api.META_KEY] && !meta) return;
-    if (!peerAcknowledged && meta && meta.dev && meta.dev === syncDeviceId && meta.fp === syncLastFingerprint) return;
+    if (!peerAcknowledged && meta && meta.dev && meta.dev === syncDeviceId && syncBaseDoc
+        && meta.fp === api.dataFingerprint(syncBaseDoc, true)) return;
     setTimeout(() => {
         runWhenReady(() => enqueueSyncOperation(() => pullSyncNow({ reason: 'remote-change' }))).catch(() => {});
     }, 400);

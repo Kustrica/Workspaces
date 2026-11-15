@@ -47,6 +47,7 @@ const context = vm.createContext({
     initReadyPromise: Promise.resolve(), isInitializingState: false, isRestoringData: false,
     workspaces: [{ id: 'shop', name: 'Shop', icon: 'x' }], tabWorkspaceMap: { 1: 'shop' },
     tabUrlCache: { 1: tabs.get(1).url }, tabWindowMap: {}, currentWorkspaceId: 'shop', lastActiveWsId: 'shop', isAllTabsMode: false, actionLogs: [],
+    tabSyncInstanceIds: new Map(), persistSyncTabInstance(id, instanceId) { return browser.sessions.setTabValue(id, 'workspacesSyncTabId', instanceId); },
     async assignTabToWorkspace(id, ws) { context.tabWorkspaceMap[id] = ws; },
     unassignTab(id) { delete context.tabWorkspaceMap[id]; },
     rememberTabMeta(tab) { context.tabUrlCache[tab.id] = tab.url; },

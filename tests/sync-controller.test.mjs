@@ -51,6 +51,7 @@ function fixture(initial = []) {
         unassignTab(id) { delete ctx.tabWorkspaceMap[id]; },
         rememberTabMeta() {}, noteSyncTabUrlAlive() {}, scheduleSyncMetaPersist() {},
         async persistTabSyncIdentity() {}, adoptSyncTabBornFromDoc() {},
+        async applySyncedTabGroups() {},
         async persistSyncState() {}, async writeOwnDeviceRosterEntry() {}, async updateSyncActionBadge() {},
         async saveState() {}, updateContextMenus() {}, async repairWorkspaceVisibility() {}, addLog() {},
         resolveExistingWorkspaceId(id) { return ctx.workspaces.some(w => w.id === id) ? id : null; },

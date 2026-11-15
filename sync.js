@@ -98,7 +98,7 @@
 
     // Stable FNV-1a over a canonical projection of workspaces + tab urls.
     // Settings are NOT part of it: a theme change must not look like a data conflict.
-    function dataFingerprint(doc) {
+    function dataFingerprint(doc, legacy = false) {
         if (!doc) return '0';
         const parts = [];
         const list = Array.isArray(doc.ws) ? doc.ws : [];
@@ -108,7 +108,15 @@
             for (const entry of tabs) {
                 // Same shape as export: one fingerprint slot per tab row (duplicates count).
                 parts.push('U', typeof entry === 'string' ? entry : String(entry.u || ''));
+                if (!legacy && entry && typeof entry === 'object' && (entry.h || entry.k)) {
+                    parts.push('H', String(entry.h || ''), 'K', String(entry.k || ''));
+                }
             }
+        }
+        for (const group of (legacy ? [] : (Array.isArray(doc.gr) ? doc.gr : [])).slice().sort((a, b) =>
+            String(a.i).localeCompare(String(b.i)))) {
+            parts.push('G', String(group.i || ''), String(group.w || ''), String(group.t || ''),
+                String(group.c || ''), group.x ? '1' : '0');
         }
         const str = parts.join('');
         let h = 0x811c9dc5;
@@ -123,7 +131,7 @@
 
     // workspaces: [{ id, name, icon, ... }]
     // tabsByWorkspace: { wsId: [{ url, groupId }] } — same list shape as export/import.
-    // extras: { revs: { wsId: { r, m } }, tombstones: { w: {}, u: {} } }
+    // extras: { revs, tombstones, groups: [{id, workspaceId, title, color, collapsed}] }
     //
     // `r` (revision) and `m` (mtime) per workspace are what makes automatic convergence
     // possible without asking the user anything: the higher revision wins, and tombstones
@@ -136,6 +144,7 @@
             dev: deviceId || null,
             ws: [],
             t: {},
+            gr: [],
             s: {},
             x: tombstonesToDoc(gcTombstones((extras && extras.tombstones) || emptyTombstones()))
         };
@@ -160,18 +169,31 @@
                 const url = typeof tab === 'string' ? tab : (tab && tab.url);
                 if (!isSyncableUrl(url)) continue;
                 const groupId = (tab && typeof tab === 'object' && tab.groupId !== undefined) ? tab.groupId : -1;
+                const groupRef = tab && typeof tab === 'object' ? (tab.groupRef || tab.h) : null;
+                const instanceId = tab && typeof tab === 'object' ? (tab.instanceId || tab.k) : null;
                 const addedAt = (tab && typeof tab === 'object' && tab.a) ? Number(tab.a) : 0;
-                if (groupId === -1 && !addedAt) {
+                if (groupId === -1 && !addedAt && !groupRef && !instanceId) {
                     packed.push(url);
                 } else {
                     const row = { u: url };
                     if (groupId !== -1) row.g = groupId;
                     if (addedAt) row.a = addedAt;
+                    if (groupRef) row.h = String(groupRef);
+                    if (instanceId) row.k = String(instanceId);
                     packed.push(row);
                 }
             }
             doc.t[ws.id] = packed;
         });
+
+        // Stable group refs and their appearance travel separately from browser-local IDs.
+        // The `gr` field is optional, so older v2 readers continue to ignore it safely.
+        for (const group of (extras && extras.groups) || []) {
+            if (!group || !group.id || !doc.t[group.workspaceId]) continue;
+            doc.gr.push({ i: String(group.id), w: String(group.workspaceId),
+                t: String(group.title || ''), c: String(group.color || 'grey'),
+                x: !!group.collapsed });
+        }
 
         if (settings) {
             for (const key of SYNCED_SETTING_KEYS) {
@@ -220,10 +242,15 @@
             tabs[ws.i] = packed.map((entry) =>
                 typeof entry === 'string'
                     ? { url: entry, groupId: -1 }
-                    : { url: entry.u, groupId: entry.g === undefined ? -1 : entry.g }
+                    : Object.assign({ url: entry.u, groupId: entry.g === undefined ? -1 : entry.g },
+                        entry.h ? { groupRef: entry.h } : {}, entry.k ? { instanceId: entry.k } : {},
+                        entry.a ? { a: entry.a } : {})
             );
         }
-        return { workspaces, tabs, settings: (doc && doc.s) || {}, timestamp: (doc && doc.ts) || 0 };
+        const groups = (doc && Array.isArray(doc.gr) ? doc.gr : []).map(group => ({
+            id: group.i, workspaceId: group.w, title: group.t || '', color: group.c || 'grey', collapsed: !!group.x
+        }));
+        return { workspaces, tabs, groups, settings: (doc && doc.s) || {}, timestamp: (doc && doc.ts) || 0 };
     }
 
     function summarize(doc) {
@@ -268,6 +295,20 @@
         return { w: {}, u: {} };
     }
 
+    function instanceTombKey(wsId, url, instanceId) {
+        return String(wsId) + '\n' + String(url) + '\n' + String(instanceId);
+    }
+
+    // Record a close against one portable tab identity. Call this instead of
+    // recordTabTombstone(url) when a stable instanceId is available.
+    function recordInstanceTombstone(store, wsId, url, instanceId, ts = Date.now()) {
+        if (!store || !wsId || !url || !instanceId) return store;
+        if (!store.k) store.k = {};
+        const key = instanceTombKey(wsId, url, instanceId);
+        store.k[key] = Math.max(Number(store.k[key]) || 0, Number(ts) || Date.now());
+        return store;
+    }
+
     function tombMeta(val) {
         if (!val) return { t: 0, n: 0 };
         if (typeof val === 'number') return { t: val, n: 1 };
@@ -285,6 +326,13 @@
             const meta = tombMeta(val);
             if (meta.n > 0 && meta.t > 0) out.u[key] = { t: meta.t, n: meta.n };
         }
+        for (const [key, ts] of Object.entries(store.k || {})) {
+            const n = Number(ts) || 0;
+            if (n > 0) {
+                if (!out.k) out.k = {};
+                out.k[key] = n;
+            }
+        }
         return out;
     }
 
@@ -301,6 +349,10 @@
                 t: Math.max(cur.t, incoming.t),
                 n: Math.max(cur.n, incoming.n)
             };
+        }
+        for (const [key, ts] of Object.entries(other.k || {})) {
+            if (!out.k) out.k = {};
+            out.k[key] = Math.max(Number(out.k[key]) || 0, ts);
         }
         return out;
     }
@@ -328,6 +380,16 @@
             else chosen = { t: Math.max(lv.t, rv.t), n: Math.max(lv.n, rv.n) };
             if (chosen.t && chosen.n) out.u[key] = chosen;
         }
+        for (const key of new Set([...Object.keys(b.k || {}), ...Object.keys(l.k || {}), ...Object.keys(r.k || {})])) {
+            const bv = Number((b.k || {})[key]) || 0;
+            const lv = Number((l.k || {})[key]) || 0;
+            const rv = Number((r.k || {})[key]) || 0;
+            const chosen = lv === bv ? rv : (rv === bv || lv === rv ? lv : Math.max(lv, rv));
+            if (chosen) {
+                if (!out.k) out.k = {};
+                out.k[key] = chosen;
+            }
+        }
         return out;
     }
 
@@ -340,13 +402,19 @@
             const meta = tombMeta(val);
             if (meta.t && now - meta.t < ttl) out.u[key] = { t: meta.t, n: meta.n };
         }
+        for (const [key, ts] of Object.entries(normalizeTombstones(store).k || {})) {
+            if (now - ts < ttl) {
+                if (!out.k) out.k = {};
+                out.k[key] = ts;
+            }
+        }
         return out;
     }
 
     // Compact array form for the synced document: [wsId, url, t, n]
     function tombstonesToDoc(store) {
         const clean = normalizeTombstones(store);
-        return {
+        const result = {
             w: Object.entries(clean.w).sort(([a], [b]) => a.localeCompare(b)).map(([id, ts]) => [id, ts]),
             u: Object.entries(clean.u).sort(([a], [b]) => a.localeCompare(b)).map(([key, val]) => {
                 const cut = key.indexOf('\n');
@@ -354,6 +422,14 @@
                 return [key.slice(0, cut), key.slice(cut + 1), meta.t, meta.n];
             })
         };
+        if (Object.keys(clean.k || {}).length) {
+            result.k = Object.entries(clean.k).sort(([a], [b]) => a.localeCompare(b))
+                .map(([key, ts]) => {
+                    const [wsId, url, ...instanceParts] = key.split('\n');
+                    return [wsId, url, instanceParts.join('\n'), ts];
+                });
+        }
+        return result;
     }
 
     function tombstonesFromDoc(doc) {
@@ -369,6 +445,14 @@
             const t = Number(row[2]) || 0;
             const n = row.length > 3 ? Math.max(1, Number(row[3]) || 1) : 1;
             if (t) out.u[tombKey(row[0], row[1])] = { t, n };
+        }
+        for (const row of x.k || []) {
+            if (!row || !row[0] || !row[1] || !row[2]) continue;
+            const ts = Number(row[3]) || 0;
+            if (ts) {
+                if (!out.k) out.k = {};
+                out.k[instanceTombKey(row[0], row[1], row[2])] = ts;
+            }
         }
         return out;
     }
@@ -415,8 +499,79 @@
         return counts;
     }
 
+    function appendDistinctRows(target, count, url, ...sources) {
+        const rows = [];
+        const instanceIds = new Set();
+        for (const source of sources) {
+            for (const row of source || []) {
+                if (urlOf(row) !== url || rows.includes(row)) continue;
+                const instanceId = row && typeof row === 'object' ? row.k : null;
+                if (instanceId && instanceIds.has(instanceId)) continue;
+                if (instanceId) instanceIds.add(instanceId);
+                rows.push(row);
+            }
+        }
+        for (let index = 0; index < count; index++) target.push(rows[index] || url);
+    }
+
+    // A legacy v2 writer omits `gr` and the portable per-tab fields entirely. During
+    // a merge, keep those fields from a schema-capable peer for surviving URL rows.
+    // This only enriches the already-merged rows: URL/tombstone arithmetic remains the
+    // authority for whether a tab exists, so a legacy close cannot be undone here.
+    function preserveLegacyTabMetadata(targetList, sourceLists, wsId, tombstones) {
+        const sourcesByUrl = new Map();
+        const closedInstances = (tombstones && tombstones.k) || {};
+        for (const list of sourceLists) {
+            for (const row of list || []) {
+                const url = urlOf(row);
+                if (!url || !row || typeof row !== 'object') continue;
+                const instanceId = row.k;
+                if (instanceId && closedInstances[instanceTombKey(wsId, url, instanceId)]) continue;
+                if (!row.h && !instanceId && !row.a) continue;
+                if (!sourcesByUrl.has(url)) sourcesByUrl.set(url, []);
+                sourcesByUrl.get(url).push(row);
+            }
+        }
+
+        const targetOccurrences = new Map();
+        const usedInstances = new Set();
+        for (let index = 0; index < targetList.length; index++) {
+            const row = targetList[index];
+            const url = urlOf(row);
+            if (!url) continue;
+            const occurrence = targetOccurrences.get(url) || 0;
+            targetOccurrences.set(url, occurrence + 1);
+            const candidates = sourcesByUrl.get(url) || [];
+            const exact = row && typeof row === 'object' && row.k
+                ? candidates.find(candidate => candidate.k === row.k)
+                : null;
+            const source = exact || candidates[occurrence];
+            if (!source) continue;
+
+            const enriched = row && typeof row === 'object' ? { ...row } : { u: url };
+            if (!enriched.h && source.h) enriched.h = source.h;
+            if (!enriched.k && source.k && !usedInstances.has(source.k)) enriched.k = source.k;
+            if (!enriched.a && source.a) enriched.a = source.a;
+            if (enriched.k) usedInstances.add(enriched.k);
+            if (enriched.h || enriched.k || enriched.a) targetList[index] = enriched;
+        }
+        return targetList;
+    }
+
     /** Preserve URL multiplicities while merging additions, closes and shared birth cohorts. */
     function mergeTabLists(wsId, localList, remoteList, tombs, baseList, localTombs, remoteTombs, baseTombs) {
+        const filterClosedInstances = list => (list || []).filter(entry => {
+            const instanceId = entry && typeof entry === 'object' ? entry.k : null;
+            if (!instanceId) return true;
+            const closedAt = Number((tombs.k || {})[instanceTombKey(wsId, urlOf(entry), instanceId)]) || 0;
+            // `a` is a URL/workspace birth cohort, shared by duplicate tabs. A later
+            // duplicate open can advance it, but must never resurrect this exact `k`.
+            // Reopens receive a new instanceId, so an instance tombstone is final.
+            return !closedAt;
+        });
+        localList = filterClosedInstances(localList);
+        remoteList = filterClosedInstances(remoteList);
+        baseList = baseList ? filterClosedInstances(baseList) : null;
         const lc = countUrls(localList);
         const rc = countUrls(remoteList);
         const urls = new Set([...lc.keys(), ...rc.keys(), ...countUrls(baseList).keys()]);
@@ -451,9 +606,7 @@
                     const n = l === bn ? r : r === bn ? l
                         : Math.max(0, bn + (l - bn) + (r - bn));
                     const source = ln >= rn ? localList : remoteList;
-                    const rows = (source || []).filter((entry) => urlOf(entry) === url);
-                    const fallback = (baseList || []).filter(entry => urlOf(entry) === url);
-                    for (let i = 0; i < n; i++) out.push(rows[i % rows.length] || fallback[i % fallback.length] || url);
+                    appendDistinctRows(out, n, url, source, source === localList ? remoteList : localList, baseList);
                     continue;
                 }
                 // Merge birth cohorts separately. A remote tab copied back to its source
@@ -482,10 +635,11 @@
                         n -= closed;
                         remainingCloses -= closed;
                     }
-                    const rows = (l.count >= r.count ? localList : remoteList)
-                        .filter((entry) => urlOf(entry) === url &&
-                            (tabAddedAt(entry) > 0 ? `born:${tabAddedAt(entry)}` : 'legacy') === cohort);
-                    for (let i = 0; i < n; i++) out.push(rows[i % rows.length] || l.sample || r.sample || url);
+                    const matching = list => (list || []).filter(entry => urlOf(entry) === url &&
+                        (tabAddedAt(entry) > 0 ? `born:${tabAddedAt(entry)}` : 'legacy') === cohort);
+                    appendDistinctRows(out, n, url,
+                        l.count >= r.count ? matching(localList) : matching(remoteList),
+                        l.count >= r.count ? matching(remoteList) : matching(localList), matching(baseList));
                 }
                 continue;
             }
@@ -505,13 +659,8 @@
                 resultN = Math.max(0, raw - tombN);
             }
 
-            const sample = (ln >= rn
-                ? (lc.get(url) && lc.get(url).sample)
-                : (rc.get(url) && rc.get(url).sample)) || url;
-            for (let i = 0; i < resultN; i++) {
-                if (typeof sample === 'string') out.push(sample);
-                else out.push(Object.assign({}, sample));
-            }
+            appendDistinctRows(out, resultN, url, ln >= rn ? localList : remoteList,
+                ln >= rn ? remoteList : localList);
         }
         return out;
     }
@@ -520,7 +669,9 @@
         const records = value || { w: [], u: [] };
         const ordered = rows => (rows || []).slice().sort((a, b) =>
             JSON.stringify(a).localeCompare(JSON.stringify(b), 'en'));
-        const str = JSON.stringify({ w: ordered(records.w), u: ordered(records.u) });
+        const canonical = { w: ordered(records.w), u: ordered(records.u) };
+        if (records.k) canonical.k = ordered(records.k);
+        const str = JSON.stringify(canonical);
         let hash = 0x811c9dc5;
         for (let i = 0; i < str.length; i++) {
             hash ^= str.charCodeAt(i);
@@ -558,6 +709,7 @@
             dev: localDoc && localDoc.dev,
             ws: [],
             t: {},
+            gr: [],
             s: Object.assign({}, (remoteDoc && remoteDoc.s) || {}, (localDoc && localDoc.s) || {}),
             x: null
         };
@@ -575,6 +727,7 @@
         const byId = new Map();
         const byName = new Map();
         const tabSources = new Map(); // targetWsId -> { local: [], remote: [] }
+        const groupSources = new Map();
 
         const addWorkspace = (ws, sourceDoc) => {
             if (!ws || !ws.i) return null;
@@ -624,11 +777,35 @@
             }
         }
 
+        // Group definitions are merged by their portable identity. Conflicting edits use
+        // the owning workspace's same revision rule as its other metadata.
+        for (const [sourceIndex, source] of [localDoc, remoteDoc].entries()) {
+            for (const group of (source && Array.isArray(source.gr) ? source.gr : [])) {
+                if (!group || !group.i || !byId.has(group.w)) continue;
+                const key = `${group.w}\n${group.i}`;
+                const previous = groupSources.get(key);
+                const sourceWs = (source.ws || []).find(item => item.i === group.w);
+                const revision = Number(sourceWs && sourceWs.r) || 0;
+                if (!previous || revision > previous.revision ||
+                    (revision === previous.revision && sourceIndex === 0)) {
+                    groupSources.set(key, { group, revision });
+                }
+            }
+        }
+        merged.gr = [...groupSources.values()].map(({ group }) => ({ ...group }));
+
+        const hasLegacyDocument = [localDoc, remoteDoc].some(doc => doc && !Array.isArray(doc.gr));
+        const metadataSources = hasLegacyDocument
+            ? [localDoc, remoteDoc].filter(doc => doc && Array.isArray(doc.gr)).map(doc => doc.t || {})
+            : [];
         for (const ws of merged.ws) {
             const slot = tabSources.get(ws.i) || { local: [], remote: [] };
             merged.t[ws.i] = mergeTabLists(ws.i, slot.local, slot.remote, tombs,
                 baseDoc ? ((baseDoc.t && baseDoc.t[ws.i]) || []) : null,
                 tombstonesFromDoc(localDoc), tombstonesFromDoc(remoteDoc), tombstonesFromDoc(baseDoc));
+            if (hasLegacyDocument) {
+                preserveLegacyTabMetadata(merged.t[ws.i], metadataSources.map(tabs => tabs[ws.i] || []), ws.i, tombs);
+            }
         }
 
         merged.ws.forEach((ws, index) => { ws.o = index; });
@@ -709,8 +886,11 @@
         const result = {
             workspacesUpsert: [],
             workspaceIdsRemove: [],
+            groupsUpsert: [],
+            groupsRemove: [],
             tabsAdd: [],
             tabsRemove: [],
+            tabsGroup: [],
             changed: false
         };
         if (!targetDoc) return result;
@@ -734,25 +914,67 @@
             if (!targetWs.has(id)) result.workspaceIdsRemove.push(id);
         }
 
+        const localGroups = new Map(((localDoc && localDoc.gr) || []).map(group => [group.i, group]));
+        for (const group of targetDoc.gr || []) {
+            const before = localGroups.get(group.i);
+            if (!before || before.w !== group.w || before.t !== group.t || before.c !== group.c || !!before.x !== !!group.x) {
+                result.groupsUpsert.push({ id: group.i, workspaceId: group.w,
+                    title: group.t || '', color: group.c || 'grey', collapsed: !!group.x });
+            }
+        }
+        const targetGroupIds = new Set((targetDoc.gr || []).map(group => group.i));
+        for (const group of localGroups.values()) if (!targetGroupIds.has(group.i)) result.groupsRemove.push(group.i);
+
         for (const ws of targetDoc.ws || []) {
             const targetList = (targetDoc.t && targetDoc.t[ws.i]) || [];
             const localList = (localDoc && localDoc.t && localDoc.t[ws.i]) || [];
-            const localCounts = countUrls(localList);
-            const targetCounts = countUrls(targetList);
-            const urls = new Set([...localCounts.keys(), ...targetCounts.keys()]);
+            const urls = new Set([...countUrls(localList).keys(), ...countUrls(targetList).keys()]);
 
             for (const url of urls) {
-                const ln = (localCounts.get(url) && localCounts.get(url).n) || 0;
-                const tn = (targetCounts.get(url) && targetCounts.get(url).n) || 0;
-                const sample = (targetCounts.get(url) && targetCounts.get(url).sample) ||
-                    (localCounts.get(url) && localCounts.get(url).sample) || url;
-                const groupId = (sample && typeof sample === 'object' && sample.g !== undefined)
-                    ? sample.g : -1;
-                for (let i = 0; i < tn - ln; i++) {
-                    result.tabsAdd.push({ wsId: ws.i, url, groupId });
+                const targetRows = targetList.filter(row => urlOf(row) === url);
+                const localRows = localList.filter(row => urlOf(row) === url);
+                const usedLocal = new Set();
+                const matches = new Map();
+                // Stable per-tab keys take precedence; old rows without `k` fall back to
+                // URL occurrence order for backward compatibility.
+                for (let ti = 0; ti < targetRows.length; ti++) {
+                    const targetRow = targetRows[ti];
+                    const key = targetRow && typeof targetRow === 'object' ? targetRow.k : null;
+                    const li = key ? localRows.findIndex((row, index) => !usedLocal.has(index) && row &&
+                        typeof row === 'object' && row.k === key) : -1;
+                    if (li >= 0) { usedLocal.add(li); matches.set(ti, li); }
                 }
-                for (let i = 0; i < ln - tn; i++) {
-                    result.tabsRemove.push({ wsId: ws.i, url });
+                for (let ti = 0; ti < targetRows.length; ti++) {
+                    if (matches.has(ti)) continue;
+                    // Exact keys for every row have already been reserved above. Any
+                    // remaining equal-URL rows are safe to pair by occurrence, even when
+                    // both sides have different keys (for example, their first join).
+                    const li = localRows.findIndex((_, index) => !usedLocal.has(index));
+                    if (li >= 0) { usedLocal.add(li); matches.set(ti, li); }
+                }
+                for (let ti = 0; ti < targetRows.length; ti++) {
+                    const row = targetRows[ti];
+                    if (matches.has(ti)) continue;
+                    result.tabsAdd.push({ wsId: ws.i, url,
+                        groupId: row && typeof row === 'object' && row.g !== undefined ? row.g : -1,
+                        groupRef: row && typeof row === 'object' ? (row.h || null) : null,
+                        instanceId: row && typeof row === 'object' ? (row.k || null) : null });
+                }
+                for (const [ti, li] of matches) {
+                    const before = localRows[li], after = targetRows[ti];
+                    const beforeRef = before && typeof before === 'object' ? (before.h || null) : null;
+                    const afterRef = after && typeof after === 'object' ? (after.h || null) : null;
+                    const beforeId = before && typeof before === 'object' ? (before.k || null) : null;
+                    const afterId = after && typeof after === 'object' ? (after.k || null) : null;
+                    if (beforeRef !== afterRef || (beforeId && afterId && beforeId !== afterId)) {
+                        result.tabsGroup.push({ wsId: ws.i, url, occurrence: li, instanceId: afterId, groupRef: afterRef });
+                    }
+                }
+                for (let li = 0; li < localRows.length; li++) {
+                    if (usedLocal.has(li)) continue;
+                    const row = localRows[li];
+                    result.tabsRemove.push({ wsId: ws.i, url,
+                        instanceId: row && typeof row === 'object' ? (row.k || null) : null });
                 }
             }
         }
@@ -761,14 +983,16 @@
             const localList = (localDoc && localDoc.t && localDoc.t[id]) || [];
             for (const entry of localList) {
                 const url = urlOf(entry);
-                if (url) result.tabsRemove.push({ wsId: id, url });
+                if (url) result.tabsRemove.push({ wsId: id, url,
+                    instanceId: entry && typeof entry === 'object' ? (entry.k || null) : null });
             }
         }
 
-        result.changed = result.workspacesUpsert.length > 0 ||
+        result.changed = result.workspacesUpsert.length > 0 || result.groupsUpsert.length > 0 || result.groupsRemove.length > 0 ||
             result.workspaceIdsRemove.length > 0 ||
             result.tabsAdd.length > 0 ||
             result.tabsRemove.length > 0;
+        result.changed = result.changed || result.tabsGroup.length > 0;
         return result;
     }
 
@@ -821,7 +1045,7 @@
                 len: body.length,
                 rawBytes: new TextEncoder().encode(json).length,
                 packedBytes: new TextEncoder().encode(body).length,
-                fp: dataFingerprint(doc),
+                fp: dataFingerprint(doc, true),
                 ts: doc.ts || Date.now(),
                 dev: doc.dev || null,
                 gen,
@@ -843,7 +1067,7 @@
         }
         const json = meta.enc === ENC_GZIP ? await gunzipToString(base64ToBytes(body)) : body;
         const doc = JSON.parse(json);
-        if (meta.fp && dataFingerprint(doc) !== meta.fp) {
+        if (meta.fp && dataFingerprint(doc, true) !== meta.fp && dataFingerprint(doc) !== meta.fp) {
             throw makeError('INCOMPLETE', 'Sync fingerprint mismatch');
         }
         return doc;
@@ -1093,6 +1317,8 @@
         isSyncableUrl,
         TOMBSTONE_TTL_MS,
         tombKey,
+        instanceTombKey,
+        recordInstanceTombstone,
         emptyTombstones,
         normalizeTombstones,
         mergeTombstoneStores,

@@ -1,5 +1,12 @@
 # Changelog
 
+1.19.17
+- Preserve Firefox tab groups when switching workspaces, including their names, colors and collapsed state. Tabs remain open while groups are temporarily ungrouped and restored.
+- Include tab group details in new exports and automatic backups; continue to import older backup formats.
+- Synchronize group details and distinguish duplicate URLs using per-tab identities; retain compatibility with older sync snapshots where possible.
+- Protect existing tabs when importing or restoring a backup fails, and preserve both restored and remaining tabs if Firefox cannot close all previous tabs.
+- Leave groups containing split-view tabs untouched when Firefox cannot safely restore their split view.
+
 1.19.16
 - Fixed menu items and dialogs showing raw placeholders such as "Move $COUNT$ Tabs to Workspace" or "$NAME$" when an interface language is chosen manually: the manual-language path now resolves named placeholders exactly like Firefox.
 - The interface language no longer changes by itself through sync. Only an explicit choice made in Options (with its time) is synced, the newest choice wins, and "Auto" or values nobody picked are never pushed or applied.

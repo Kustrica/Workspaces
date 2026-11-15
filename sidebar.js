@@ -552,29 +552,13 @@ function initTour() {
 // Perform data export (similar to options.js)
 async function performExport() {
     try {
-        const { workspaces } = await browser.storage.local.get('workspaces');
-        const storageData = await browser.storage.local.get('tabWorkspaceMap');
-        const tabWorkspaceMap = storageData.tabWorkspaceMap || {};
-
-        const tabs = await browser.tabs.query({});
-        const tabsData = {};
-
-        tabs.forEach(tab => {
-            const wsId = tabWorkspaceMap[tab.id] || 'ws_default';
-            if (!tabsData[wsId]) tabsData[wsId] = [];
-            
-            const tabInfo = {
-                url: tab.url,
-                groupId: tab.groupId !== undefined ? tab.groupId : -1
-            };
-            tabsData[wsId].push(tabInfo);
-        });
-
-        const exportData = {
-            timestamp: Date.now(),
-            workspaces: workspaces || [],
-            tabs: tabsData
-        };
+        const exportData = await browser.runtime.sendMessage({ action: 'GET_GROUP_BACKUP_SNAPSHOT' });
+        if (!exportData || !Array.isArray(exportData.workspaces) ||
+            !exportData.tabs || typeof exportData.tabs !== 'object' || Array.isArray(exportData.tabs) ||
+            !Array.isArray(exportData.groups)) {
+            throw new Error('Background returned an invalid group backup snapshot');
+        }
+        exportData.timestamp = exportData.timestamp || Date.now();
 
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);

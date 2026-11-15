@@ -7,7 +7,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_FILES = (
-    'manifest.json', 'i18n.js', 'background.js', 'sync.js', 'options.html',
+    'manifest.json', 'i18n.js', 'background.js', 'sync.js', 'group-visibility.js',
+    'group-snapshot.js', 'options.html',
     'options.js', 'sidebar.html', 'sidebar.js', 'emoji-catalog.json',
     'sync-breath.css', 'sync-breath.js', 'sync-progress.css', 'sync-progress.js',
 )

@@ -80,6 +80,7 @@ Sidebar retains cached tab counts when rebuilding rows, ignores equivalent works
 The automated checks cover large replacement, full URLs, duplicate counts, redirects, settings writes, independent edits, partial payloads and failed applies. Firefox 156.0.1 in a fresh headless profile verifies extension installation, native compression, the translated switch, its persistence and light suppression. End-to-end account delivery between the user's computer and laptop remains a separate manual check.
 
 ## Constraints & Rules
+- Native groups are temporarily ungrouped around workspace hiding, with metadata stored in tab sessions. Firefox `tabs.ungroup()` can remove split views; groups containing split views are left visible because the WebExtensions API cannot recreate them. Numeric browser group IDs are not portable. New snapshots carry portable group and tab identities; legacy sync snapshots lack per-instance identity, so same-URL copies can only be matched by occurrence. Older clients may overwrite newer metadata until an updated client republishes it. Tabstead is GPL-3.0; this MIT project does not copy its implementation.
 - Firefox & Chromium compatibility (Manifest V3).
 - Strict adherence to non-persistent background script lifecycle (event page / service worker). Global handlers must not trigger side-effects like background task executions on simple script load.
 - Avoid unnecessary permissions (e.g. `<all_urls>` host permissions) to preserve privacy and prevent security warnings.

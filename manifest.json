@@ -4,7 +4,7 @@
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
   "homepage_url": "https://t.me/Kustric",
-  "version": "1.19.16",
+  "version": "1.19.17",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -12,6 +12,7 @@
     "unlimitedStorage",
     "sessions",
     "tabHide",
+    "tabGroups",
     "menus",
     "contextMenus",
     "alarms"
@@ -32,6 +33,8 @@
     "scripts": [
       "i18n.js",
       "sync.js",
+      "group-visibility.js",
+      "group-snapshot.js",
       "background.js"
     ]
   },
