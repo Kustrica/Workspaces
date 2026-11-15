@@ -32,7 +32,6 @@
             const result = { ungrouped: [], skipped: [], errors: [] };
             if (!ids.length) return result;
             const tabs = await browserApi.tabs.query({});
-            const nativeGroups = await browserApi.tabGroups.query({});
             const selected = new Set(ids);
             const groups = new Map();
             for (const tab of tabs) {
@@ -40,12 +39,14 @@
                 if (!groups.has(tab.groupId)) groups.set(tab.groupId, []);
                 groups.get(tab.groupId).push(tab);
             }
+            if (![...groups.values()].some(members => members.some(tab => selected.has(tab.id)))) return result;
+            const nativeGroups = new Map((await browserApi.tabGroups.query({})).map(group => [group.id, group]));
 
             for (const [nativeGroupId, members] of groups) {
                 const affected = members.filter(tab => selected.has(tab.id));
                 if (!affected.length) continue;
                 await waitForMetadataOperations(members.map(tab => tab.id));
-                const group = nativeGroups.find(item => item.id === nativeGroupId);
+                const group = nativeGroups.get(nativeGroupId);
                 if (!group) {
                     result.skipped.push({ groupId: nativeGroupId, reason: 'metadata-unavailable' });
                     continue;
@@ -204,7 +205,9 @@
                         if (groupedTabs.length) registerExpectedTabGroupChange(groupedTabs.map(tab => tab.id), groupId);
                         // The tokenized title is the ownership marker. Numeric group IDs can be
                         // reused, so never treat the ID journal alone as proof of ownership.
-                        let liveGroup = (await browserApi.tabGroups.query({})).find(group => group.id === groupId);
+                        // A new group cannot already carry our recovery marker. For a
+                        // retry, use the group snapshot already fetched above.
+                        let liveGroup = existingGroupId == null ? null : groupById.get(groupId);
                         const marker = markedTitle(meta.title, meta.operationToken);
                         if (liveGroup?.title !== marker) {
                             try {

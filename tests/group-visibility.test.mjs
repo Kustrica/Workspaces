@@ -76,9 +76,17 @@ function fixture({ splitViewId = -1, failSession = false, failSessionTab = null,
     assert.equal((await f.api.getSavedMetadata(1)).workspaceId, 'work');
     const restored = await f.api.restoreVisible([1], 'work');
     assert.equal(restored.restored.length, 1);
+    assert.equal(f.groupQueries, 2, 'one group query per hide and restore, with no extra query for a newly created group');
     assert.equal(f.nativeGroups.get(77).title, 'Research');
     assert.equal(f.nativeGroups.get(77).color, 'blue');
     assert.equal(await f.api.getSavedMetadata(1), null);
+}
+
+{
+    const f = fixture();
+    await f.api.prepareForHide([3], () => 'work');
+    assert.equal(f.groupQueries, 0, 'hiding an ungrouped tab does not query native groups');
+    assert.equal(f.calls.some(call => call[0] === 'ungroup'), false);
 }
 
 {

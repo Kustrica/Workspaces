@@ -146,3 +146,8 @@
 - [x] STEP-82: Add a group-specific tab context menu and move all members safely while preserving their group and workspace assignments; support undo and redo.
 - [x] STEP-83: Localize the command, update release notes and project context.
 - [x] STEP-84: Run focused transfer and regression checks; verify packaging. Browser QA was not run under the existing no-launch constraint.
+
+## Phase 16: Reduce group-switch latency
+- [x] STEP-85: Remove redundant browser API calls from group hiding and restoration without weakening recovery.
+- [x] STEP-86: Document the optimization in the existing 1.19.18 entry.
+- [x] STEP-87: Run focused regression and API-call checks and rebuild the release archive; Firefox timing was not measured under the existing no-launch constraint.

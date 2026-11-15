@@ -3,6 +3,7 @@
 1.19.18
 - Added a tab context-menu command to move every tab in its Firefox group to a workspace without moving individual tabs out of the group.
 - Added history undo and redo for group transfers and translated the command into all 19 interface languages.
+- Reduced redundant Firefox group queries when hiding tabs and restoring workspace groups.
 
 1.19.17
 - Preserve Firefox tab groups when switching workspaces, including their names, colors and collapsed state. Tabs remain open while groups are temporarily ungrouped and restored.
