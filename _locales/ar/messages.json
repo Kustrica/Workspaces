@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "آخر تحديث مستلم من هذا الجهاز"
+    },
+    "moveTabGroup": {
+        "message": "نقل مجموعة علامات التبويب إلى مساحة العمل"
     }
 }

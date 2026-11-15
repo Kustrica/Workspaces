@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Dernière mise à jour reçue de cet appareil"
+    },
+    "moveTabGroup": {
+        "message": "Déplacer le groupe d’onglets vers un espace de travail"
     }
 }

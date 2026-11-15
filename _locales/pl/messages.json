@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Ostatnia aktualizacja odebrana z tego urządzenia"
+    },
+    "moveTabGroup": {
+        "message": "Przenieś grupę kart do obszaru roboczego"
     }
 }

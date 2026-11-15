@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "このデバイスから受信した最終更新"
+    },
+    "moveTabGroup": {
+        "message": "タブグループをワークスペースに移動"
     }
 }

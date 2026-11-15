@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Bu cihazdan alınan son güncelleme"
+    },
+    "moveTabGroup": {
+        "message": "Sekme grubunu çalışma alanına taşı"
     }
 }

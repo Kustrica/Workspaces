@@ -81,6 +81,7 @@ The automated checks cover large replacement, full URLs, duplicate counts, redir
 
 ## Constraints & Rules
 - Native groups are temporarily ungrouped around workspace hiding, with metadata stored in tab sessions. Firefox `tabs.ungroup()` can remove split views; groups containing split views are left visible because the WebExtensions API cannot recreate them. Numeric browser group IDs are not portable. New snapshots carry portable group and tab identities; legacy sync snapshots lack per-instance identity, so same-URL copies can only be matched by occurrence. Older clients may overwrite newer metadata until an updated client republishes it. Tabstead is GPL-3.0; this MIT project does not copy its implementation.
+- The tab context menu offers a separate group-transfer command for a tab belonging to a native group. It changes all members' workspace ownership without moving them in the tab strip; normal visibility repair handles hiding and restoring the group. Firefox groups containing split views remain visible under the existing safety policy.
 - Firefox & Chromium compatibility (Manifest V3).
 - Strict adherence to non-persistent background script lifecycle (event page / service worker). Global handlers must not trigger side-effects like background task executions on simple script load.
 - Avoid unnecessary permissions (e.g. `<all_urls>` host permissions) to preserve privacy and prevent security warnings.

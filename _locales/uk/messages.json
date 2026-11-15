@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Останнє оновлення з цього пристрою"
+    },
+    "moveTabGroup": {
+        "message": "Перемістити групу вкладок у простір"
     }
 }

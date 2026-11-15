@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Ultimo aggiornamento ricevuto da questo dispositivo"
+    },
+    "moveTabGroup": {
+        "message": "Sposta gruppo di schede nello spazio di lavoro"
     }
 }

@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Última actualización recibida de este dispositivo"
+    },
+    "moveTabGroup": {
+        "message": "Mover grupo de pestañas al espacio de trabajo"
     }
 }

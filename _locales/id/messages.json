@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Pembaruan terakhir diterima dari perangkat ini"
+    },
+    "moveTabGroup": {
+        "message": "Pindahkan grup tab ke ruang kerja"
     }
 }

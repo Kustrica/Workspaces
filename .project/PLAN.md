@@ -141,3 +141,8 @@
 - [x] STEP-79: Preserve group metadata in exports, backups, imports and synchronization, with legacy compatibility; old clients cannot distinguish same-URL instances.
 - [x] STEP-80: Update release notes, version and project context.
 - [x] STEP-81: Run focused group, restore and sync regression checks; review browser API calls and performance. Mock-based checks and package verification passed; Firefox and two-device QA were not run per the existing no-launch constraint.
+
+## Phase 15: Move native tab groups between workspaces
+- [x] STEP-82: Add a group-specific tab context menu and move all members safely while preserving their group and workspace assignments; support undo and redo.
+- [x] STEP-83: Localize the command, update release notes and project context.
+- [x] STEP-84: Run focused transfer and regression checks; verify packaging. Browser QA was not run under the existing no-launch constraint.

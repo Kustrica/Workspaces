@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "从此设备收到的最近更新"
+    },
+    "moveTabGroup": {
+        "message": "将标签页组移至工作区"
     }
 }

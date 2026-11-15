@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Letzte Aktualisierung von diesem Gerät"
+    },
+    "moveTabGroup": {
+        "message": "Tabgruppe in Arbeitsbereich verschieben"
     }
 }

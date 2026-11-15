@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Lần cập nhật gần nhất nhận từ thiết bị này"
+    },
+    "moveTabGroup": {
+        "message": "Chuyển nhóm thẻ sang không gian làm việc"
     }
 }

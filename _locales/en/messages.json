@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Last update received from this device"
+    },
+    "moveTabGroup": {
+        "message": "Move tab group to workspace"
     }
 }

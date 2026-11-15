@@ -839,6 +839,19 @@ async function updateContextMenus() {
     if (!menuAPI) return;
 
     const parentId = "move-to-workspace";
+    const groupParentId = "move-group-to-workspace";
+    menuAPI.create({ id: groupParentId, title: getMessage("moveTabGroup"), contexts: ["tab"], visible: false }, () => {
+        if (browser.runtime.lastError) return;
+        for (const ws of workspaces || []) {
+            const title = ws.icon && !ws.icon.startsWith('img:') ? `${ws.icon} ${ws.name}` : ws.name;
+            const opts = { id: `move-group-to-${ws.id}`, parentId: groupParentId, contexts: ["tab"], title };
+            if (ws.icon?.startsWith('img:') && menuAPI === browser.menus) opts.icons = { "16": ws.icon.substring(4) };
+            try { menuAPI.create(opts, () => { if (browser.runtime.lastError) {} }); } catch (_) {
+                delete opts.icons;
+                try { menuAPI.create(opts, () => { if (browser.runtime.lastError) {} }); } catch (_) {}
+            }
+        }
+    });
     
     menuAPI.create({
         id: parentId,
@@ -890,12 +903,29 @@ async function updateContextMenus() {
 const menuAPI = browser.menus || browser.contextMenus;
 if (menuAPI && menuAPI.onClicked) {
     menuAPI.onClicked.addListener((info, tab) => {
+        if (typeof info.menuItemId === 'string' && info.menuItemId.startsWith('move-group-to-') && info.menuItemId !== 'move-group-to-workspace') {
+            runWhenReady(() => moveTabGroupToWorkspace(tab, info.menuItemId.slice('move-group-to-'.length))).catch(console.error);
+            return;
+        }
         if (info.menuItemId.startsWith("move-to-")) {
             const targetWsId = info.menuItemId.replace("move-to-", "");
             if (targetWsId !== "workspace") {
                 moveTabsToWorkspace(info, tab, targetWsId);
             }
         }
+    });
+}
+
+if (menuAPI?.onShown && menuAPI?.onHidden && menuAPI.refresh) {
+    let menuGeneration = 0;
+    menuAPI.onHidden.addListener(() => { menuGeneration++; });
+    menuAPI.onShown.addListener(async (info, tab) => {
+        const generation = ++menuGeneration;
+        const visible = !!(info.contexts?.includes('tab') && tab && Number.isInteger(tab.groupId) && tab.groupId >= 0);
+        try {
+            await menuAPI.update('move-group-to-workspace', { visible });
+            if (generation === menuGeneration) await menuAPI.refresh();
+        } catch (_) { /* Menu may have closed or been rebuilt. */ }
     });
 }
 
@@ -939,6 +969,29 @@ browser.runtime.onStartup.addListener(async () => {
 });
 
 // Move tabs to specified workspace
+async function moveTabGroupToWorkspace(tab, targetWsId) {
+    if (!tab || !workspaceExists(targetWsId)) return false;
+    const clicked = await browser.tabs.get(tab.id);
+    if (!Number.isInteger(clicked.groupId) || clicked.groupId < 0) return false;
+    const members = await browser.tabs.query({ groupId: clicked.groupId, windowId: clicked.windowId });
+    if (!members.length) return false;
+    const previous = members.map(member => ({ id: member.id, workspaceId: tabWorkspaceMap[member.id] || null }));
+    if (previous.every(member => member.workspaceId === targetWsId)) return true;
+    // Do not move tabs in the strip: Firefox can ungroup them when they move.
+    for (const member of members) await assignTabToWorkspace(member.id, targetWsId);
+    await saveState();
+    const sourceIds = [...new Set(previous.map(member => member.workspaceId).filter(Boolean))];
+    const sourceNames = sourceIds.map(id => workspaces.find(ws => ws.id === id)?.name || id).join(', ');
+    const targetName = workspaces.find(ws => ws.id === targetWsId)?.name || targetWsId;
+    addLog('MOVE_TABS', `i18n:logDetailsMoved:${members.length}:${sourceNames}:${targetName}`, {
+        type: 'MOVE_GROUP', data: { members: previous, toWsId: targetWsId, windowId: clicked.windowId }
+    });
+    if (!isAllTabsMode && currentWorkspaceId) {
+        await switchWorkspace(currentWorkspaceId, false, { windowId: clicked.windowId });
+    }
+    return true;
+}
+
 async function moveTabsToWorkspace(info, tab, targetWsId) {
     const highlightedTabsQuery = await browser.tabs.query({ highlighted: true, currentWindow: true });
     const highlightedTabs = highlightedTabsQuery.filter(t => tabWorkspaceMap[t.id] === currentWorkspaceId || tabWorkspaceMap[t.id] === undefined);
@@ -1871,6 +1924,13 @@ browser.runtime.onMessage.addListener(async (message) => {
                 }
                 saveState();
                 await switchWorkspace(currentWorkspaceId);
+            } else if (type === 'MOVE_GROUP') {
+                if (workspaceExists(data.toWsId)) {
+                    const openTabs = new Set((await browser.tabs.query({})).map(tab => tab.id));
+                    for (const member of data.members || []) if (openTabs.has(member.id)) await assignTabToWorkspace(member.id, data.toWsId);
+                    await saveState();
+                    if (!isAllTabsMode && currentWorkspaceId) await switchWorkspace(currentWorkspaceId, false, { windowId: data.windowId });
+                }
             } else if (type === 'RESET_WORKSPACES') {
                 tabWorkspaceMap = {};
                 workspaces = [];
@@ -1931,6 +1991,18 @@ browser.runtime.onMessage.addListener(async (message) => {
                 }
                 saveState();
                 await switchWorkspace(currentWorkspaceId);
+            } else if (type === 'MOVE_GROUP') {
+                const openTabs = new Set((await browser.tabs.query({})).map(tab => tab.id));
+                for (const member of data.members || []) {
+                    if (!openTabs.has(member.id)) continue;
+                    if (workspaceExists(member.workspaceId)) await assignTabToWorkspace(member.id, member.workspaceId);
+                    else if (member.workspaceId === null) {
+                        unassignTab(member.id);
+                        await clearSessionWorkspace(member.id);
+                    }
+                }
+                await saveState();
+                if (!isAllTabsMode && currentWorkspaceId) await switchWorkspace(currentWorkspaceId, false, { windowId: data.windowId });
             } else if (type === 'RESET_WORKSPACES') {
                 workspaces = data.workspaces;
                 tabWorkspaceMap = data.tabWorkspaceMap;

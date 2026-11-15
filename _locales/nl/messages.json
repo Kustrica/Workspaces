@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "Laatste update ontvangen van dit apparaat"
+    },
+    "moveTabGroup": {
+        "message": "Tabbladgroep naar werkruimte verplaatsen"
     }
 }

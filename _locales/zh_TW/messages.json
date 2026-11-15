@@ -882,5 +882,8 @@
     },
     "syncDeviceLastUpdate": {
         "message": "從此裝置收到的最近更新"
+    },
+    "moveTabGroup": {
+        "message": "將分頁群組移至工作區"
     }
 }
