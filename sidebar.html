@@ -300,18 +300,14 @@
         #new-ws-icon-preview img { width: 22px; height: 22px; object-fit: contain; }
         #emoji-picker-wrap {
             box-sizing: border-box;
-            width: calc(100% - 16px);
-            max-width: 440px;
-            max-height: calc(100dvh - 16px);
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--input-bg);
+            flex: 0 1 auto;
+            min-height: 0;
+            padding: 8px 10px;
+            border-top: 1px solid var(--border-color);
+            background: var(--header-bg);
             color: var(--text-color);
-            font: inherit;
         }
-        #emoji-picker-wrap[open] { display: flex; flex-direction: column; gap: 8px; }
-        #emoji-picker-wrap::backdrop { background: #0006; }
+        #emoji-picker-wrap:not([hidden]) { display: flex; flex-direction: column; gap: 6px; }
         #emoji-picker-wrap h2 { font-size: 15px; margin: 0; }
         .workspace-icon-packs { display: flex; flex-wrap: wrap; gap: 5px; }
         .workspace-icon-packs button, .emoji-option {
@@ -346,7 +342,7 @@
             grid-auto-rows: 40px;
             align-content: start;
             gap: 5px;
-            height: min(340px, 55dvh);
+            height: min(260px, 38dvh);
             min-height: 70px;
             overflow: auto;
             overscroll-behavior: contain;
@@ -881,6 +877,21 @@
         <button id="save-new-ws" data-i18n="create">__MSG_create__</button>
     </div>
 
+    <section hidden id="emoji-picker-wrap" aria-labelledby="workspace-picker-title">
+        <h2 id="workspace-picker-title" data-i18n="selectEmoji">Choose icon</h2>
+        <div class="workspace-icon-packs" id="workspace-icon-packs">
+            <button type="button" data-pack="all" data-i18n="iconPickerAll">All sets</button>
+            <button type="button" data-pack="native">Emoji</button>
+            <button type="button" data-pack="tabler">Tabler</button>
+            <button type="button" data-pack="logos">SVG Logos</button>
+        </div>
+        <input id="emoji-search" type="search" class="emoji-search-input" data-i18n-placeholder="searchEmoji" data-i18n-title="searchEmoji" placeholder="Search icons">
+        <div id="emoji-grid" class="emoji-grid"></div>
+        <div class="workspace-icon-packs">
+            <button type="button" id="workspace-icon-cancel" data-i18n="cancel">Cancel</button>
+        </div>
+    </section>
+
     <div id="move-modal" class="modal-overlay">
         <div class="modal">
             <h3 id="move-title" data-i18n="moveAllTitle">__MSG_moveAllTitle__</h3>
@@ -946,20 +957,6 @@
     <script src="i18n.js"></script>
     <script src="sync-breath.js"></script>
     <script src="sync-progress.js"></script>
-    <dialog id="emoji-picker-wrap" aria-labelledby="workspace-picker-title">
-        <h2 id="workspace-picker-title" data-i18n="selectEmoji">Choose icon</h2>
-        <div class="workspace-icon-packs" id="workspace-icon-packs">
-            <button type="button" data-pack="all" data-i18n="iconPickerAll">All sets</button>
-            <button type="button" data-pack="native">Emoji</button>
-            <button type="button" data-pack="tabler">Tabler</button>
-            <button type="button" data-pack="logos">SVG Logos</button>
-        </div>
-        <input id="emoji-search" type="search" class="emoji-search-input" data-i18n-placeholder="searchEmoji" data-i18n-title="searchEmoji" placeholder="Search icons">
-        <div id="emoji-grid" class="emoji-grid"></div>
-        <div class="workspace-icon-packs">
-            <button type="button" id="workspace-icon-cancel" data-i18n="cancel">Cancel</button>
-        </div>
-    </dialog>
     <script src="sidebar.js"></script>
 </body>
 </html>

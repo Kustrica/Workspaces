@@ -505,10 +505,11 @@ function saveState(options = {}) {
 
 // Track tab activation to update active tab map
 browser.tabs.onActivated.addListener(async (activeInfo) => {
-    if (isInitializingState || isRestoringData || isSwitchingWorkspace) return;
+    if (isInitializingState || isRestoringData || isSwitchingWorkspace || workspacePinChanges) return;
 
     const tabId = activeInfo.tabId;
     const mapped = resolveExistingWorkspaceId(tabWorkspaceMap[tabId]);
+    if (currentWorkspaceId && mapped && mapped !== currentWorkspaceId) return;
     const wsId = mapped || resolveExistingWorkspaceId(currentWorkspaceId);
     if (!wsId) return;
 
@@ -519,6 +520,82 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
 let isSwitchingWorkspace = false;
 let pendingWorkspaceSwitch = null;
 
+const WORKSPACE_PIN_KEY = 'workspacesParkedPin';
+let workspacePinChanges = 0;
+
+async function readWorkspacePins(tabs) {
+    const { sharedPinnedTabs } = await browser.storage.local.get('sharedPinnedTabs');
+    const saved = new Map();
+    if (browser.sessions?.getTabValue) {
+        await Promise.all(tabs.map(async tab => {
+            const entry = await browser.sessions.getTabValue(tab.id, WORKSPACE_PIN_KEY).catch(() => null);
+            if (entry && Number.isFinite(entry.order)) saved.set(tab.id, entry);
+        }));
+    }
+    return { shared: sharedPinnedTabs === true, saved };
+}
+
+async function prepareWorkspacePinsForHide(tabs, ids, pins) {
+    const pinned = new Map(tabs.filter(tab => tab.pinned).map(tab => [tab.id, tab]));
+    if (pins.shared) return ids.filter(id => !pinned.has(id) && !pins.saved.has(id));
+
+    const safe = new Set(ids);
+    ++workspacePinChanges;
+    try {
+        for (const id of ids) {
+            const tab = pinned.get(id);
+            if (!tab) continue;
+            try {
+                const live = await browser.tabs.get(id);
+                if (live.active) {
+                    safe.delete(id);
+                    continue;
+                }
+                if (!live.pinned) continue;
+                if (!pins.saved.has(id)) {
+                    const entry = { workspaceId: tabWorkspaceMap[id], order: tab.index };
+                    await browser.sessions.setTabValue(id, WORKSPACE_PIN_KEY, entry);
+                    pins.saved.set(id, entry);
+                }
+                await browser.tabs.update(id, { pinned: false });
+            } catch (error) {
+                console.warn('Could not park a pinned workspace tab', error);
+                safe.delete(id);
+            }
+        }
+    } finally {
+        --workspacePinChanges;
+    }
+    return ids.filter(id => safe.has(id));
+}
+
+async function restoreWorkspacePins(tabs, pins, workspaceId) {
+    const ordered = tabs.filter(tab => pins.saved.has(tab.id)
+        && (pins.shared || workspaceId == null || tabWorkspaceMap[tab.id] === workspaceId))
+        .sort((a, b) => pins.saved.get(a.id).order - pins.saved.get(b.id).order || a.index - b.index);
+    ++workspacePinChanges;
+    try {
+        for (const tab of ordered) {
+            try {
+                await browser.tabs.show(tab.id);
+                await browser.tabs.update(tab.id, { pinned: true });
+                const { order } = pins.saved.get(tab.id);
+                if (!pins.shared && workspaceId != null) {
+                    const pinned = await browser.tabs.query({ windowId: tab.windowId, pinned: true });
+                    const index = order === Number.MAX_SAFE_INTEGER ? pinned.length - 1 : Math.min(order, pinned.length - 1);
+                    if (index >= 0) await browser.tabs.move(tab.id, { index });
+                }
+                await browser.sessions.removeTabValue(tab.id, WORKSPACE_PIN_KEY);
+            } catch (error) {
+                console.warn('Could not restore a pinned workspace tab', error);
+            }
+        }
+    } finally {
+        --workspacePinChanges;
+    }
+}
+
+
 // Repair show/hide after background wake without forcing a different active tab.
 async function repairWorkspaceVisibility(workspaceId, options = {}) {
     if (!workspaceId || isAllTabsMode) return;
@@ -528,10 +605,12 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
     const tabQuery = typeof windowId === 'number' ? { windowId } : { currentWindow: true };
 
     const tabs = await browser.tabs.query(tabQuery);
+    const pins = await readWorkspacePins(tabs);
     const toShow = [];
     const toHide = [];
 
     for (const tab of tabs) {
+        if (pins.shared && (tab.pinned || pins.saved.has(tab.id)) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         let ws = tabWorkspaceMap[tab.id];
         if (!ws) {
             // Do not auto-claim orphans on wake — that migrates lost tabs into the wrong space.
@@ -564,7 +643,7 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
             let tabToActivate = pickBestWorkspaceTabId(
                 tabs.filter(t => toShow.includes(t.id)),
                 workspaceId,
-                [workspaceActiveTabMap[workspaceId]]
+                [workspaceActiveTabMap[workspaceId]], pins.saved
             );
             if (tabToActivate) {
                 try {
@@ -580,7 +659,7 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
             ? { active: true, windowId }
             : { active: true, currentWindow: true };
         const [stillActive] = await browser.tabs.query(activeQuery);
-        let hideList = toHide;
+        let hideList = await prepareWorkspacePinsForHide(tabs, toHide, pins);
         if (stillActive && hideList.includes(stillActive.id)) {
             hideList = hideList.filter(id => id !== stillActive.id);
         }
@@ -607,6 +686,8 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
         try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch (e) {}
     }
 
+    await restoreWorkspacePins(tabs, pins, workspaceId);
+
     saveState({ force: !isInitializingState });
 }
 
@@ -616,7 +697,7 @@ function normalizeTabId(rawId) {
     return Number.isFinite(n) ? n : null;
 }
 
-function pickBestWorkspaceTabId(tabs, workspaceId, preferredIds) {
+function pickBestWorkspaceTabId(tabs, workspaceId, preferredIds, parkedPins = new Map()) {
     const preferred = Array.isArray(preferredIds) ? preferredIds : [preferredIds];
     for (const raw of preferred) {
         const id = normalizeTabId(raw);
@@ -625,6 +706,8 @@ function pickBestWorkspaceTabId(tabs, workspaceId, preferredIds) {
         if (tab && tabWorkspaceMap[id] === workspaceId) return id;
     }
 
+    const ordinary = tabs.filter(tab => tabWorkspaceMap[tab.id] === workspaceId && !tab.pinned && !parkedPins.has(tab.id));
+    if (ordinary.length) tabs = ordinary;
     let bestId = null;
     let bestAccessed = -1;
     for (const tab of tabs) {
@@ -664,8 +747,6 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             // (A keepVisible group tab / race must not overwrite the real last-active memory.)
             if (mapped === currentWorkspaceId) {
                 workspaceActiveTabMap[currentWorkspaceId] = currentTab.id;
-            } else if (mapped) {
-                workspaceActiveTabMap[mapped] = currentTab.id;
             }
         }
     }
@@ -678,6 +759,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     await saveState();
     
     const tabs = await browser.tabs.query(tabQuery);
+    const pins = await readWorkspacePins(tabs);
     
     const toShow = [];
     const toHide = [];
@@ -690,7 +772,8 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
         return;
     }
     
-    for (let tab of tabs) {
+    for (const tab of tabs) {
+        if (pins.shared && (tab.pinned || pins.saved.has(tab.id)) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         let ws = tabWorkspaceMap[tab.id];
 
         if (!ws) {
@@ -744,7 +827,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             tabToActivate = pickBestWorkspaceTabId(
                 tabs.filter(t => toShow.includes(t.id)),
                 workspaceId,
-                [remembered]
+                [remembered], pins.saved
             );
 
             if (tabToActivate && toShow.includes(tabToActivate) && tabWorkspaceMap[tabToActivate] === workspaceId) {
@@ -764,7 +847,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             const fallback = pickBestWorkspaceTabId(
                 tabs.filter(t => toShow.includes(t.id)),
                 workspaceId,
-                [workspaceActiveTabMap[workspaceId]]
+                [workspaceActiveTabMap[workspaceId]], pins.saved
             );
             if (fallback) {
                 try { await browser.tabs.update(fallback, { active: true }); } catch(e) {}
@@ -777,7 +860,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
             if (idx > -1) toHide.splice(idx, 1);
         }
         
-        let hideList = toHide;
+        let hideList = await prepareWorkspacePinsForHide(tabs, toHide, pins);
         if (groupVisibility && hideList.length > 0) {
             const membersByGroup = new Map();
             for (const tab of tabs) {
@@ -805,6 +888,8 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     if (groupVisibility && toShow.length > 0) {
         try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch(e) {}
     }
+    await restoreWorkspacePins(tabs, pins, workspaceId);
+    await saveState();
     } finally {
         isSwitchingWorkspace = false;
         if (pendingWorkspaceSwitch) {
@@ -993,7 +1078,7 @@ async function moveTabGroupToWorkspace(tab, targetWsId) {
 }
 
 async function moveTabsToWorkspace(info, tab, targetWsId) {
-    const highlightedTabsQuery = await browser.tabs.query({ highlighted: true, currentWindow: true });
+    const highlightedTabsQuery = await browser.tabs.query({ highlighted: true, windowId: tab.windowId });
     const highlightedTabs = highlightedTabsQuery.filter(t => tabWorkspaceMap[t.id] === currentWorkspaceId || tabWorkspaceMap[t.id] === undefined);
     
     let tabsToMove = [];
@@ -1005,15 +1090,21 @@ async function moveTabsToWorkspace(info, tab, targetWsId) {
         tabsToMove = [tab];
     }
 
-    for (let t of tabsToMove) {
-        assignTabToWorkspace(t.id, targetWsId);
+    const pins = await readWorkspacePins(tabsToMove);
+    for (const t of tabsToMove) {
+        if (t.pinned || pins.saved.has(t.id)) {
+            await browser.sessions.setTabValue(t.id, WORKSPACE_PIN_KEY, { workspaceId: targetWsId, order: Number.MAX_SAFE_INTEGER });
+        }
+        await assignTabToWorkspace(t.id, targetWsId);
     }
-    saveState();
+    await saveState();
     
-    await moveTabsToEnd(tabsToMove.map(t => t.id));
+    await moveTabsToEnd(tabsToMove.filter(t => !t.pinned && !pins.saved.has(t.id)).map(t => t.id));
 
-    if (targetWsId !== currentWorkspaceId) {
-        await switchWorkspace(currentWorkspaceId);
+    if (currentWorkspaceId && targetWsId !== currentWorkspaceId) {
+        await switchWorkspace(currentWorkspaceId, false, { windowId: tab.windowId });
+    } else {
+        await restoreWorkspacePins(tabsToMove, await readWorkspacePins(tabsToMove), currentWorkspaceId);
     }
 }
 
@@ -1522,6 +1613,14 @@ browser.runtime.onMessage.addListener(async (message) => {
             await switchWorkspace(message.workspaceId);
             return { currentWorkspaceId };
         });
+    } else if (message.action === 'WORKSPACE_PIN_MODE_CHANGED') {
+        return runWhenReady(async () => {
+            if (!currentWorkspaceId) return;
+            const windows = await browser.windows.getAll({ windowTypes: ['normal'] });
+            for (const window of windows) {
+                await repairWorkspaceVisibility(currentWorkspaceId, { allowActivate: true, windowId: window.id });
+            }
+        });
     } else if (message.action === 'GET_CURRENT_WORKSPACE') {
         await initReadyPromise;
         return { currentWorkspaceId };
@@ -1881,6 +1980,7 @@ browser.runtime.onMessage.addListener(async (message) => {
                 try { await browser.tabs.hide(tabsToHide); } catch (e) {}
             }
             
+            await restoreWorkspacePins(allTabs, await readWorkspacePins(allTabs), null);
             return { success: true, shownCount: tabsToShow.length };
         });
     } else if (message.action === 'GET_LOGS') {

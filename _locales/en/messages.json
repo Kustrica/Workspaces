@@ -1,4 +1,5 @@
 {
+    "sharedPinnedTabs": { "message": "Show pinned tabs in all workspaces" },
     "iconPickerAll": {
         "message": "All sets"
     },

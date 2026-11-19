@@ -1,5 +1,10 @@
 # Changelog
 
+1.19.25
+- Restored the inline icon picker at the bottom of the sidebar.
+- Kept pinned tabs within their workspaces by default, with an option to share them across workspaces.
+- Preserved pinned tab order, remembered focus, and pin state when moving tabs through the context menu.
+
 1.19.24
 - Fixed the workspace icon picker closing when clicking its controls.
 - Redesigned the picker to match the sidebar and load more results while scrolling.

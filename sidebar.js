@@ -128,11 +128,11 @@ async function renderEmojiGrid(query, resetScroll = true) {
     try {
         result = matchingWorkspaceIcons(await getWorkspaceIconCatalog(), activeIconPack, query, iconPageSize);
     } catch (error) {
-        if (request !== iconRenderRequest || !emojiPickerWrap.open) return;
+        if (request !== iconRenderRequest || emojiPickerWrap.hidden) return;
         console.error(error);
         result = { icons: [], hasMore: false };
     }
-    if (request !== iconRenderRequest || !emojiPickerWrap.open) return;
+    if (request !== iconRenderRequest || emojiPickerWrap.hidden) return;
 
     loadingIcons = false;
     const first = resetScroll ? 0 : renderedIconCount;
@@ -186,7 +186,7 @@ function openEmojiPicker(workspaceId = null) {
     renderedIconCount = 0;
     moreIconsAvailable = false;
     updateWorkspaceIconPacks();
-    emojiPickerWrap.showModal();
+    emojiPickerWrap.hidden = false;
     emojiSearchInput.focus({ preventScroll: true });
     renderEmojiGrid('');
 }
@@ -194,7 +194,7 @@ function openEmojiPicker(workspaceId = null) {
 function closeEmojiPicker() {
     ++iconRenderRequest;
     editingWorkspaceId = null;
-    if (emojiPickerWrap.open) emojiPickerWrap.close();
+    emojiPickerWrap.hidden = true;
 }
 
 workspaceIconPacks.addEventListener('click', event => {
@@ -210,15 +210,17 @@ emojiSearchInput.addEventListener('input', () => {
     renderEmojiGrid(emojiSearchInput.value);
 });
 emojiGrid.addEventListener('scroll', () => {
-    if (!emojiPickerWrap.open || loadingIcons || !moreIconsAvailable) return;
+    if (emojiPickerWrap.hidden || loadingIcons || !moreIconsAvailable) return;
     if (emojiGrid.scrollHeight - emojiGrid.scrollTop - emojiGrid.clientHeight > 100) return;
     iconPageSize += ICON_PAGE_SIZE;
     renderEmojiGrid(emojiSearchInput.value, false);
 }, { passive: true });
 document.getElementById('workspace-icon-cancel').onclick = closeEmojiPicker;
-emojiPickerWrap.addEventListener('cancel', event => {
-    event.preventDefault();
+emojiPickerWrap.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.stopPropagation();
     closeEmojiPicker();
+    if (addForm.classList.contains('visible')) toggleEmojiBtn.focus();
 });
 
 // Generate unique name for new workspace
@@ -401,7 +403,7 @@ const allTabsSection = document.getElementById('all-tabs-section');
 let isAllTabsMode = false;
 
 window.onclick = (e) => {
-    if (emojiPickerWrap.open || e.composedPath().includes(emojiPickerWrap)) return;
+    if (e.composedPath().includes(emojiPickerWrap) || e.composedPath().some(node => node?.classList?.contains("change-workspace-icon"))) return;
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('visible');
         if (e.target.id === 'delete-modal') {
@@ -412,6 +414,8 @@ window.onclick = (e) => {
         if (addForm.classList.contains('visible')) {
             addForm.classList.remove('visible');
             addBtn.style.display = 'block';
+            closeEmojiPicker();
+        } else if (!emojiPickerWrap.hidden) {
             closeEmojiPicker();
         }
     }

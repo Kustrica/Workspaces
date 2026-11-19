@@ -523,6 +523,12 @@ function showStatus(msg, type = 'success') {
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.initI18n) await window.initI18n();
+    const sharedPins = document.getElementById('shared-pinned-tabs');
+    sharedPins.checked = (await browser.storage.local.get('sharedPinnedTabs')).sharedPinnedTabs === true;
+    sharedPins.onchange = async () => {
+        await browser.storage.local.set({ sharedPinnedTabs: sharedPins.checked });
+        await browser.runtime.sendMessage({ action: 'WORKSPACE_PIN_MODE_CHANGED' });
+    };
     localizePage();
     loadShortcuts();
     
