@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Icônes" },
+    "iconPickerLogos": { "message": "Logos" },
+    "workspaceTabVisibility": { "message": "Visibilité des onglets" },
+    "sharedTabGroups": { "message": "Afficher les groupes d’onglets dans tous les espaces de travail" },
     "sharedPinnedTabs": { "message": "Afficher les onglets épinglés dans tous les espaces de travail" },
     "iconPickerAll": {
-        "message": "Tous les ensembles"
+        "message": "Tout"
     },
     "iconPickerMore": {
         "message": "Afficher plus"

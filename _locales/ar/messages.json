@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "أيقونات" },
+    "iconPickerLogos": { "message": "شعارات" },
+    "workspaceTabVisibility": { "message": "ظهور علامات التبويب" },
+    "sharedTabGroups": { "message": "عرض مجموعات علامات التبويب في جميع مساحات العمل" },
     "sharedPinnedTabs": { "message": "عرض علامات التبويب المثبتة في جميع مساحات العمل" },
     "iconPickerAll": {
-        "message": "كل المجموعات"
+        "message": "الكل"
     },
     "iconPickerMore": {
         "message": "عرض المزيد"

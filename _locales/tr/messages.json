@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Simgeler" },
+    "iconPickerLogos": { "message": "Logolar" },
+    "workspaceTabVisibility": { "message": "Sekme görünürlüğü" },
+    "sharedTabGroups": { "message": "Sekme gruplarını tüm çalışma alanlarında göster" },
     "sharedPinnedTabs": { "message": "Sabitlenmiş sekmeleri tüm çalışma alanlarında göster" },
     "iconPickerAll": {
-        "message": "Tüm setler"
+        "message": "Tümü"
     },
     "iconPickerMore": {
         "message": "Daha fazla göster"

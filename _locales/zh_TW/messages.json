@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "圖示" },
+    "iconPickerLogos": { "message": "標誌" },
+    "workspaceTabVisibility": { "message": "分頁可見性" },
+    "sharedTabGroups": { "message": "在所有工作區顯示分頁群組" },
     "sharedPinnedTabs": { "message": "在所有工作區顯示已釘選的分頁" },
     "iconPickerAll": {
-        "message": "所有圖示集"
+        "message": "全部"
     },
     "iconPickerMore": {
         "message": "顯示更多"

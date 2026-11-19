@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Icone" },
+    "iconPickerLogos": { "message": "Loghi" },
+    "workspaceTabVisibility": { "message": "Visibilità delle schede" },
+    "sharedTabGroups": { "message": "Mostra i gruppi di schede in tutti gli spazi di lavoro" },
     "sharedPinnedTabs": { "message": "Mostra le schede fissate in tutti gli spazi di lavoro" },
     "iconPickerAll": {
-        "message": "Tutti i set"
+        "message": "Tutti"
     },
     "iconPickerMore": {
         "message": "Mostra altro"

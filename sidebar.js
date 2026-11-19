@@ -37,7 +37,7 @@ function renderNewWorkspaceIcon() {
     }
 }
 renderNewWorkspaceIcon();
-newIconPreview.onclick = () => openEmojiPicker();
+
 const saveNewBtn = document.getElementById('save-new-ws');
 const toggleEmojiBtn = document.getElementById('toggle-emoji');
 const emojiGrid = document.getElementById('emoji-grid');
@@ -235,7 +235,27 @@ function generateWorkspaceName() {
     return name;
 }
 
-toggleEmojiBtn.onclick = () => openEmojiPicker();
+toggleEmojiBtn.onclick = () => {
+    if (emojiPickerWrap.hidden) openEmojiPicker();
+    else closeEmojiPicker();
+};
+
+function closeNewWorkspaceForm() {
+    addForm.classList.remove('visible');
+    addBtn.style.display = 'block';
+    closeEmojiPicker();
+}
+
+document.getElementById('cancel-new-workspace').onclick = () => {
+    closeNewWorkspaceForm();
+    addBtn.focus();
+};
+addForm.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.stopPropagation();
+    closeNewWorkspaceForm();
+    addBtn.focus();
+});
 
 addBtn.onclick = () => {
     addForm.classList.toggle('visible');
@@ -412,9 +432,7 @@ window.onclick = (e) => {
     }
     if (!e.composedPath().includes(addForm) && !e.composedPath().includes(addBtn)) {
         if (addForm.classList.contains('visible')) {
-            addForm.classList.remove('visible');
-            addBtn.style.display = 'block';
-            closeEmojiPicker();
+            closeNewWorkspaceForm();
         } else if (!emojiPickerWrap.hidden) {
             closeEmojiPicker();
         }
@@ -1358,9 +1376,7 @@ saveNewBtn.onclick = async () => {
     });
     
     newNameInput.value = '';
-    addForm.classList.remove('visible');
-    addBtn.style.display = 'block'; 
-    closeEmojiPicker();
+    closeNewWorkspaceForm();
     
     if (workspaces.length === 1) {
         await activateWorkspace(newWs.id);

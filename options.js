@@ -523,12 +523,19 @@ function showStatus(msg, type = 'success') {
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.initI18n) await window.initI18n();
-    const sharedPins = document.getElementById('shared-pinned-tabs');
-    sharedPins.checked = (await browser.storage.local.get('sharedPinnedTabs')).sharedPinnedTabs === true;
-    sharedPins.onchange = async () => {
-        await browser.storage.local.set({ sharedPinnedTabs: sharedPins.checked });
-        await browser.runtime.sendMessage({ action: 'WORKSPACE_PIN_MODE_CHANGED' });
+    const visibilitySettings = {
+        'shared-pinned-tabs': 'sharedPinnedTabs',
+        'shared-tab-groups': 'sharedTabGroups'
     };
+    const visibility = await browser.storage.local.get(Object.values(visibilitySettings));
+    for (const [id, key] of Object.entries(visibilitySettings)) {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = visibility[key] === true;
+        checkbox.onchange = async () => {
+            await browser.storage.local.set({ [key]: checkbox.checked });
+            await browser.runtime.sendMessage({ action: 'WORKSPACE_PIN_MODE_CHANGED' });
+        };
+    }
     localizePage();
     loadShortcuts();
     

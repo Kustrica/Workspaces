@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Ícones" },
+    "iconPickerLogos": { "message": "Logos" },
+    "workspaceTabVisibility": { "message": "Visibilidade das abas" },
+    "sharedTabGroups": { "message": "Mostrar grupos de abas em todos os espaços de trabalho" },
     "sharedPinnedTabs": { "message": "Mostrar abas fixadas em todos os espaços de trabalho" },
     "iconPickerAll": {
-        "message": "Todos os conjuntos"
+        "message": "Todos"
     },
     "iconPickerMore": {
         "message": "Mostrar mais"

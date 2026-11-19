@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "アイコン" },
+    "iconPickerLogos": { "message": "ロゴ" },
+    "workspaceTabVisibility": { "message": "タブの表示" },
+    "sharedTabGroups": { "message": "すべてのワークスペースにタブグループを表示する" },
     "sharedPinnedTabs": { "message": "固定タブをすべてのワークスペースに表示する" },
     "iconPickerAll": {
-        "message": "すべてのセット"
+        "message": "すべて"
     },
     "iconPickerMore": {
         "message": "さらに表示"

@@ -291,13 +291,6 @@
             border-color: var(--input-border);
         }
 
-        #new-ws-icon-preview {
-            flex: 0 0 42px;
-            display: grid;
-            place-items: center;
-            font-size: 21px;
-        }
-        #new-ws-icon-preview img { width: 22px; height: 22px; object-fit: contain; }
         #emoji-picker-wrap {
             box-sizing: border-box;
             flex: 0 1 auto;
@@ -308,6 +301,23 @@
             color: var(--text-color);
         }
         #emoji-picker-wrap:not([hidden]) { display: flex; flex-direction: column; gap: 6px; }
+        .workspace-form-heading, .workspace-picker-heading {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .workspace-form-heading input { flex: 1; min-width: 0; }
+        .workspace-picker-heading h2 { flex: 1; }
+        .workspace-close, .add-form .workspace-close {
+            flex: 0 0 32px; width: 32px; height: 32px; margin: 0;
+            display: grid; place-items: center; padding: 0;
+            border: 1px solid var(--input-border); border-radius: 6px;
+            background: transparent; color: var(--text-color);
+            font: 20px/1 system-ui; cursor: pointer;
+        }
+        .workspace-close:hover { background: var(--item-hover); }
+        #new-ws-icon-preview { display: inline-grid; place-items: center; width: 20px; height: 20px; }
+        #new-ws-icon-preview img { display: block; width: 20px; height: 20px; object-fit: contain; }
+        #workspace-icon-packs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        #workspace-icon-packs button { padding-inline: 2px; font-size: 12px; }
         #emoji-picker-wrap h2 { font-size: 15px; margin: 0; }
         .workspace-icon-packs { display: flex; flex-wrap: wrap; gap: 5px; }
         .workspace-icon-packs button, .emoji-option {
@@ -863,13 +873,15 @@
     </div>
     
     <div id="add-form" class="add-form">
-        <input type="text" id="new-ws-name" placeholder="__MSG_name__" data-i18n-placeholder="name">
+        <div class="workspace-form-heading">
+            <input type="text" id="new-ws-name" placeholder="__MSG_name__" data-i18n-placeholder="name">
+            <button type="button" id="cancel-new-workspace" class="workspace-close" data-i18n-title="cancel">×</button>
+        </div>
         
         <div class="emoji-container">
             <input type="hidden" id="new-ws-icon" value="img:icons/workspace-picker/tabler/folder.svg">
-            <button type="button" id="new-ws-icon-preview" class="emoji-toggle" data-i18n-title="selectEmoji" aria-label="Choose icon"></button>
             <button type="button" id="toggle-emoji" class="emoji-toggle" style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                <img src="icons/emoji-choose-64.png" style="width: 20px; height: 20px;"> 
+                <span id="new-ws-icon-preview" aria-hidden="true"></span>
                 <span data-i18n="selectEmoji">__MSG_selectEmoji__</span>
             </button>
         </div>
@@ -878,18 +890,18 @@
     </div>
 
     <section hidden id="emoji-picker-wrap" aria-labelledby="workspace-picker-title">
-        <h2 id="workspace-picker-title" data-i18n="selectEmoji">Choose icon</h2>
+        <div class="workspace-picker-heading">
+            <h2 id="workspace-picker-title" data-i18n="selectEmoji">Choose icon</h2>
+            <button type="button" id="workspace-icon-cancel" class="workspace-close" data-i18n-title="cancel">×</button>
+        </div>
         <div class="workspace-icon-packs" id="workspace-icon-packs">
-            <button type="button" data-pack="all" data-i18n="iconPickerAll">All sets</button>
+            <button type="button" data-pack="all" data-i18n="iconPickerAll">All</button>
             <button type="button" data-pack="native">Emoji</button>
-            <button type="button" data-pack="tabler">Tabler</button>
-            <button type="button" data-pack="logos">SVG Logos</button>
+            <button type="button" data-pack="tabler" data-i18n="iconPickerIcons">Icons</button>
+            <button type="button" data-pack="logos" data-i18n="iconPickerLogos">Logos</button>
         </div>
         <input id="emoji-search" type="search" class="emoji-search-input" data-i18n-placeholder="searchEmoji" data-i18n-title="searchEmoji" placeholder="Search icons">
         <div id="emoji-grid" class="emoji-grid"></div>
-        <div class="workspace-icon-packs">
-            <button type="button" id="workspace-icon-cancel" data-i18n="cancel">Cancel</button>
-        </div>
     </section>
 
     <div id="move-modal" class="modal-overlay">

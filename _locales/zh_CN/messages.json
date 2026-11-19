@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "图标" },
+    "iconPickerLogos": { "message": "标志" },
+    "workspaceTabVisibility": { "message": "标签页可见性" },
+    "sharedTabGroups": { "message": "在所有工作区显示标签页组" },
     "sharedPinnedTabs": { "message": "在所有工作区显示固定标签页" },
     "iconPickerAll": {
-        "message": "所有图标集"
+        "message": "全部"
     },
     "iconPickerMore": {
         "message": "显示更多"

@@ -124,3 +124,4 @@ The automated checks cover large replacement, full URLs, duplicate counts, redir
 The workspace icon picker uses system emoji, Tabler and SVG Logos. The catalog carries CLDR keywords across the 19 UI locales and stores packaged artwork as existing-compatible img: relative paths. Distribution notices are listed in ICON-LICENSES.txt.
 
 Workspaces stores temporarily hidden pin state in Firefox tab-session metadata. Pins are workspace-local by default, with a local preference for window-wide visibility. The workspace icon picker is an inline section at the bottom of the sidebar.
+Tab visibility settings can optionally preserve native groups across workspace switches without reassigning their member tabs. Previously hidden groups are restored through the existing group metadata.

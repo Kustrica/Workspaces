@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Иконки" },
+    "iconPickerLogos": { "message": "Логотипы" },
+    "workspaceTabVisibility": { "message": "Видимость вкладок" },
+    "sharedTabGroups": { "message": "Показывать группы вкладок во всех пространствах" },
     "sharedPinnedTabs": { "message": "Показывать закреплённые вкладки во всех пространствах" },
     "iconPickerAll": {
-        "message": "Все наборы"
+        "message": "Все"
     },
     "iconPickerMore": {
         "message": "Показать ещё"

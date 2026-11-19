@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Icons" },
+    "iconPickerLogos": { "message": "Logos" },
+    "workspaceTabVisibility": { "message": "Tab Visibility" },
+    "sharedTabGroups": { "message": "Show tab groups in all workspaces" },
     "sharedPinnedTabs": { "message": "Show pinned tabs in all workspaces" },
     "iconPickerAll": {
-        "message": "All sets"
+        "message": "All"
     },
     "iconPickerMore": {
         "message": "Show more"

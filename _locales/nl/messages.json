@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Pictogrammen" },
+    "iconPickerLogos": { "message": "Logo’s" },
+    "workspaceTabVisibility": { "message": "Tabbladen weergeven" },
+    "sharedTabGroups": { "message": "Tabbladgroepen in alle werkruimten weergeven" },
     "sharedPinnedTabs": { "message": "Vastgemaakte tabbladen in alle werkruimten tonen" },
     "iconPickerAll": {
-        "message": "Alle sets"
+        "message": "Alles"
     },
     "iconPickerMore": {
         "message": "Meer tonen"

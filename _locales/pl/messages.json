@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Ikony" },
+    "iconPickerLogos": { "message": "Logo" },
+    "workspaceTabVisibility": { "message": "Widoczność kart" },
+    "sharedTabGroups": { "message": "Pokazuj grupy kart we wszystkich przestrzeniach roboczych" },
     "sharedPinnedTabs": { "message": "Pokazuj przypięte karty we wszystkich przestrzeniach roboczych" },
     "iconPickerAll": {
-        "message": "Wszystkie zestawy"
+        "message": "Wszystkie"
     },
     "iconPickerMore": {
         "message": "Pokaż więcej"

@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Значки" },
+    "iconPickerLogos": { "message": "Логотипи" },
+    "workspaceTabVisibility": { "message": "Видимість вкладок" },
+    "sharedTabGroups": { "message": "Показувати групи вкладок у всіх просторах" },
     "sharedPinnedTabs": { "message": "Показувати закріплені вкладки в усіх робочих просторах" },
     "iconPickerAll": {
-        "message": "Усі набори"
+        "message": "Усі"
     },
     "iconPickerMore": {
         "message": "Показати більше"

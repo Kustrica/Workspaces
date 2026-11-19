@@ -185,7 +185,15 @@
             accent-color: #ff9400;
             cursor: pointer;
         }
-</style>
+        .visibility-options { display: grid; gap: 10px; }
+        .visibility-options label { display: flex; align-items: center; gap: 8px; margin: 0 !important; }
+        .icon-license-section summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: #ff9400; font-weight: 600; }
+        .icon-license-section summary::-webkit-details-marker { display: none; }
+        .license-chevron { width: 7px; height: 7px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-inline-end: 4px; }
+        .icon-license-section[open] .license-chevron { transform: rotate(225deg); }
+        .icon-license-section li { margin-block: 4px; }
+        .icon-license-section a { color: inherit; text-decoration-color: #ff9400; text-underline-offset: 3px; }
+    </style>
 </head>
 <body>
     <div id="restore-progress-overlay" class="modal-overlay" style="z-index: 9999; display: none;">
@@ -271,10 +279,17 @@
     </div>
 
     <div class="section">
+        <h2 data-i18n="workspaceTabVisibility">Tab visibility</h2>
+        <div class="visibility-options">
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
             <input type="checkbox" id="shared-pinned-tabs">
             <span data-i18n="sharedPinnedTabs">Show pinned tabs in all workspaces</span>
         </label>
+            <label><input type="checkbox" id="shared-tab-groups"><span data-i18n="sharedTabGroups">Show tab groups in all workspaces</span></label>
+        </div>
+    </div>
+
+    <div class="section">
         <h2 data-i18n="dataManagementTitle">Data Management</h2>
         <p class="info-text" data-i18n="dataManagementDesc">Backup and restore...</p>
         
@@ -684,8 +699,8 @@
     <script src="sync-progress.js"></script>
     <script src="options.js"></script>
 
-    <details class="card" style="margin-top: 16px;">
-        <summary data-i18n="iconPickerLicenses">Icon licenses</summary>
+    <details class="section icon-license-section">
+        <summary><span data-i18n="iconPickerLicenses">Icon licenses</span><span class="license-chevron" aria-hidden="true"></span></summary>
         <ul>
             <li>Tabler · <a href="LICENSE-TABLER.txt">MIT</a></li>
             <li>Lucide · <a href="LICENSE-LUCIDE.txt">ISC / MIT</a></li>

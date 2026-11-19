@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Symbole" },
+    "iconPickerLogos": { "message": "Logos" },
+    "workspaceTabVisibility": { "message": "Tab-Sichtbarkeit" },
+    "sharedTabGroups": { "message": "Tab-Gruppen in allen Arbeitsbereichen anzeigen" },
     "sharedPinnedTabs": { "message": "Angeheftete Tabs in allen Arbeitsbereichen anzeigen" },
     "iconPickerAll": {
-        "message": "Alle Sammlungen"
+        "message": "Alle"
     },
     "iconPickerMore": {
         "message": "Mehr anzeigen"

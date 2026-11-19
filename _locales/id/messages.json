@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Ikon" },
+    "iconPickerLogos": { "message": "Logo" },
+    "workspaceTabVisibility": { "message": "Visibilitas tab" },
+    "sharedTabGroups": { "message": "Tampilkan grup tab di semua ruang kerja" },
     "sharedPinnedTabs": { "message": "Tampilkan tab yang disematkan di semua ruang kerja" },
     "iconPickerAll": {
-        "message": "Semua set"
+        "message": "Semua"
     },
     "iconPickerMore": {
         "message": "Tampilkan lainnya"

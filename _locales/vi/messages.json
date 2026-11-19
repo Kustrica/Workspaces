@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Biểu tượng" },
+    "iconPickerLogos": { "message": "Logo" },
+    "workspaceTabVisibility": { "message": "Hiển thị thẻ" },
+    "sharedTabGroups": { "message": "Hiển thị nhóm thẻ trong mọi không gian làm việc" },
     "sharedPinnedTabs": { "message": "Hiển thị thẻ đã ghim trong tất cả không gian làm việc" },
     "iconPickerAll": {
-        "message": "Tất cả bộ biểu tượng"
+        "message": "Tất cả"
     },
     "iconPickerMore": {
         "message": "Hiện thêm"

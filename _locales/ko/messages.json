@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "아이콘" },
+    "iconPickerLogos": { "message": "로고" },
+    "workspaceTabVisibility": { "message": "탭 표시" },
+    "sharedTabGroups": { "message": "모든 작업 공간에 탭 그룹 표시" },
     "sharedPinnedTabs": { "message": "모든 작업 공간에서 고정 탭 표시" },
     "iconPickerAll": {
-        "message": "모든 세트"
+        "message": "전체"
     },
     "iconPickerMore": {
         "message": "더 보기"

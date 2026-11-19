@@ -1,7 +1,11 @@
 {
+    "iconPickerIcons": { "message": "Iconos" },
+    "iconPickerLogos": { "message": "Logos" },
+    "workspaceTabVisibility": { "message": "Visibilidad de pestañas" },
+    "sharedTabGroups": { "message": "Mostrar grupos de pestañas en todos los espacios de trabajo" },
     "sharedPinnedTabs": { "message": "Mostrar pestañas fijadas en todos los espacios de trabajo" },
     "iconPickerAll": {
-        "message": "Todos los conjuntos"
+        "message": "Todos"
     },
     "iconPickerMore": {
         "message": "Mostrar más"

@@ -524,7 +524,7 @@ const WORKSPACE_PIN_KEY = 'workspacesParkedPin';
 let workspacePinChanges = 0;
 
 async function readWorkspacePins(tabs) {
-    const { sharedPinnedTabs } = await browser.storage.local.get('sharedPinnedTabs');
+    const { sharedPinnedTabs, sharedTabGroups } = await browser.storage.local.get(['sharedPinnedTabs', 'sharedTabGroups']);
     const saved = new Map();
     if (browser.sessions?.getTabValue) {
         await Promise.all(tabs.map(async tab => {
@@ -532,7 +532,21 @@ async function readWorkspacePins(tabs) {
             if (entry && Number.isFinite(entry.order)) saved.set(tab.id, entry);
         }));
     }
-    return { shared: sharedPinnedTabs === true, saved };
+    const groups = new Map();
+    if (sharedTabGroups === true && typeof WorkspacesGroupVisibility !== 'undefined') {
+        const visibility = WorkspacesGroupVisibility.create(browser);
+        await Promise.all(tabs.map(async tab => {
+            const owner = tabWorkspaceMap[tab.id];
+            if (!owner) return;
+            if (tab.groupId >= 0) {
+                groups.set(tab.id, owner);
+            } else {
+                const meta = await visibility.getSavedMetadata(tab.id);
+                if (meta?.workspaceId === owner) groups.set(tab.id, owner);
+            }
+        }));
+    }
+    return { shared: sharedPinnedTabs === true, saved, groups };
 }
 
 async function prepareWorkspacePinsForHide(tabs, ids, pins) {
@@ -596,6 +610,28 @@ async function restoreWorkspacePins(tabs, pins, workspaceId) {
 }
 
 
+async function restoreSharedWorkspaceGroups(visibility, groups, workspaceId) {
+    if (!visibility || groups.size === 0) return;
+    const byOwner = new Map();
+    for (const [id, owner] of groups) {
+        if (owner === workspaceId) continue;
+        if (!byOwner.has(owner)) byOwner.set(owner, []);
+        byOwner.get(owner).push(id);
+    }
+    for (const [owner, ids] of byOwner) {
+        try {
+            const live = (await Promise.all(ids.map(id => browser.tabs.get(id).catch(() => null)))).filter(Boolean);
+            const hidden = live.filter(tab => tab.hidden).map(tab => tab.id);
+            if (hidden.length) await browser.tabs.show(hidden);
+            if (live.some(tab => tab.groupId == null || tab.groupId < 0)) {
+                await visibility.restoreVisible(live.map(tab => tab.id), owner);
+            }
+        } catch (error) {
+            console.warn('Could not show a shared workspace group', error);
+        }
+    }
+}
+
 // Repair show/hide after background wake without forcing a different active tab.
 async function repairWorkspaceVisibility(workspaceId, options = {}) {
     if (!workspaceId || isAllTabsMode) return;
@@ -610,6 +646,7 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
     const toHide = [];
 
     for (const tab of tabs) {
+        if (pins.groups.has(tab.id) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         if (pins.shared && (tab.pinned || pins.saved.has(tab.id)) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         let ws = tabWorkspaceMap[tab.id];
         if (!ws) {
@@ -686,6 +723,7 @@ async function repairWorkspaceVisibility(workspaceId, options = {}) {
         try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch (e) {}
     }
 
+    await restoreSharedWorkspaceGroups(groupVisibility, pins.groups, workspaceId);
     await restoreWorkspacePins(tabs, pins, workspaceId);
 
     saveState({ force: !isInitializingState });
@@ -773,6 +811,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     }
     
     for (const tab of tabs) {
+        if (pins.groups.has(tab.id) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         if (pins.shared && (tab.pinned || pins.saved.has(tab.id)) && tabWorkspaceMap[tab.id] !== workspaceId) continue;
         let ws = tabWorkspaceMap[tab.id];
 
@@ -888,6 +927,7 @@ async function switchWorkspace(workspaceId, preserveActiveTab = false, options =
     if (groupVisibility && toShow.length > 0) {
         try { await groupVisibility.restoreVisible(toShow, workspaceId); } catch(e) {}
     }
+    await restoreSharedWorkspaceGroups(groupVisibility, pins.groups, workspaceId);
     await restoreWorkspacePins(tabs, pins, workspaceId);
     await saveState();
     } finally {
