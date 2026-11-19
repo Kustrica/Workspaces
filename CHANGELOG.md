@@ -1,5 +1,8 @@
 # Changelog
 
+1.19.20
+- Updated the extension icon.
+
 1.19.19
 - Combined group recovery marker and appearance updates to reduce sequential Firefox calls during workspace switching.
 
