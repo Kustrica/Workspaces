@@ -3,8 +3,8 @@
   "default_locale": "en",
   "name": "__MSG_extensionName__",
   "author": "Kustrica (Telegram: @Kustrica)",
-  "homepage_url": "https://t.me/Kustric",
-  "version": "1.19.20",
+  "homepage_url": "https://t.me/kustricadev",
+  "version": "1.19.21",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -27,6 +27,7 @@
     "default_icon": "icons/main1-200.png"
   },
   "icons": {
+    "128": "icons/addon-128.png",
     "200": "icons/main1-200.png"
   },
   "background": {

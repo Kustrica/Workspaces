@@ -1,5 +1,9 @@
 # Changelog
 
+1.19.21
+- Updated the Telegram contact and added a 128 px icon for Firefox Add-ons Manager.
+- Restored the star icon for the default Main workspace.
+
 1.19.20
 - Updated the extension icon.
 
