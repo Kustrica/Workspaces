@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "모든 세트"
+    },
+    "iconPickerMore": {
+        "message": "더 보기"
+    },
+    "iconPickerLicenses": {
+        "message": "아이콘 라이선스"
+    },
     "actionRedone": {
         "message": "다시 실행됨"
     },

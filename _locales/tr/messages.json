@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Tüm setler"
+    },
+    "iconPickerMore": {
+        "message": "Daha fazla göster"
+    },
+    "iconPickerLicenses": {
+        "message": "Simge lisansları"
+    },
     "actionRedone": {
         "message": "Yinelendi"
     },

@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "すべてのセット"
+    },
+    "iconPickerMore": {
+        "message": "さらに表示"
+    },
+    "iconPickerLicenses": {
+        "message": "アイコンのライセンス"
+    },
     "actionRedone": {
         "message": "やり直しました"
     },

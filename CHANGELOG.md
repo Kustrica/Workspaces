@@ -1,5 +1,21 @@
 # Changelog
 
+1.19.24
+- Fixed the workspace icon picker closing when clicking its controls.
+- Redesigned the picker to match the sidebar and load more results while scrolling.
+- Added a visible icon preview for new workspaces and aligned and enlarged sidebar controls.
+- Improved icon contrast and checkbox styling, and moved icon licenses to Settings.
+
+1.19.23
+- Added an icon picker for new and existing workspaces with Tabler, system emoji, and SVG Logos. The picker opens on Tabler.
+- Added search across all icon sets, with emoji keywords in all 19 interface languages.
+- Updated the icons for standard workspaces, sidebar actions, and new workspaces.
+- Refreshed the GitHub and Patreon icons in Settings.
+
+1.19.22
+- Added a workspace icon picker for new and existing workspaces with Tabler, system emoji, and SVG Logos.
+- Added search across all icon sets, including emoji keywords in all 19 interface languages.
+
 1.19.21
 - Updated the Telegram contact and added a 128 px icon for Firefox Add-ons Manager.
 - Restored the star icon for the default Main workspace.

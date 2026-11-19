@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Все наборы"
+    },
+    "iconPickerMore": {
+        "message": "Показать ещё"
+    },
+    "iconPickerLicenses": {
+        "message": "Лицензии значков"
+    },
     "actionRedone": {
         "message": "Возвращено"
     },

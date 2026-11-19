@@ -120,3 +120,5 @@ The automated checks cover large replacement, full URLs, duplicate counts, redir
 - **Tab Hiding (Скрытие вкладок)**: Использование API `browser.tabs.hide` / `show` для отображения только вкладок текущего пространства.
 - **Host Permissions (Разрешения узлов)**: Разрешения доступа к содержимому веб-сайтов (`<all_urls>`).
 - **Pending Assignment (Ожидающее назначение)**: Кратковременный флаг новой вкладки в `pendingTabAssignments`, пока `onCreated` уточняет session/opener — `switchWorkspace` не должен переназначать такие вкладки.
+
+The workspace icon picker uses system emoji, Tabler and SVG Logos. The catalog carries CLDR keywords across the 19 UI locales and stores packaged artwork as existing-compatible img: relative paths. Distribution notices are listed in ICON-LICENSES.txt.

@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Semua set"
+    },
+    "iconPickerMore": {
+        "message": "Tampilkan lainnya"
+    },
+    "iconPickerLicenses": {
+        "message": "Lisensi ikon"
+    },
     "actionRedone": {
         "message": "Diulangi"
     },

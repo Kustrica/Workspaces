@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Усі набори"
+    },
+    "iconPickerMore": {
+        "message": "Показати більше"
+    },
+    "iconPickerLicenses": {
+        "message": "Ліцензії значків"
+    },
     "actionRedone": {
         "message": "Повернуто"
     },

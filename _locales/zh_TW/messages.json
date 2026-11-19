@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "所有圖示集"
+    },
+    "iconPickerMore": {
+        "message": "顯示更多"
+    },
+    "iconPickerLicenses": {
+        "message": "圖示授權"
+    },
     "actionRedone": {
         "message": "已重做"
     },

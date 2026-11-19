@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "كل المجموعات"
+    },
+    "iconPickerMore": {
+        "message": "عرض المزيد"
+    },
+    "iconPickerLicenses": {
+        "message": "تراخيص الأيقونات"
+    },
     "actionRedone": {
         "message": "تمت الإعادة"
     },

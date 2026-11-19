@@ -1,0 +1,18 @@
+Workspace icon sources
+
+Tabler Icons — Copyright (c) Paweł Kuna and contributors. MIT.
+https://github.com/tabler/tabler-icons
+The extension adjusts the display color to match its themes. See LICENSE-TABLER.txt.
+
+SVG Logos collection — Gil Bárbara and contributors. CC0-1.0.
+https://github.com/gilbarbara/logos
+Individual logos and trademarks belong to their respective owners. The icons identify
+services and projects and do not imply endorsement. See LICENSE-SVG-LOGOS.txt.
+
+Unicode CLDR — localized names and keywords for emoji search. Unicode License v3.
+https://github.com/unicode-org/cldr-json
+See LICENSE-UNICODE.txt. System emoji are rendered by the installed font.
+
+GitHub and Patreon link artwork: https://simpleicons.org/ (collection: CC0; LICENSE-SIMPLE-ICONS.txt). Brand marks belong to their respective owners.
+Tabler icon artwork: https://github.com/tabler/tabler-icons (MIT; LICENSE-TABLER.txt).
+Lucide icon artwork: https://lucide.dev/license (ISC and applicable Feather MIT notices; LICENSE-LUCIDE.txt).

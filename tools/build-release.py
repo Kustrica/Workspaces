@@ -9,7 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_FILES = (
     'manifest.json', 'i18n.js', 'background.js', 'sync.js', 'group-visibility.js',
     'group-snapshot.js', 'options.html',
-    'options.js', 'sidebar.html', 'sidebar.js', 'emoji-catalog.json',
+    'options.js', 'sidebar.html', 'sidebar.js', 'workspace-icon-catalog.json',
+    'LICENSE', 'LICENSE-LUCIDE.txt', 'ICON-LICENSES.txt', 'LICENSE-TABLER.txt',
+    'LICENSE-SVG-LOGOS.txt', 'LICENSE-UNICODE.txt', 'LICENSE-SIMPLE-ICONS.txt',
     'sync-breath.css', 'sync-breath.js', 'sync-progress.css', 'sync-progress.js',
 )
 
@@ -34,6 +36,9 @@ def check_resources(files):
     references.update(manifest['icons'].values())
     references.add(manifest['sidebar_action']['default_icon'])
     references.add(manifest['action']['default_icon'])
+    catalog = json.loads(files['workspace-icon-catalog.json'].read_text(encoding='utf-8-sig'))
+    references.update(icon[4:] for pack in catalog.values() for icon, *_ in pack
+                      if icon.startswith('img:'))
     for name, file in files.items():
         if file.suffix not in {'.js', '.html', '.css'}:
             continue

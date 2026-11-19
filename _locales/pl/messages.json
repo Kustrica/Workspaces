@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Wszystkie zestawy"
+    },
+    "iconPickerMore": {
+        "message": "Pokaż więcej"
+    },
+    "iconPickerLicenses": {
+        "message": "Licencje ikon"
+    },
     "actionRedone": {
         "message": "Ponowiono"
     },

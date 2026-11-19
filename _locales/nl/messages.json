@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Alle sets"
+    },
+    "iconPickerMore": {
+        "message": "Meer tonen"
+    },
+    "iconPickerLicenses": {
+        "message": "Pictogramlicenties"
+    },
     "actionRedone": {
         "message": "Opnieuw uitgevoerd"
     },

@@ -1909,7 +1909,7 @@ browser.runtime.onMessage.addListener(async (message) => {
                     await switchWorkspace('ws_default');
                 }
             } else if (type === 'CREATE_WORKSPACE') {
-                workspaces.push({ id: data.id, name: data.name, icon: '📁' });
+                workspaces.push({ id: data.id, name: data.name, icon: data.icon || '📁' });
                 await browser.storage.local.set({ workspaces });
             } else if (type === 'RENAME_WORKSPACE') {
                 const ws = workspaces.find(w => w.id === data.id);

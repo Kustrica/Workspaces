@@ -1,4 +1,13 @@
 {
+    "iconPickerAll": {
+        "message": "Tất cả bộ biểu tượng"
+    },
+    "iconPickerMore": {
+        "message": "Hiện thêm"
+    },
+    "iconPickerLicenses": {
+        "message": "Giấy phép biểu tượng"
+    },
     "actionRedone": {
         "message": "Đã làm lại"
     },

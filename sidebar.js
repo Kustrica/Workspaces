@@ -23,43 +23,29 @@ const addBtn = document.getElementById('add-workspace');
 const addForm = document.getElementById('add-form');
 const newNameInput = document.getElementById('new-ws-name');
 const newIconInput = document.getElementById('new-ws-icon');
+const defaultNewWorkspaceIcon = newIconInput.value;
+const newIconPreview = document.getElementById('new-ws-icon-preview');
+function renderNewWorkspaceIcon() {
+    const value = newIconInput.value || '📁';
+    if (value.startsWith('img:')) {
+        const image = document.createElement('img');
+        image.src = value.slice(4);
+        image.alt = '';
+        newIconPreview.replaceChildren(image);
+    } else {
+        newIconPreview.textContent = value;
+    }
+}
+renderNewWorkspaceIcon();
+newIconPreview.onclick = () => openEmojiPicker();
 const saveNewBtn = document.getElementById('save-new-ws');
 const toggleEmojiBtn = document.getElementById('toggle-emoji');
 const emojiGrid = document.getElementById('emoji-grid');
 const emojiPickerWrap = document.getElementById('emoji-picker-wrap');
 const emojiSearchInput = document.getElementById('emoji-search');
-const customIconSection = document.getElementById('custom-icon-section');
-const customIconsList = document.getElementById('custom-icons-list');
 const toggleActionsBtn = document.getElementById('toggle-actions-btn');
 const logsBtn = document.getElementById('logs-btn');
 const themeBtn = document.getElementById('theme-btn');
-
-const CUSTOM_ICONS = [];
-
-// Full emoji set is loaded from emoji-catalog.json (generated from Unicode/gemoji — not hand-listed).
-let emojiCatalog = null; // [[emoji, searchText], ...]
-let emojiCatalogPromise = null;
-
-function ensureEmojiCatalog() {
-    if (emojiCatalog) return Promise.resolve(emojiCatalog);
-    if (!emojiCatalogPromise) {
-        emojiCatalogPromise = fetch(browser.runtime.getURL('emoji-catalog.json'))
-            .then((r) => {
-                if (!r.ok) throw new Error('Failed to load emoji catalog');
-                return r.json();
-            })
-            .then((data) => {
-                emojiCatalog = Array.isArray(data) ? data : [];
-                return emojiCatalog;
-            })
-            .catch((e) => {
-                console.error(e);
-                emojiCatalog = [];
-                return emojiCatalog;
-            });
-    }
-    return emojiCatalogPromise;
-}
 
 function clearElement(el) {
     while (el.firstChild) {
@@ -67,90 +53,173 @@ function clearElement(el) {
     }
 }
 
-// Render the emoji grid, optionally filtered by a search query (matched against catalog keywords).
-async function renderEmojiGrid(query) {
-    clearElement(emojiGrid);
+const workspaceIconPacks = document.getElementById('workspace-icon-packs');
+const iconPackOrder = ['native', 'tabler', 'logos'];
+let workspaceIconCatalog;
+let activeIconPack = 'tabler';
+const ICON_PAGE_SIZE = 72;
+let iconPageSize = ICON_PAGE_SIZE;
+let renderedIconCount = 0;
+let moreIconsAvailable = false;
+let loadingIcons = false;
+let iconRenderRequest = 0;
+let editingWorkspaceId = null;
 
-    const loading = document.createElement('div');
-    loading.className = 'emoji-grid-empty';
-    loading.textContent = '…';
-    emojiGrid.appendChild(loading);
-
-    const catalog = await ensureEmojiCatalog();
-    if (!emojiGrid.isConnected) return;
-
-    clearElement(emojiGrid);
-    const q = (query || '').trim().toLowerCase();
-    const rawQuery = (query || '').trim();
-
-    const frag = document.createDocumentFragment();
-    let shown = 0;
-
-    for (let i = 0; i < catalog.length; i++) {
-        const emoji = catalog[i][0];
-        const keywords = catalog[i][1] || '';
-        if (q) {
-            const matchesKeyword = keywords.includes(q);
-            const matchesEmojiItself = emoji.includes(rawQuery);
-            if (!matchesKeyword && !matchesEmojiItself) continue;
-        }
-        shown++;
-
-        const div = document.createElement('div');
-        div.className = 'emoji-option';
-        div.textContent = emoji;
-        div.title = keywords;
-        div.onclick = () => {
-            newIconInput.value = emoji;
-            closeEmojiPicker();
-        };
-        frag.appendChild(div);
+function getWorkspaceIconCatalog() {
+    if (!workspaceIconCatalog) {
+        workspaceIconCatalog = fetch(browser.runtime.getURL('workspace-icon-catalog.json'))
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load workspace icons');
+                return response.json();
+            })
+            .catch(error => {
+                workspaceIconCatalog = null;
+                throw error;
+            });
     }
+    return workspaceIconCatalog;
+}
 
-    if (shown === 0) {
+function normalizeIconSearch(text) {
+    return text.normalize('NFKC').toLowerCase().replaceAll('ё', 'е');
+}
+
+function matchingWorkspaceIcons(catalog, pack, query, limit) {
+    const terms = normalizeIconSearch(query.trim()).split(/\s+/).filter(Boolean);
+    const packs = pack === 'all' ? iconPackOrder : [pack];
+    const matches = packs.map(id => catalog[id].filter(([value, keywords]) =>
+        terms.every(term => normalizeIconSearch(keywords).includes(term) || value === term)));
+    const icons = [];
+    for (let i = 0; icons.length < limit; i++) {
+        const found = matches.flatMap(items => items[i] ? [items[i]] : []);
+        if (found.length === 0) break;
+        icons.push(...found.slice(0, limit - icons.length));
+    }
+    return { icons, hasMore: matches.reduce((sum, items) => sum + items.length, 0) > limit };
+}
+
+function workspaceIconLabel(label, fallback) {
+    if (typeof label === 'string') return label;
+    const locale = (document.documentElement.lang || browser.i18n.getUILanguage()).replaceAll('_', '-');
+    const cldr = { 'pt-BR': 'pt', 'zh-CN': 'zh', 'zh-TW': 'zh-Hant' };
+    return label?.[cldr[locale] || locale] || label?.[locale.split('-')[0]] || label?.en || fallback;
+}
+
+async function chooseWorkspaceIcon(value) {
+    const id = editingWorkspaceId;
+    closeEmojiPicker();
+    if (id === null) {
+        newIconInput.value = value;
+        renderNewWorkspaceIcon();
+        return;
+    }
+    const { workspaces: current = [] } = await browser.storage.local.get('workspaces');
+    const target = current.find(workspace => workspace.id === id);
+    if (!target || target.icon === value) return;
+    await browser.storage.local.set({
+        workspaces: current.map(workspace => workspace.id === id ? { ...workspace, icon: value } : workspace)
+    });
+}
+
+async function renderEmojiGrid(query, resetScroll = true) {
+    const request = ++iconRenderRequest;
+    loadingIcons = true;
+    let result;
+    try {
+        result = matchingWorkspaceIcons(await getWorkspaceIconCatalog(), activeIconPack, query, iconPageSize);
+    } catch (error) {
+        if (request !== iconRenderRequest || !emojiPickerWrap.open) return;
+        console.error(error);
+        result = { icons: [], hasMore: false };
+    }
+    if (request !== iconRenderRequest || !emojiPickerWrap.open) return;
+
+    loadingIcons = false;
+    const first = resetScroll ? 0 : renderedIconCount;
+    const fragment = document.createDocumentFragment();
+    for (const [value, , label] of result.icons.slice(first)) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'emoji-option';
+        button.title = workspaceIconLabel(label, value);
+        button.setAttribute('aria-label', button.title);
+        if (value.startsWith('img:')) {
+            const img = document.createElement('img');
+            img.src = value.substring(4);
+            img.alt = '';
+            img.loading = 'lazy';
+            button.append(img);
+        } else {
+            button.textContent = value;
+        }
+        button.onclick = () => chooseWorkspaceIcon(value).catch(console.error);
+        fragment.append(button);
+    }
+    if (result.icons.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'emoji-grid-empty';
-        empty.textContent = getMessage("noEmojiFound") || "No matching emoji";
-        emojiGrid.appendChild(empty);
-    } else {
-        emojiGrid.appendChild(frag);
+        empty.textContent = getMessage('noEmojiFound') || 'No matching icons';
+        fragment.append(empty);
     }
+    if (resetScroll) {
+        emojiGrid.replaceChildren(fragment);
+        emojiGrid.scrollTop = 0;
+    } else {
+        emojiGrid.append(fragment);
+    }
+    renderedIconCount = result.icons.length;
+    moreIconsAvailable = result.hasMore;
+}
+
+function updateWorkspaceIconPacks() {
+    for (const button of workspaceIconPacks.querySelectorAll('[data-pack]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.pack === activeIconPack));
+    }
+}
+
+function openEmojiPicker(workspaceId = null) {
+    editingWorkspaceId = workspaceId;
+    activeIconPack = 'tabler';
+    iconPageSize = ICON_PAGE_SIZE;
+    emojiSearchInput.value = '';
+    emojiGrid.replaceChildren();
+    renderedIconCount = 0;
+    moreIconsAvailable = false;
+    updateWorkspaceIconPacks();
+    emojiPickerWrap.showModal();
+    emojiSearchInput.focus({ preventScroll: true });
+    renderEmojiGrid('');
 }
 
 function closeEmojiPicker() {
-    emojiPickerWrap.classList.remove('visible');
-    customIconSection.style.display = 'none';
+    ++iconRenderRequest;
+    editingWorkspaceId = null;
+    if (emojiPickerWrap.open) emojiPickerWrap.close();
 }
 
-// Initialize emoji and icon picker grid
-function initEmojiPicker() {
-    // Prefetch catalog in the background; render happens when the picker opens.
-    ensureEmojiCatalog();
-
-    if (emojiSearchInput) {
-        let searchTimer = null;
-        emojiSearchInput.oninput = () => {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => renderEmojiGrid(emojiSearchInput.value), 80);
-        };
-    }
-
-    if (CUSTOM_ICONS.length > 0) {
-        clearElement(customIconsList);
-        CUSTOM_ICONS.forEach(iconFile => {
-            const img = document.createElement('img');
-            img.src = `icons/${iconFile}`;
-            img.className = 'custom-icon-option';
-            img.title = iconFile;
-            img.onerror = () => { img.style.display = 'none'; };
-            img.onclick = () => {
-                newIconInput.value = `img:icons/${iconFile}`;
-                closeEmojiPicker();
-            };
-            customIconsList.appendChild(img);
-        });
-    }
-}
+workspaceIconPacks.addEventListener('click', event => {
+    const button = event.target.closest('[data-pack]');
+    if (!button) return;
+    activeIconPack = button.dataset.pack;
+    iconPageSize = ICON_PAGE_SIZE;
+    updateWorkspaceIconPacks();
+    renderEmojiGrid(emojiSearchInput.value);
+});
+emojiSearchInput.addEventListener('input', () => {
+    iconPageSize = ICON_PAGE_SIZE;
+    renderEmojiGrid(emojiSearchInput.value);
+});
+emojiGrid.addEventListener('scroll', () => {
+    if (!emojiPickerWrap.open || loadingIcons || !moreIconsAvailable) return;
+    if (emojiGrid.scrollHeight - emojiGrid.scrollTop - emojiGrid.clientHeight > 100) return;
+    iconPageSize += ICON_PAGE_SIZE;
+    renderEmojiGrid(emojiSearchInput.value, false);
+}, { passive: true });
+document.getElementById('workspace-icon-cancel').onclick = closeEmojiPicker;
+emojiPickerWrap.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeEmojiPicker();
+});
 
 // Generate unique name for new workspace
 function generateWorkspaceName() {
@@ -164,24 +233,15 @@ function generateWorkspaceName() {
     return name;
 }
 
-toggleEmojiBtn.onclick = () => {
-    const opening = !emojiPickerWrap.classList.contains('visible');
-    emojiPickerWrap.classList.toggle('visible', opening);
-    customIconSection.style.display = opening ? 'block' : 'none';
-    if (opening) {
-        if (emojiSearchInput) {
-            emojiSearchInput.value = '';
-            emojiSearchInput.focus();
-        }
-        renderEmojiGrid('');
-    }
-};
+toggleEmojiBtn.onclick = () => openEmojiPicker();
 
 addBtn.onclick = () => {
     addForm.classList.toggle('visible');
     if (addForm.classList.contains('visible')) {
         addBtn.style.display = 'none';
         newNameInput.value = generateWorkspaceName();
+        newIconInput.value = defaultNewWorkspaceIcon;
+        renderNewWorkspaceIcon();
         newNameInput.focus();
         newNameInput.select();
     } else {
@@ -341,13 +401,14 @@ const allTabsSection = document.getElementById('all-tabs-section');
 let isAllTabsMode = false;
 
 window.onclick = (e) => {
+    if (emojiPickerWrap.open || e.composedPath().includes(emojiPickerWrap)) return;
     if (e.target.classList.contains('modal-overlay')) {
         e.target.classList.remove('visible');
         if (e.target.id === 'delete-modal') {
              workspaceToDeleteId = null;
         }
     }
-    if (!addForm.contains(e.target) && e.target !== addBtn) {
+    if (!e.composedPath().includes(addForm) && !e.composedPath().includes(addBtn)) {
         if (addForm.classList.contains('visible')) {
             addForm.classList.remove('visible');
             addBtn.style.display = 'block';
@@ -403,7 +464,6 @@ function localizePage() {
 async function init() {
     if (window.initI18n) await window.initI18n();
     localizePage();
-    initEmojiPicker();
     
     const res = await browser.storage.local.get(['workspaces', 'currentWorkspaceId', 'areActionsVisible', 'theme', 'isAllTabsMode', 'tourComplete', 'onboardingComplete', 'lastActiveWsId']);
     workspaces = res.workspaces || getDefaultWorkspaces();
@@ -711,12 +771,19 @@ function render() {
         
         const content = document.createElement('div');
         content.style.display = 'flex';
+        content.style.minWidth = '0';
         content.style.alignItems = 'center';
         content.style.flex = '1';
         content.style.pointerEvents = 'none'; 
         
-        const iconWrapper = document.createElement('div');
-        iconWrapper.className = 'ws-icon';
+        const iconWrapper = document.createElement('button');
+        iconWrapper.type = 'button';
+        iconWrapper.className = 'ws-icon change-workspace-icon';
+        iconWrapper.title = getMessage('selectEmoji') || 'Choose icon';
+        iconWrapper.onclick = event => {
+            event.stopPropagation();
+            openEmojiPicker(ws.id);
+        };
         if (ws.icon && ws.icon.startsWith('img:')) {
             const img = document.createElement('img');
             img.src = ws.icon.substring(4);
@@ -1265,7 +1332,7 @@ saveNewBtn.onclick = async () => {
     const name = newNameInput.value;
     if (!name) return;
     
-    const icon = newIconInput.value || '📁';
+    const icon = newIconInput.value || 'img:icons/workspace-picker/tabler/folder.svg';
     
     const newWs = {
         id: 'ws_' + Date.now(),
@@ -1282,7 +1349,7 @@ saveNewBtn.onclick = async () => {
         details: `i18n:logDetailsCreated:${name}`,
         undoData: {
             type: 'CREATE_WORKSPACE',
-            data: { id: newWs.id, name: name }
+            data: { id: newWs.id, name, icon }
         }
     });
     
