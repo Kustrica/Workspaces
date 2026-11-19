@@ -313,6 +313,8 @@
             background: transparent; color: var(--text-color);
             font: 20px/1 system-ui; cursor: pointer;
         }
+        .workspace-form-heading .workspace-close { align-self: start; }
+        .workspace-close img { display: block; width: 16px; height: 16px; }
         .workspace-close:hover { background: var(--item-hover); }
         #new-ws-icon-preview { display: inline-grid; place-items: center; width: 20px; height: 20px; }
         #new-ws-icon-preview img { display: block; width: 20px; height: 20px; object-fit: contain; }
@@ -875,12 +877,12 @@
     <div id="add-form" class="add-form">
         <div class="workspace-form-heading">
             <input type="text" id="new-ws-name" placeholder="__MSG_name__" data-i18n-placeholder="name">
-            <button type="button" id="cancel-new-workspace" class="workspace-close" data-i18n-title="cancel">×</button>
+            <button type="button" id="cancel-new-workspace" class="workspace-close" data-i18n-title="cancel"><img src="icons/workspace-picker/tabler/x.svg" alt=""></button>
         </div>
         
         <div class="emoji-container">
             <input type="hidden" id="new-ws-icon" value="img:icons/workspace-picker/tabler/folder.svg">
-            <button type="button" id="toggle-emoji" class="emoji-toggle" style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+            <button type="button" id="toggle-emoji" aria-controls="emoji-picker-wrap" aria-expanded="false" class="emoji-toggle" style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                 <span id="new-ws-icon-preview" aria-hidden="true"></span>
                 <span data-i18n="selectEmoji">__MSG_selectEmoji__</span>
             </button>
@@ -892,13 +894,12 @@
     <section hidden id="emoji-picker-wrap" aria-labelledby="workspace-picker-title">
         <div class="workspace-picker-heading">
             <h2 id="workspace-picker-title" data-i18n="selectEmoji">Choose icon</h2>
-            <button type="button" id="workspace-icon-cancel" class="workspace-close" data-i18n-title="cancel">×</button>
         </div>
         <div class="workspace-icon-packs" id="workspace-icon-packs">
             <button type="button" data-pack="all" data-i18n="iconPickerAll">All</button>
             <button type="button" data-pack="native">Emoji</button>
-            <button type="button" data-pack="tabler" data-i18n="iconPickerIcons">Icons</button>
-            <button type="button" data-pack="logos" data-i18n="iconPickerLogos">Logos</button>
+            <button type="button" data-pack="tabler">Icons</button>
+            <button type="button" data-pack="logos">Logos</button>
         </div>
         <input id="emoji-search" type="search" class="emoji-search-input" data-i18n-placeholder="searchEmoji" data-i18n-title="searchEmoji" placeholder="Search icons">
         <div id="emoji-grid" class="emoji-grid"></div>

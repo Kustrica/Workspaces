@@ -187,6 +187,7 @@ function openEmojiPicker(workspaceId = null) {
     moreIconsAvailable = false;
     updateWorkspaceIconPacks();
     emojiPickerWrap.hidden = false;
+    toggleEmojiBtn.setAttribute('aria-expanded', 'true');
     emojiSearchInput.focus({ preventScroll: true });
     renderEmojiGrid('');
 }
@@ -195,6 +196,7 @@ function closeEmojiPicker() {
     ++iconRenderRequest;
     editingWorkspaceId = null;
     emojiPickerWrap.hidden = true;
+    toggleEmojiBtn.setAttribute('aria-expanded', 'false');
 }
 
 workspaceIconPacks.addEventListener('click', event => {
@@ -215,7 +217,6 @@ emojiGrid.addEventListener('scroll', () => {
     iconPageSize += ICON_PAGE_SIZE;
     renderEmojiGrid(emojiSearchInput.value, false);
 }, { passive: true });
-document.getElementById('workspace-icon-cancel').onclick = closeEmojiPicker;
 emojiPickerWrap.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     event.stopPropagation();
@@ -804,7 +805,8 @@ function render() {
         iconWrapper.title = getMessage('selectEmoji') || 'Choose icon';
         iconWrapper.onclick = event => {
             event.stopPropagation();
-            openEmojiPicker(ws.id);
+            if (!emojiPickerWrap.hidden && editingWorkspaceId === ws.id) closeEmojiPicker();
+            else openEmojiPicker(ws.id);
         };
         if (ws.icon && ws.icon.startsWith('img:')) {
             const img = document.createElement('img');

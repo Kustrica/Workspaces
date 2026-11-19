@@ -4,6 +4,8 @@
 - Added a Tab Visibility section with separate options to show pinned tabs and tab groups across workspaces.
 - Simplified the inline icon picker and added close buttons for the picker and new workspace form.
 - Updated the styling of icon licenses in Settings.
+- Simplified the icon picker to one close button, with a reusable Choose Icon toggle and consistent Icons and Logos labels.
+- Moved icon licenses to a subdued footer in Settings.
 
 1.19.25
 - Restored the inline icon picker at the bottom of the sidebar.

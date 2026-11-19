@@ -187,12 +187,13 @@
         }
         .visibility-options { display: grid; gap: 10px; }
         .visibility-options label { display: flex; align-items: center; gap: 8px; margin: 0 !important; }
-        .icon-license-section summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: #ff9400; font-weight: 600; }
+        .icon-license-section summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: inherit; font-weight: 500; }
         .icon-license-section summary::-webkit-details-marker { display: none; }
         .license-chevron { width: 7px; height: 7px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-inline-end: 4px; }
         .icon-license-section[open] .license-chevron { transform: rotate(225deg); }
+        .icon-license-footer { border-top: 1px solid #444; margin-top: 16px; padding: 12px 0; color: #b8b6c3; font-size: 13px; }
         .icon-license-section li { margin-block: 4px; }
-        .icon-license-section a { color: inherit; text-decoration-color: #ff9400; text-underline-offset: 3px; }
+        .icon-license-section a { color: inherit; text-decoration-color: currentColor; text-underline-offset: 3px; }
     </style>
 </head>
 <body>
@@ -699,7 +700,8 @@
     <script src="sync-progress.js"></script>
     <script src="options.js"></script>
 
-    <details class="section icon-license-section">
+    <footer class="icon-license-footer">
+    <details class="icon-license-section">
         <summary><span data-i18n="iconPickerLicenses">Icon licenses</span><span class="license-chevron" aria-hidden="true"></span></summary>
         <ul>
             <li>Tabler · <a href="LICENSE-TABLER.txt">MIT</a></li>
@@ -710,5 +712,6 @@
         </ul>
         <a href="ICON-LICENSES.txt" data-i18n="iconPickerLicenses">Icon licenses</a>
     </details>
+    </footer>
 </body>
 </html>
